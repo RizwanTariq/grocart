@@ -1,0 +1,32 @@
+import mongoose from "mongoose";
+
+interface IUser {
+  _id?: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  password: string;
+  contact?: string;
+  role: "user" | "delivery_boy" | "admin";
+}
+
+export const userSchema = new mongoose.Schema<IUser>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    contact: { type: String, required: false },
+    role: {
+      type: String,
+      enum: ["user", "delivery_boy", "admin"],
+      default: "user",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const UserModel =
+  mongoose.models.UserModel || mongoose.model<IUser>("User", userSchema);
+
+export default UserModel;
