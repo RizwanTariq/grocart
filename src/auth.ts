@@ -1,8 +1,12 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import connectDB from "./libs/db";
 import UserModel from "./models/user.model";
 import bcrypt from "bcryptjs";
+
+class InvalidLoginError extends CredentialsSignin {
+  code = "Invalid identifier or password";
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -15,18 +19,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await connectDB();
         const { email, password } = credentials;
         if (!email || !password) {
-          throw new Error("Missing credentials");
+          throw new InvalidLoginError("Missing credentials", {
+            cause: "MISSING_CREDENTIALS",
+          });
         }
-        const user = await UserModel.findOne({ email });
+        const user = await UserModel.findOne({ email }).lean();
         if (!user) {
-          throw new Error("User not found");
+          throw new InvalidLoginError("User not found", {
+            cause: "USER_NOT_FOUND",
+          });
         }
         const isPasswordValid = await bcrypt.compare(
           String(password),
           user.password
         );
         if (!isPasswordValid) {
-          throw new Error("Invalid password");
+          throw new InvalidLoginError("Invalid password", {
+            cause: "INVALID_PASSWORD",
+          });
         }
         return {
           id: user._id.toString(),
