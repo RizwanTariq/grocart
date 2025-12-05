@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { toast } from "sonner";
 import { ArrowLeft, BadgeCheck, Lock, LogIn, Mail, User } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -13,11 +12,14 @@ import Divider from "./Divider";
 
 import googleLogo from "@/assets/google-icon.png";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type RegisterFormProps = {
   onBack: () => void;
 };
 function RegisterForm({ onBack }: RegisterFormProps) {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +39,6 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         console.log(result);
       }
     } catch (error) {
-      toast.error("Registration failed");
       console.error("Registration error:", error);
     }
   }
@@ -125,6 +126,7 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
+        onClick={() => router.push("/login")}
       >
         Already have an account? <LogIn className="w-4 h-4" />
         <span className="text-rose-700">Sign in</span>
