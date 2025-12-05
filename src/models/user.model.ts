@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -28,6 +28,7 @@ export const userSchema = new mongoose.Schema<IUser>(
 
 // In case of hot-reloading in development, we check if the model already exists
 const UserModel =
-  mongoose.models.User || mongoose.model<IUser>("User", userSchema);
+  (mongoose.models.User as Model<IUser>) ||
+  mongoose.model<IUser>("User", userSchema);
 
 export default UserModel;
