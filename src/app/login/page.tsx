@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { toast } from "sonner";
 import { BadgeCheck, Lock, LogIn, Mail } from "lucide-react";
 
 import { cn } from "@/utils/cn";
@@ -13,29 +12,18 @@ import Divider from "@/components/Divider";
 
 import googleLogo from "@/assets/google-icon.png";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const isValid = email.length >= 4 && password.length >= 8;
-  async function register(data: FormData) {
-    const name = data.get("name")?.toString();
+  async function login(data: FormData) {
     const email = data.get("email")?.toString();
     const password = data.get("password")?.toString();
-    try {
-      const result = await axios.post("/api/auth/register", {
-        name,
-        email,
-        password,
-      });
-      if (result.status === 201) {
-        toast.success("Registration successful");
-      }
-    } catch (error) {
-      toast.error("Registration failed");
-      console.error("Registration error:", error);
-    }
+    console.log(email, password);
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
@@ -56,7 +44,7 @@ function LoginForm() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        action={register}
+        action={login}
       >
         <Input
           type="email"
@@ -103,6 +91,7 @@ function LoginForm() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
         className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
+        onClick={() => router.push("/register")}
       >
         Don&apos;t have an account? <LogIn className="w-4 h-4" />
         <span className="text-rose-700">Sign up</span>
