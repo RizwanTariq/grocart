@@ -28,6 +28,6 @@ export const userSchema = new mongoose.Schema<IUser>(
 
 // In case of hot-reloading in development, we check if the model already exists
 const UserModel =
-  mongoose.models.UserModel || mongoose.model<IUser>("User", userSchema);
+  mongoose.models.User || mongoose.model<IUser>("User", userSchema);
 
 export default UserModel;
