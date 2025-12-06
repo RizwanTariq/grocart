@@ -12,6 +12,7 @@ import googleLogo from "@/assets/google-icon.png";
 import { loginAction } from "@/app/actions/login";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { oAuthloginAction } from "@/app/actions/oAuthLogin";
 
 function LoginForm() {
   const session = useSession();
@@ -94,6 +95,7 @@ function LoginForm() {
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium cursor-pointer transition-all duration-200"
+          onClick={() => oAuthloginAction("google")}
         >
           <Image src={googleLogo} alt="Google logo" width={20} height={20} />
           Continue with Google

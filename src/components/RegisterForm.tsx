@@ -23,6 +23,7 @@ import googleLogo from "@/assets/google-icon.png";
 import { useRouter } from "next/navigation";
 import { registerAction } from "@/app/actions/register";
 import Link from "next/link";
+import { oAuthloginAction } from "@/app/actions/oAuthLogin";
 
 type RegisterFormProps = {
   onBack: () => void;
@@ -126,6 +127,7 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium cursor-pointer transition-all duration-200"
+          onClick={() => oAuthloginAction("google")}
         >
           <Image src={googleLogo} alt="Google logo" width={20} height={20} />
           Continue with Google
