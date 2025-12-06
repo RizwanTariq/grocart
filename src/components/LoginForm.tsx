@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { BadgeCheck, LoaderCircle, Lock, LogIn, Mail } from "lucide-react";
 
@@ -11,9 +10,12 @@ import Input from "@/components/Input";
 import Divider from "@/components/Divider";
 import googleLogo from "@/assets/google-icon.png";
 import { loginAction } from "@/app/actions/login";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 function LoginForm() {
-  const router = useRouter();
+  const session = useSession();
+  console.log(session);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -97,16 +99,17 @@ function LoginForm() {
           Continue with Google
         </button>
       </motion.form>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
-        onClick={() => router.push("/register")}
-      >
-        Don&apos;t have an account? <LogIn className="w-4 h-4" />
-        <span className="text-rose-700">Sign up</span>
-      </motion.p>
+      <Link href="/register">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
+        >
+          Don&apos;t have an account? <LogIn className="w-4 h-4" />
+          <span className="text-rose-700">Sign up</span>
+        </motion.p>
+      </Link>
     </div>
   );
 }
