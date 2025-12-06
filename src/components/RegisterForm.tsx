@@ -3,7 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { ArrowLeft, BadgeCheck, Lock, LogIn, Mail, User } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  LoaderCircle,
+  Lock,
+  LogIn,
+  Mail,
+  User,
+  UserRoundPlus,
+} from "lucide-react";
 
 import { cn } from "@/utils/cn";
 
@@ -11,8 +20,8 @@ import Input from "./Input";
 import Divider from "./Divider";
 
 import googleLogo from "@/assets/google-icon.png";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { registerAction } from "@/app/actions/register";
 
 type RegisterFormProps = {
   onBack: () => void;
@@ -20,26 +29,21 @@ type RegisterFormProps = {
 function RegisterForm({ onBack }: RegisterFormProps) {
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const isValid = name.length >= 4 && email.length >= 4 && password.length >= 8;
-  async function register(data: FormData) {
-    const name = data.get("name")?.toString();
-    const email = data.get("email")?.toString();
-    const password = data.get("password")?.toString();
+  async function handleSubmit(data: FormData) {
+    setLoading(true);
     try {
-      const result = await axios.post("/api/auth/register", {
-        name,
-        email,
-        password,
-      });
-      if (result.status === 201) {
-        console.log(result);
-      }
+      await registerAction(data); // ⬅ server action
+      console.log("User registered!");
     } catch (error) {
       console.error("Registration error:", error);
+    } finally {
+      router.push("/login");
     }
   }
   return (
@@ -70,7 +74,7 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        action={register}
+        action={handleSubmit}
       >
         <Input
           type="name"
@@ -102,15 +106,20 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         />
         <button
           type="submit"
-          disabled={!isValid}
+          disabled={!isValid || loading}
           className={cn(
             "w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 cursor-pointer",
-            isValid
+            isValid && !loading
               ? "bg-green-600 hover:bg-green-700 text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
           )}
         >
-          Register
+          <span>Register</span>
+          {loading ? (
+            <LoaderCircle className="animate-spin w-5 h-5" />
+          ) : (
+            <UserRoundPlus className="w-5 h-5" />
+          )}
         </button>
         <Divider text="OR" />
         <button
