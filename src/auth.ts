@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import connectDB from "./libs/db";
 import UserModel from "./models/user.model";
 import bcrypt from "bcryptjs";
+import Google from "next-auth/providers/google";
 
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid identifier or password";
@@ -31,7 +32,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
         const isPasswordValid = await bcrypt.compare(
           String(password),
-          user.password
+          user.password || ""
         );
         if (!isPasswordValid) {
           throw new InvalidLoginError("Invalid password", {
@@ -45,6 +46,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           role: user.role,
         };
       },
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   callbacks: {
@@ -66,6 +71,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.role = token.role as string;
       }
       return session;
+    },
+    async signIn({ account, user }) {
+      if (account?.provider === "google") {
+        await connectDB();
+        const existingUser = await UserModel.findOne({ email: user.email });
+        if (existingUser) {
+          return true;
+        }
+        const newUser = await UserModel.create({
+          name: user.name,
+          email: user.email,
+          image: user.image as string,
+        });
+        user.id = newUser._id.toString();
+        user.role = newUser.role;
+      }
+      return true;
     },
   },
   pages: {
