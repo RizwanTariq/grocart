@@ -22,6 +22,7 @@ import Divider from "./Divider";
 import googleLogo from "@/assets/google-icon.png";
 import { useRouter } from "next/navigation";
 import { registerAction } from "@/app/actions/register";
+import Link from "next/link";
 
 type RegisterFormProps = {
   onBack: () => void;
@@ -130,16 +131,17 @@ function RegisterForm({ onBack }: RegisterFormProps) {
           Continue with Google
         </button>
       </motion.form>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
-        onClick={() => router.push("/login")}
-      >
-        Already have an account? <LogIn className="w-4 h-4" />
-        <span className="text-rose-700">Sign in</span>
-      </motion.p>
+      <Link href="/login">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
+        >
+          Already have an account? <LogIn className="w-4 h-4" />
+          <span className="text-rose-700">Sign in</span>
+        </motion.p>
+      </Link>
     </div>
   );
 }
