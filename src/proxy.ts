@@ -20,7 +20,7 @@ export default async function proxy(request: NextRequest) {
   });
   if (!token) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", request.url);
+    loginUrl.searchParams.set("redirectUrl", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
