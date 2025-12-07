@@ -1,32 +1,37 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
 
-export default async function proxy(request: NextRequest) {
-  const publicRoutes = [
-    "/login",
-    "/register",
-    "/api/auth",
-    "/favicon.ico",
-    "/_next",
-  ];
-  const { pathname } = request.nextUrl;
-  const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
-  if (isPublicRoute) {
+export default auth(async function proxy(req) {
+  const { nextUrl } = req;
+  const path = nextUrl.pathname;
+
+  const publicRoutes = ["/favicon.ico", "/_next", "/api/auth"];
+  const authRoutes = ["/login", "/register"];
+
+  // Skip public asset routes
+  if (publicRoutes.some((p) => path.startsWith(p))) {
     return NextResponse.next();
   }
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-  });
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirectUrl", request.url);
+
+  const isAuthRoute = authRoutes.some((p) => path.startsWith(p));
+
+  // Check if user is logged in
+  const isLoggedIn = !!req.auth;
+
+  // 🔥 1. If logged in and visiting login/register → redirect home
+  if (isLoggedIn && isAuthRoute) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  // 🔥 2. If not logged in and visiting a protected route → redirect to login
+  if (!isLoggedIn && !isAuthRoute) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("redirectUrl", req.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Default continue normally
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [
