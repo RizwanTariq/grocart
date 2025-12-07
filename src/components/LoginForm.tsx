@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import { BadgeCheck, LoaderCircle, Lock, LogIn, Mail } from "lucide-react";
 
 import { cn } from "@/utils/cn";
 import Input from "@/components/Input";
 import Divider from "@/components/Divider";
-import googleLogo from "@/assets/google-icon.png";
 import { loginAction } from "@/app/actions/login";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { oAuthloginAction } from "@/app/actions/oAuthLogin";
+
+import GoogleLogin from "./GoogleLogin";
 
 function LoginForm() {
-  const session = useSession();
-  console.log(session);
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirectUrl") || "/";
+
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +26,7 @@ function LoginForm() {
   async function handleSubmit(data: FormData) {
     setLoading(true);
     try {
-      await loginAction(data); // ⬅ server action
+      await loginAction(data, redirectUrl); // ⬅ server action
     } catch (error) {
       console.error("Login error:", error);
     } finally {
@@ -92,16 +92,11 @@ function LoginForm() {
           )}
         </button>
         <Divider text="OR" />
-        <button
-          type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium cursor-pointer transition-all duration-200"
-          onClick={() => oAuthloginAction("google")}
-        >
-          <Image src={googleLogo} alt="Google logo" width={20} height={20} />
-          Continue with Google
-        </button>
+
+        <GoogleLogin redirectUrl={redirectUrl} />
       </motion.form>
-      <Link href="/register">
+
+      <Link href={{ pathname: "/register", query: { redirectUrl } }}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

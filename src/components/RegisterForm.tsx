@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import {
   ArrowLeft,
@@ -14,21 +15,19 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 
+import { registerAction } from "@/app/actions/register";
 import { cn } from "@/utils/cn";
 
 import Input from "./Input";
 import Divider from "./Divider";
-
-import googleLogo from "@/assets/google-icon.png";
-import { useRouter } from "next/navigation";
-import { registerAction } from "@/app/actions/register";
-import Link from "next/link";
-import { oAuthloginAction } from "@/app/actions/oAuthLogin";
+import GoogleLogin from "./GoogleLogin";
 
 type RegisterFormProps = {
   onBack: () => void;
 };
 function RegisterForm({ onBack }: RegisterFormProps) {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirectUrl") || "/";
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,7 @@ function RegisterForm({ onBack }: RegisterFormProps) {
     } catch (error) {
       console.error("Registration error:", error);
     } finally {
-      router.push("/login");
+      router.push("/login" + `?redirectUrl=${encodeURIComponent(redirectUrl)}`);
     }
   }
   return (
@@ -124,16 +123,9 @@ function RegisterForm({ onBack }: RegisterFormProps) {
           )}
         </button>
         <Divider text="OR" />
-        <button
-          type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium cursor-pointer transition-all duration-200"
-          onClick={() => oAuthloginAction("google")}
-        >
-          <Image src={googleLogo} alt="Google logo" width={20} height={20} />
-          Continue with Google
-        </button>
+        <GoogleLogin redirectUrl={redirectUrl} />
       </motion.form>
-      <Link href="/login">
+      <Link href={{ pathname: "/login", query: { redirectUrl } }}>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
