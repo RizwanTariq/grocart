@@ -26,7 +26,8 @@ export async function updateUserAction(formData: FormData) {
     if (!user) {
       throw new Error("User not found");
     }
-    return { ...user, _id: user._id.toString() };
+
+    return JSON.parse(JSON.stringify(user));
   } catch (error) {
     throw error;
   }
