@@ -9,7 +9,7 @@ class InvalidLoginError extends CredentialsSignin {
   code = "Invalid identifier or password";
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
