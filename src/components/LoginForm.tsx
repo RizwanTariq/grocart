@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
@@ -17,21 +17,26 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirectUrl") || "/";
 
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const isValid = email.length >= 4 && password.length >= 8;
 
-  async function handleSubmit(data: FormData) {
-    setLoading(true);
-    try {
-      await loginAction(data, redirectUrl); // ⬅ server action
-    } catch (error) {
-      console.error("Login error:", error);
-    } finally {
-      setLoading(false);
-    }
+  function handleSubmit(data: FormData) {
+    startTransition(async () => {
+      setError("");
+      try {
+        await loginAction(data, redirectUrl); // ⬅ server action
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+      }
+    });
   }
 
   return (
@@ -79,18 +84,19 @@ function LoginForm() {
           disabled={!isValid}
           className={cn(
             "w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 cursor-pointer",
-            isValid
+            isValid || !isPending
               ? "bg-green-600 hover:bg-green-700 text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
           )}
         >
           Sign in
-          {loading ? (
+          {isPending ? (
             <LoaderCircle className="animate-spin w-5 h-5" />
           ) : (
             <LogIn className="w-5 h-5" />
           )}
         </button>
+        {error && <p className="text-red-500">{error}</p>}
         <Divider text="OR" />
 
         <GoogleLogin redirectUrl={redirectUrl} />

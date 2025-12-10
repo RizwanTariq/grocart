@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
@@ -30,22 +30,31 @@ function RegisterForm({ onBack }: RegisterFormProps) {
   const redirectUrl = searchParams.get("redirectUrl") || "/";
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const isValid = name.length >= 4 && email.length >= 4 && password.length >= 8;
   async function handleSubmit(data: FormData) {
-    setLoading(true);
-    try {
-      await registerAction(data); // ⬅ server action
-      console.log("User registered!");
-    } catch (error) {
-      console.error("Registration error:", error);
-    } finally {
-      router.push("/login" + `?redirectUrl=${encodeURIComponent(redirectUrl)}`);
-    }
+    startTransition(async () => {
+      setError("");
+      try {
+        await registerAction(data); // ⬅ server action
+        console.log("User registered!");
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unexpected error occurred");
+        }
+      } finally {
+        router.push(
+          "/login" + `?redirectUrl=${encodeURIComponent(redirectUrl)}`
+        );
+      }
+    });
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
@@ -107,21 +116,22 @@ function RegisterForm({ onBack }: RegisterFormProps) {
         />
         <button
           type="submit"
-          disabled={!isValid || loading}
+          disabled={!isValid || isPending}
           className={cn(
             "w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 cursor-pointer",
-            isValid && !loading
+            isValid && !isPending
               ? "bg-green-600 hover:bg-green-700 text-white"
               : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
           )}
         >
           <span>Register</span>
-          {loading ? (
+          {isPending ? (
             <LoaderCircle className="animate-spin w-5 h-5" />
           ) : (
             <UserRoundPlus className="w-5 h-5" />
           )}
         </button>
+        {error && <p className="text-red-500">{error}</p>}
         <Divider text="OR" />
         <GoogleLogin redirectUrl={redirectUrl} />
       </motion.form>
