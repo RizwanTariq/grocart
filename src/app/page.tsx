@@ -27,9 +27,9 @@ export default async function Home() {
   }
   return (
     <>
+      <NavBar user={user} />
       {user.role === "user" ? (
         <>
-          <NavBar user={user} />
           <UserDashboard />
         </>
       ) : user.role === "admin" ? (

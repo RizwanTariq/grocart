@@ -31,7 +31,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
     signOut({ redirect: true, redirectTo: "/login" });
   }
   return (
-    <div className="relative" ref={dropdownCont}>
+    <div className="relative hidden md:block" ref={dropdownCont}>
       <div
         className="bg-white rounded-full w-10 h-10 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-all cursor-pointer relative"
         onClick={() => setOpen((pre) => !pre)}
@@ -80,14 +80,16 @@ function ProfileDropdown({ user }: { user: IUser }) {
                 </div>
               </div>
             </div>
-            <Link
-              href=""
-              className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-rose-50 transition-all rounded-xl font-medium"
-              onClick={() => setOpen((pre) => !pre)}
-            >
-              <Package2 className="w-5 h-5 text-rose-500" />
-              My Orders
-            </Link>
+            {user.role === "user" && (
+              <Link
+                href=""
+                className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-rose-50 transition-all rounded-xl font-medium"
+                onClick={() => setOpen((pre) => !pre)}
+              >
+                <Package2 className="w-5 h-5 text-rose-500" />
+                My Orders
+              </Link>
+            )}
             <button
               className="flex items-center gap-3 w-full px-3 py-2.5 bg-red-200 hover:bg-red-100 rounded-xl text-gray-700 font-medium transition-all cursor-pointer"
               onClick={handleLogOut}
