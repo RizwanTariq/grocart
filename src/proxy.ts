@@ -30,6 +30,15 @@ export default auth(async function proxy(req) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // 🔥 3. If logged in and visiting a unauthorized route
+  if (
+    (path.includes("/admin") && req.auth?.user?.role !== "admin") ||
+    (path.includes("/delivery") && req.auth?.user?.role !== "delivery_boy") ||
+    (path.includes("/user") && req.auth?.user?.role !== "user")
+  ) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+
   return NextResponse.next();
 });
 
