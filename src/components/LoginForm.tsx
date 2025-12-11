@@ -84,8 +84,10 @@ function LoginForm() {
           disabled={!isValid}
           className={cn(
             "w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 cursor-pointer",
-            isValid || !isPending
+            isValid
               ? "bg-green-600 hover:bg-green-700 text-white"
+              : isPending
+              ? "bg-green-300 text-white cursor-not-allowed shadow-none"
               : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
           )}
         >

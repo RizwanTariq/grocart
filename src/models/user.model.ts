@@ -8,6 +8,8 @@ export interface IUser {
   contact?: string;
   image?: string;
   role: "user" | "delivery_boy" | "admin";
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export const userSchema = new mongoose.Schema<IUser>(

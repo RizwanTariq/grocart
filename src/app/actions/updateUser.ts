@@ -10,7 +10,6 @@ export async function updateUserAction(formData: FormData) {
 
     const contact = formData.get("contact")?.toString();
     const role = formData.get("role")?.toString();
-    console.log(role, contact);
 
     const session = await auth();
 

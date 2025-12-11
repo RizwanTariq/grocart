@@ -64,11 +64,10 @@ export const { handlers, signIn, auth } = NextAuth({
     },
     session({ session, token }) {
       if (token && session.user) {
-        session.userId = token.id as string;
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
-        session.user.role = token.role as string;
+        session.user.role = String(token.role || "user");
       }
       return session;
     },
