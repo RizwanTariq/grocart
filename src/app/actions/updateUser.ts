@@ -2,9 +2,10 @@
 
 import { auth } from "@/auth";
 import connectDB from "@/libs/db";
-import UserModel from "@/models/user.model";
+import UserModel, { IUser } from "@/models/user.model";
+import { revalidatePath } from "next/cache";
 
-export async function updateUserAction(formData: FormData) {
+export async function updateUserAction(formData: FormData): Promise<IUser> {
   try {
     await connectDB();
 
@@ -25,6 +26,8 @@ export async function updateUserAction(formData: FormData) {
     if (!user) {
       throw new Error("User not found");
     }
+
+    revalidatePath("/");
 
     return JSON.parse(JSON.stringify(user));
   } catch (error) {

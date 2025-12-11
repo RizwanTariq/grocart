@@ -11,6 +11,7 @@ import {
   UserCog2,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 
 function EditRoleAndContact({ user }: { user: IUser }) {
@@ -29,6 +30,8 @@ function EditRoleAndContact({ user }: { user: IUser }) {
   const disabled =
     !contact || contact.length < 10 || contact.length > 10 || !selectedRole;
 
+  const { update } = useSession();
+
   function handleSubmit() {
     startTransition(async () => {
       try {
@@ -36,7 +39,7 @@ function EditRoleAndContact({ user }: { user: IUser }) {
         if (contact) formData.append("contact", contact);
         if (selectedRole) formData.append("role", selectedRole);
         const updatedUser = await updateUserAction(formData);
-        console.log(updatedUser, "Updated user");
+        update({ role: updatedUser.role });
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
