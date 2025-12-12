@@ -82,7 +82,7 @@ function NavBar({ user }: { user: IUser }) {
               <div className="flex flex-col gap-3 font-medium mt-6">
                 <Link
                   className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                  href=""
+                  href="/admin/add-product"
                 >
                   <PlusCircle className="w-6 h-6 text-rose-200" />
                   <span className="text-md">Add Product</span>
@@ -151,7 +151,7 @@ function NavBar({ user }: { user: IUser }) {
           <>
             <div className="hidden md:flex items-center gap-3">
               <TooltipIconButton
-                href=""
+                href="/admin/add-product"
                 icon={<PlusCircle className="w-5 h-5 text-rose-700" />}
                 tooltip="Add Product"
               />
