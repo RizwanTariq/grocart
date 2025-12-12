@@ -14,7 +14,7 @@ function HeroSection() {
       content:
         "Fresh fruits, vegetables, and pantry items delivered to your doorstep.",
       Icon: (
-        <Salad className="w-20 h-20 sm:w-28 sm:h-28 text-rose-400 drop-shadow-xl" />
+        <Salad className="w-18 h-18 sm:w-28 sm:h-28 text-rose-400 drop-shadow-xl" />
       ),
       buttonText: "Order Now",
       bgImage:
@@ -26,7 +26,7 @@ function HeroSection() {
       content:
         "Fast and reliable delivery right to your doorstep, ensuring your groceries arrive fresh and on time.",
       Icon: (
-        <TruckElectric className="w-20 h-20 sm:w-28 sm:h-28 text-blue-400 drop-shadow-xl" />
+        <TruckElectric className="w-18 h-18 sm:w-28 sm:h-28 text-blue-400 drop-shadow-xl" />
       ),
       buttonText: "Shop Now",
       bgImage:
@@ -38,7 +38,7 @@ function HeroSection() {
       content:
         "Shop from the comfort of your home or office, with our convenient delivery service available 24/7.",
       Icon: (
-        <Smartphone className="w-20 h-20 sm:w-28 sm:h-28 text-emerald-400 drop-shadow-xl" />
+        <Smartphone className="w-18 h-18 sm:w-28 sm:h-28 text-emerald-400 drop-shadow-xl" />
       ),
       buttonText: "Get Started",
       bgImage:
@@ -55,7 +55,7 @@ function HeroSection() {
     return () => clearInterval(interval);
   }, [activeSlide, slides.length]);
   return (
-    <div className="relative w-[98%] mx-auto mt-32 h-[80vh] rounded-3xl overflow-hidden shadow-2xl">
+    <div className="relative w-[96%] mx-auto mt-26 md:mt-32 h-[60vh] md:h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
       <AnimatePresence mode="wait">
         <motion.div
           key={activeSlide}
@@ -102,7 +102,7 @@ function HeroSection() {
             whileTap={{ scale: 0.95 }}
             className="bg-black/10 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-105 transition-all cursor-pointer"
           >
-            <Store className="w-10 h-10" />
+            <Store className="w-8 h-8 sm:w-10 sm:h-10" />
             <span className="text-lg font-semibold">
               {slides[activeSlide - 1].buttonText}
             </span>
@@ -114,8 +114,10 @@ function HeroSection() {
           <button
             key={_.id}
             className={cn(
-              "w-3 h-3 rounded-full cursor-pointer transition-all",
-              activeSlide === _.id ? "bg-white w-5 h-5" : "bg-white/50"
+              "w-2 h-2 md:w-3 md:h-3 rounded-full cursor-pointer transition-all",
+              activeSlide === _.id
+                ? "bg-white w-3 h-3 md:w-4 md:h-4"
+                : "bg-white/50"
             )}
             onClick={() => setActiveSlide(_.id)}
           ></button>
