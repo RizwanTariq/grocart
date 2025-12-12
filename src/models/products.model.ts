@@ -1,19 +1,7 @@
 import mongoose, { Model } from "mongoose";
+import { IProductDB } from "../types";
 
-export interface IProduct {
-  _id?: mongoose.Types.ObjectId;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  unit: string;
-  image: string;
-  countInStock: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export const productSchema = new mongoose.Schema<IProduct>(
+export const productSchema = new mongoose.Schema<IProductDB>(
   {
     name: { type: String, required: true },
     category: {
@@ -81,7 +69,7 @@ export const productSchema = new mongoose.Schema<IProduct>(
 
 // In case of hot-reloading in development, we check if the model already exists
 const ProductModel =
-  (mongoose.models.Product as Model<IProduct>) ||
-  mongoose.model<IProduct>("Product", productSchema);
+  (mongoose.models.Product as Model<IProductDB>) ||
+  mongoose.model<IProductDB>("Product", productSchema);
 
 export default ProductModel;

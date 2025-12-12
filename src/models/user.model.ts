@@ -1,18 +1,7 @@
 import mongoose, { Model } from "mongoose";
+import { IUserDB } from "@/types";
 
-export interface IUser {
-  _id?: mongoose.Types.ObjectId;
-  name: string;
-  email: string;
-  password?: string;
-  contact?: string;
-  image?: string;
-  role: "user" | "delivery_boy" | "admin";
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-export const userSchema = new mongoose.Schema<IUser>(
+export const userSchema = new mongoose.Schema<IUserDB>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -32,7 +21,7 @@ export const userSchema = new mongoose.Schema<IUser>(
 
 // In case of hot-reloading in development, we check if the model already exists
 const UserModel =
-  (mongoose.models.User as Model<IUser>) ||
-  mongoose.model<IUser>("User", userSchema);
+  (mongoose.models.User as Model<IUserDB>) ||
+  mongoose.model<IUserDB>("User", userSchema);
 
 export default UserModel;

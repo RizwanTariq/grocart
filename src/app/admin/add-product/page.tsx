@@ -1,18 +1,20 @@
 "use client";
 
+import { useRef, useState, useTransition } from "react";
 import { ArrowLeft, LoaderCircle, PlusCircle, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { motion } from "motion/react";
+import axios from "axios";
+
+import { IProduct } from "@/types";
+
 import Dropdown from "./_components/Dropdown";
-import { useRef, useState, useTransition } from "react";
 import NumberField from "./_components/NumberField";
 import ImageUploadField, {
   ImageUploadFieldRef,
 } from "./_components/ImageField";
 import TextArea from "./_components/TextArea";
 import TextField from "./_components/TextField";
-import axios from "axios";
-import { IProduct } from "@/models/products.model";
 
 function AddProductPage() {
   const units = [

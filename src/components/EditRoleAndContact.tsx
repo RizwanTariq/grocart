@@ -1,8 +1,5 @@
 "use client";
 
-import { updateUserAction } from "@/app/actions/updateUser";
-import { IUser } from "@/models/user.model";
-import { cn } from "@/utils/cn";
 import {
   LoaderCircle,
   MoveRight,
@@ -13,6 +10,10 @@ import {
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
+
+import { updateUserAction } from "@/app/actions/updateUser";
+import { IUser } from "@/types";
+import { cn } from "@/utils/cn";
 
 function EditRoleAndContact({ user }: { user: IUser }) {
   const [roles, setRoles] = useState([

@@ -1,5 +1,6 @@
 import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
+import { convertId } from "@/types";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,7 +39,9 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    return NextResponse.json(convertId(newUser), {
+      status: 201,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

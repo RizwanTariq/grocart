@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
-
+import { signOut } from "next-auth/react";
 import {
   Boxes,
   ClipboardList,
@@ -17,13 +17,12 @@ import {
   X,
 } from "lucide-react";
 
-import { IUser } from "@/models/user.model";
+import { IUser } from "@/types";
 
 import ProfileDropdown from "./ProfileDropdown";
 import SearchBar from "./SearchBar";
 import SearchBarMobile from "./SearchBarMobile";
 import TooltipIconButton from "./TooltipIconButton";
-import { signOut } from "next-auth/react";
 
 function NavBar({ user }: { user: IUser }) {
   const isUser = user.role === "user";
@@ -58,7 +57,7 @@ function NavBar({ user }: { user: IUser }) {
               </div>
 
               <div className="flex items-center gap-4 p-3 mt-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all shadow-inner">
-                <div className="bg-white rounded-full w-12 h-12 overflow-hidden flex items-center justify-center relative border-2 border-rose-400 shadow-lg">
+                <div className="bg-rose-50 rounded-full w-12 h-12 overflow-hidden flex items-center justify-center relative border-2 border-rose-400 shadow-lg">
                   {user.image ? (
                     <Image
                       src={user.image}

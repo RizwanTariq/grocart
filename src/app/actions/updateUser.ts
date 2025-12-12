@@ -2,7 +2,8 @@
 
 import { auth } from "@/auth";
 import connectDB from "@/libs/db";
-import UserModel, { IUser } from "@/models/user.model";
+import UserModel from "@/models/user.model";
+import { convertId, IUser } from "@/types";
 import { revalidatePath } from "next/cache";
 
 export async function updateUserAction(formData: FormData): Promise<IUser> {
@@ -29,7 +30,7 @@ export async function updateUserAction(formData: FormData): Promise<IUser> {
 
     revalidatePath("/");
 
-    return JSON.parse(JSON.stringify(user));
+    return convertId(user) as IUser;
   } catch (error) {
     throw error;
   }

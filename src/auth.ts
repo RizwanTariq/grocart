@@ -4,6 +4,7 @@ import connectDB from "./libs/db";
 import UserModel from "./models/user.model";
 import bcrypt from "bcryptjs";
 import Google from "next-auth/providers/google";
+import { convertId, IUser } from "./types";
 
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid identifier or password";
@@ -24,7 +25,8 @@ export const { handlers, signIn, auth } = NextAuth({
             cause: "MISSING_CREDENTIALS",
           });
         }
-        const user = await UserModel.findOne({ email }).lean();
+        const _dbUser = await UserModel.findOne({ email }).lean();
+        const user: IUser = convertId(_dbUser) as IUser;
         if (!user) {
           throw new InvalidLoginError("User not found", {
             cause: "USER_NOT_FOUND",
@@ -40,7 +42,7 @@ export const { handlers, signIn, auth } = NextAuth({
           });
         }
         return {
-          id: user._id.toString(),
+          id: user._id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -56,10 +58,11 @@ export const { handlers, signIn, auth } = NextAuth({
     async jwt({ token, user, trigger, session, account }) {
       if (account?.provider === "google") {
         await connectDB();
-        const dbUser = await UserModel.findOne({ email: user.email }).lean();
+        const _dbUser = await UserModel.findOne({ email: user.email }).lean();
+        const dbUser: IUser = convertId(_dbUser) as IUser;
 
         if (dbUser) {
-          token.id = dbUser._id.toString();
+          token.id = dbUser._id;
           token.name = dbUser.name;
           token.email = dbUser.email;
           token.role = dbUser.role;
@@ -89,7 +92,8 @@ export const { handlers, signIn, auth } = NextAuth({
     async signIn({ account, user }) {
       if (account?.provider === "google") {
         await connectDB();
-        const existingUser = await UserModel.findOne({ email: user.email });
+        const existingUserDB = await UserModel.findOne({ email: user.email });
+        const existingUser = convertId(existingUserDB) as IUser;
         if (existingUser) {
           return true;
         }

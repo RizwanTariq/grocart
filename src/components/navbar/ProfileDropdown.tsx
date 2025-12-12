@@ -1,6 +1,5 @@
 "use client";
 
-import { IUser } from "@/models/user.model";
 import { LogOut, Package2, User } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import Image from "next/image";
@@ -8,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+
+import { IUser } from "@/types";
 
 function ProfileDropdown({ user }: { user: IUser }) {
   const [open, setOpen] = useState(false);
@@ -59,7 +60,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
             className="absolute top-12 right-0 w-50 bg-white border rounded-xl border-gray-300 shadow-lg p-3 space-y-2 text-sm font-medium text-gray-700 z-50"
           >
             <div className="flex items-center gap-3 px-3 py-2 border-b border-gray-100">
-              <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center relative">
+              <div className="bg-rose-50 rounded-full w-10 h-10 flex items-center justify-center relative">
                 {user.image ? (
                   <Image
                     src={user.image}
@@ -91,10 +92,10 @@ function ProfileDropdown({ user }: { user: IUser }) {
               </Link>
             )}
             <button
-              className="flex items-center gap-3 w-full px-3 py-2.5 bg-red-200 hover:bg-red-100 rounded-xl text-gray-700 font-medium transition-all cursor-pointer"
+              className="flex items-center gap-3 w-full px-4 py-2.5 bg-red-500 hover:bg-red-400 rounded-xl text-white font-medium transition-all cursor-pointer"
               onClick={handleLogOut}
             >
-              <LogOut className="h-5 w-5 text-red-600" />
+              <LogOut className="h-5 w-5 text-red-800" />
               Log Out
             </button>
           </motion.div>

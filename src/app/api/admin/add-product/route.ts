@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { uploadOnCloudinary } from "@/libs/cloudinary";
 import connectDB from "@/libs/db";
 import ProductModel from "@/models/products.model";
+import { convertId } from "@/types";
 import { NextResponse } from "next/server";
 
 export const POST = auth(async function (request) {
@@ -51,7 +52,7 @@ export const POST = auth(async function (request) {
       image: imgeUrl || "",
     });
 
-    return NextResponse.json(product, {
+    return NextResponse.json(convertId(product), {
       status: 201,
     });
   } catch (error) {
