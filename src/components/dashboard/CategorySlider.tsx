@@ -196,7 +196,7 @@ export default function CategorySlider() {
       whileInView={{ opacity: 1 }}
       viewport={{ once: false, amount: "some" }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="w-[90%] md:w-[80%] mx-auto mt-9 sm:mt-12 relative"
+      className="w-[90%] md:w-[84%] mx-auto mt-9 sm:mt-12 relative"
     >
       <h2 className="text-2xl md:text-3xl font-bold text-rose-700 mb-8 text-center">
         🛒 Shop by Category
