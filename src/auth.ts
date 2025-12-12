@@ -53,7 +53,19 @@ export const { handlers, signIn, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session, account }) {
+      if (account?.provider === "google") {
+        await connectDB();
+        const dbUser = await UserModel.findOne({ email: user.email }).lean();
+
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+          token.name = dbUser.name;
+          token.email = dbUser.email;
+          token.role = dbUser.role;
+        }
+        return token;
+      }
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -70,7 +82,7 @@ export const { handlers, signIn, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
-        session.user.role = String(token.role || "user");
+        session.user.role = token.role as string;
       }
       return session;
     },

@@ -96,6 +96,7 @@ function EditRoleAndContact({ user }: { user: IUser }) {
           onChange={(e) => setContact(e.target.value)}
           className="w-70 sm:w-120 md:w-140 p-3 md:px-6 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 mb-6"
           placeholder="eg. 1234567890"
+          required
         />
       </motion.div>
       <motion.button
