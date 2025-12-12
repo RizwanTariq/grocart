@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export const POST = auth(async function (request) {
   try {
-    connectDB();
+    await connectDB();
     if (!request.auth) {
       return new NextResponse("Unauthenticated", {
         status: 401,
@@ -51,7 +51,7 @@ export const POST = auth(async function (request) {
       image: imgeUrl || "",
     });
 
-    return new NextResponse(JSON.parse(JSON.stringify(product)), {
+    return NextResponse.json(product, {
       status: 201,
     });
   } catch (error) {
