@@ -23,7 +23,9 @@ export async function updateUserAction(formData: FormData): Promise<IUser> {
       { email: session.user.email },
       { contact, role },
       { new: true }
-    ).lean();
+    )
+      .select("-password")
+      .lean();
     if (!user) {
       throw new Error("User not found");
     }

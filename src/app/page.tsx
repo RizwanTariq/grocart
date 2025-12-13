@@ -15,7 +15,9 @@ export default async function Home() {
   const session = await auth();
   const dbUser = await UserModel.findOne({
     email: session?.user?.email,
-  }).lean();
+  })
+    .select("-password")
+    .lean();
 
   if (!dbUser) {
     redirect("/login");
