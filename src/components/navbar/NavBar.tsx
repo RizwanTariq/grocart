@@ -12,17 +12,19 @@ import {
   LogOut,
   Menu,
   PlusCircle,
-  ShoppingCart,
   User,
   X,
 } from "lucide-react";
 
 import { IUser } from "@/types";
 
+import ClientOnly from "../common/ClientOnly";
+
 import ProfileDropdown from "./ProfileDropdown";
 import SearchBar from "./SearchBar";
 import SearchBarMobile from "./SearchBarMobile";
 import TooltipIconButton from "./TooltipIconButton";
+import CartLinkButton from "./CartLinkButton";
 
 function NavBar({ user }: { user: IUser }) {
   const isUser = user.role === "user";
@@ -78,29 +80,31 @@ function NavBar({ user }: { user: IUser }) {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col gap-3 font-medium mt-6">
-                <Link
-                  className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                  href="/admin/add-product"
-                >
-                  <PlusCircle className="w-6 h-6 text-rose-200" />
-                  <span className="text-md">Add Product</span>
-                </Link>
-                <Link
-                  className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                  href=""
-                >
-                  <Boxes className="w-6 h-6 text-rose-200" />
-                  <span className="text-md">View Products</span>
-                </Link>
-                <Link
-                  className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                  href=""
-                >
-                  <ClipboardList className="w-6 h-6 text-rose-200" />
-                  <span className="text-md">Manage Orders</span>
-                </Link>
-              </div>
+              {user.role === "admin" && (
+                <div className="flex flex-col gap-3 font-medium mt-6">
+                  <Link
+                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                    href="/admin/add-product"
+                  >
+                    <PlusCircle className="w-6 h-6 text-rose-200" />
+                    <span className="text-md">Add Product</span>
+                  </Link>
+                  <Link
+                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                    href=""
+                  >
+                    <Boxes className="w-6 h-6 text-rose-200" />
+                    <span className="text-md">View Products</span>
+                  </Link>
+                  <Link
+                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                    href=""
+                  >
+                    <ClipboardList className="w-6 h-6 text-rose-200" />
+                    <span className="text-md">Manage Orders</span>
+                  </Link>
+                </div>
+              )}
               <div className="my-5 border-t border-white/30" />
             </div>
             <div className="mb-10">
@@ -135,44 +139,36 @@ function NavBar({ user }: { user: IUser }) {
         {isUser && (
           <>
             <SearchBarMobile />
-            <Link
-              href=""
-              className="relative bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all"
-            >
-              <ShoppingCart className="w-6 h-6 text-red-700" strokeWidth={2} />
-              <span className="absolute -top-1 -right-1 text-xs bg-rose-700 text-white w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow">
-                0
-              </span>
-            </Link>
+            <ClientOnly>
+              <CartLinkButton />
+            </ClientOnly>
           </>
         )}
         {user.role === "admin" && (
-          <>
-            <div className="hidden md:flex items-center gap-3">
-              <TooltipIconButton
-                href="/admin/add-product"
-                icon={<PlusCircle className="w-5 h-5 text-rose-700" />}
-                tooltip="Add Product"
-              />
-              <TooltipIconButton
-                href=""
-                icon={<Boxes className="w-5 h-5 text-rose-700" />}
-                tooltip="View Products"
-              />
-              <TooltipIconButton
-                href=""
-                icon={<ClipboardList className="w-5 h-5 text-rose-700" />}
-                tooltip="Manage Orders"
-              />
-            </div>
-            <div
-              className="md:hidden bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all cursor-pointer"
-              onClick={() => setMobileMenu((pre) => !pre)}
-            >
-              <Menu className="w-6 h-6 text-rose-600" />
-            </div>
-          </>
+          <div className="hidden md:flex items-center gap-3">
+            <TooltipIconButton
+              href="/admin/add-product"
+              icon={<PlusCircle className="w-5 h-5 text-rose-700" />}
+              tooltip="Add Product"
+            />
+            <TooltipIconButton
+              href=""
+              icon={<Boxes className="w-5 h-5 text-rose-700" />}
+              tooltip="View Products"
+            />
+            <TooltipIconButton
+              href=""
+              icon={<ClipboardList className="w-5 h-5 text-rose-700" />}
+              tooltip="Manage Orders"
+            />
+          </div>
         )}
+        <div
+          className="md:hidden bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all cursor-pointer"
+          onClick={() => setMobileMenu((pre) => !pre)}
+        >
+          <Menu className="w-6 h-6 text-rose-600" />
+        </div>
         <ProfileDropdown user={user} />
       </div>
       {sideBar}
