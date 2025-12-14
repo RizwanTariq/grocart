@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export function ClientOnly({ children }: { children: React.ReactNode }) {
+function ClientOnly({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -12,3 +12,5 @@ export function ClientOnly({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+export default ClientOnly;
