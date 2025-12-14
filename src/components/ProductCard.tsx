@@ -5,19 +5,33 @@ import Image from "next/image";
 import { IProduct } from "@/types/dto";
 import { CATEGORY_LABELS, UNIT_LABELS } from "@/constants/product";
 import { ShoppingBag, Heart, Plus, Minus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { cn } from "@/utils/cn";
 
 function ProductCard({ product }: { product: IProduct }) {
+  const [mounted, setMounted] = useState(false);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
   const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  const quantityCart = useStore((s) =>
+    s.cartItems.reduce((sum, i) => {
+      return i.productId === product._id ? sum + i.quantity : sum;
+    }, 0)
+  );
+
+  const remainingStock = mounted
+    ? Math.max(product.countInStock - quantityCart, 0)
+    : product.countInStock;
 
   const addToCart = useStore((s) => s.addToCart);
 
   const handleQuantityChange = (delta: number) => {
     const newQuantity = quantity + delta;
-    if (newQuantity >= 1 && newQuantity <= product.countInStock) {
+    if (newQuantity >= 1 && newQuantity <= remainingStock) {
       setQuantity(newQuantity);
     }
   };
@@ -27,7 +41,7 @@ function ProductCard({ product }: { product: IProduct }) {
     setQuantity(1);
   };
 
-  const isLowStock = product.countInStock < 20;
+  const isLowStock = remainingStock < 20;
 
   return (
     <motion.div
@@ -53,7 +67,7 @@ function ProductCard({ product }: { product: IProduct }) {
       </motion.button>
 
       {/* Stock badge */}
-      {product.countInStock === 0 ? (
+      {remainingStock === 0 ? (
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -70,7 +84,7 @@ function ProductCard({ product }: { product: IProduct }) {
           className="absolute top-3 left-3 z-20 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200/60 backdrop-blur-sm shadow-sm"
         >
           <span className="text-xs font-semibold text-amber-700">
-            Only {product.countInStock} left
+            Only {remainingStock} left
           </span>
         </motion.div>
       ) : null}
@@ -79,7 +93,7 @@ function ProductCard({ product }: { product: IProduct }) {
       <div
         className={cn(
           "relative w-full aspect-square bg-gray-50/50 overflow-hidden",
-          product.countInStock === 0 && "opacity-60"
+          remainingStock === 0 && "opacity-60"
         )}
       >
         <Image
@@ -116,7 +130,7 @@ function ProductCard({ product }: { product: IProduct }) {
         </div>
 
         {/* Quantity selector and Add to cart - only show if in stock */}
-        {product.countInStock > 0 ? (
+        {remainingStock > 0 ? (
           <>
             {/* Quantity selector - sleek design */}
             <div className="flex items-center gap-3 mb-3">
@@ -145,7 +159,7 @@ function ProductCard({ product }: { product: IProduct }) {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= product.countInStock}
+                  disabled={quantity >= remainingStock}
                   className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
                 >
                   <Plus
