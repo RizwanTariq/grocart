@@ -70,7 +70,7 @@ function ProductCard({ product }: { product: IProduct }) {
 
         {/* Add to cart button - sleek design */}
         <motion.button
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-900 hover:bg-rose-800 transition-colors duration-200 text-white text-sm font-medium group/btn cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-800 hover:bg-rose-700 transition-colors duration-200 text-white text-sm font-medium group/btn cursor-pointer"
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.98 }}
         >
