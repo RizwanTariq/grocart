@@ -1,4 +1,4 @@
-import RegisterContainer from "@/components/RegisterContainer";
+import RegisterContainer from "./_components/RegisterContainer";
 
 function RegisterPage() {
   return (

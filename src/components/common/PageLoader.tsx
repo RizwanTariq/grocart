@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 
-export default function MainLoader() {
+function PageLoader() {
   return (
     <motion.div
       className="fixed inset-0 flex items-center justify-center"
@@ -25,3 +25,5 @@ export default function MainLoader() {
     </motion.div>
   );
 }
+
+export default PageLoader;

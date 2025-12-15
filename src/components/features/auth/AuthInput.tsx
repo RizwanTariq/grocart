@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, LucideIcon } from "lucide-react";
 
-type InputProps = {
+type Props = {
   id?: string;
   type: string;
   name: string;
@@ -13,7 +13,7 @@ type InputProps = {
   value?: string;
   handleChange?: (value: string) => void;
 };
-function Input({
+function AuthInput({
   type,
   placeholder,
   name,
@@ -22,7 +22,7 @@ function Input({
   value = "",
   handleChange = () => {},
   autoComplete = "on",
-}: InputProps) {
+}: Props) {
   const [show, setShow] = useState(false);
   const isPassword = type === "password";
   return (
@@ -53,4 +53,4 @@ function Input({
   );
 }
 
-export default Input;
+export default AuthInput;

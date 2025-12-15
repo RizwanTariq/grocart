@@ -4,10 +4,10 @@ import { auth } from "@/auth";
 import EditRoleAndContact from "@/components/EditRoleAndContact";
 import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
-import NavBar from "@/components/navbar/NavBar";
-import AdminDashboard from "@/components/dashboard/AdminDashboard";
-import DeliveryBoyDashboard from "@/components/dashboard/DeliveryBoyDashboard";
-import UserDashboard from "@/components/dashboard/UserDashboard";
+import NavBar from "@/components/features/navbar/NavBar";
+import AdminDashboard from "@/components/features/dashboard/AdminDashboard";
+import DeliveryBoyDashboard from "@/components/features/dashboard/DeliveryBoyDashboard";
+import UserDashboard from "@/components/features/dashboard/UserDashboard";
 import { convertId, IUser } from "@/types";
 
 export default async function Home() {

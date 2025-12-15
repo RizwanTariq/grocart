@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import RegisterForm from "@/components/RegisterForm";
-import Welcome from "@/components/Welcome";
+import RegisterForm from "./RegisterForm";
+import Welcome from "./Welcome";
 
 function RegisterContainer() {
   const [step, setStep] = useState(0);

@@ -1,5 +1,5 @@
-import MainLoader from "@/components/MainLoader";
+import PageLoader from "@/components/common/PageLoader";
 
 export default function LoadingPage() {
-  return <MainLoader />;
+  return <PageLoader />;
 }
