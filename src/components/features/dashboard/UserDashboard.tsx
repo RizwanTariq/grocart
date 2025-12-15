@@ -4,7 +4,7 @@ import HeroSection from "./HeroSection";
 import ProductModel from "@/models/products.model";
 import { convertIds, IProduct } from "@/types";
 
-import ProductCard from "../ProductCard";
+import ProductCard from "../../ProductCard";
 
 async function UserDashboard() {
   await connectDB();
