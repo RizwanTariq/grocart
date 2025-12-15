@@ -1,8 +1,11 @@
-import { ArrowRight, Minus, Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import { ShoppingCart, Trash2, X } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 
 import useCart from "@/hooks/useCart";
+import QuantitySelector from "@/components/QuantitySelector";
+import IconButton from "@/components/common/IconButton";
+import CheckoutSection from "../cart/CheckoutSection";
 
 function CartSideBar({
   setCartMenu,
@@ -12,13 +15,11 @@ function CartSideBar({
   const {
     cartCount,
     cartItems,
-    cartTotal,
     decreaseQuantity,
     increaseQuantity,
     removeFromCart,
   } = useCart();
-  const deliveryFee = 50;
-  const total = cartTotal + deliveryFee;
+
   return (
     <>
       {/* Backdrop */}
@@ -116,49 +117,20 @@ function CartSideBar({
 
                       {/* Quantity Controls */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            disabled={item.quantity <= 1}
-                            className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
-                            onClick={() => decreaseQuantity(item.productId)}
-                          >
-                            <Minus
-                              className="w-3.5 h-3.5 text-gray-600"
-                              strokeWidth={2.5}
-                            />
-                          </motion.button>
+                        <QuantitySelector
+                          quantity={item.quantity}
+                          onDecrease={() => decreaseQuantity(item.productId)}
+                          onIncrease={() => increaseQuantity(item.productId)}
+                          increaseDisabled={item.quantity >= item.countInStock}
+                          decreaseDisabled={item.quantity <= 1}
+                        />
 
-                          <span className="w-8 text-center text-sm font-semibold text-gray-800">
-                            {item.quantity}
-                          </span>
-
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            disabled={item.quantity >= item.countInStock}
-                            className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
-                            onClick={() => increaseQuantity(item.productId)}
-                          >
-                            <Plus
-                              className="w-3.5 h-3.5 text-gray-600"
-                              strokeWidth={2.5}
-                            />
-                          </motion.button>
-                        </div>
-
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center cursor-pointer transition-colors"
+                        <IconButton
                           onClick={() => removeFromCart(item.productId)}
-                        >
-                          <Trash2
-                            className="w-4 h-4 text-red-600"
-                            strokeWidth={2}
-                          />
-                        </motion.button>
+                          Icon={Trash2}
+                          size="sm"
+                          variant="danger"
+                        />
                       </div>
                     </div>
                   </div>
@@ -172,40 +144,7 @@ function CartSideBar({
         {cartItems.length > 0 && (
           <div className="border-t border-gray-200 bg-gray-50 px-6 py-5">
             {/* Price Summary */}
-            <div className="space-y-3 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-semibold text-gray-800">
-                  Rs. {cartTotal}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Delivery Fee</span>
-                <span className="font-semibold text-gray-800">
-                  Rs. {deliveryFee}
-                </span>
-              </div>
-              <div className="border-t border-gray-200 pt-3 flex justify-between">
-                <span className="text-base font-bold text-gray-800">Total</span>
-                <span className="text-xl font-bold text-rose-600">
-                  Rs. {total}
-                </span>
-              </div>
-            </div>
-
-            {/* Checkout Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-linear-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 cursor-pointer transition-all"
-            >
-              <span>Proceed to Checkout</span>
-              <ArrowRight className="w-5 h-5" strokeWidth={2.5} />
-            </motion.button>
-
-            <p className="text-center text-xs text-gray-500 mt-3">
-              Secure checkout with end-to-end encryption
-            </p>
+            <CheckoutSection />
           </div>
         )}
       </motion.div>

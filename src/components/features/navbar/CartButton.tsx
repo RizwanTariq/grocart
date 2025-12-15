@@ -8,7 +8,7 @@ function CartButton({ handleClick }: { handleClick: () => void }) {
   const { cartCount } = useCart();
   return (
     <button
-      className="relative bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all"
+      className="relative bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md shadow-black/30 cursor-pointer hover:scale-105 transition-all"
       onClick={handleClick}
     >
       <ShoppingCart className="w-6 h-6 text-red-700" strokeWidth={2} />

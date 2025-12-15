@@ -2,12 +2,15 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
-import { IProduct } from "@/types/dto";
-import { CATEGORY_LABELS, UNIT_LABELS } from "@/constants/product";
-import { ShoppingBag, Heart, Plus, Minus, Check } from "lucide-react";
+import { ShoppingBag, Heart, Plus, Check } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import { useStore } from "@/store/useStore";
 import { cn } from "@/utils/cn";
+import { CATEGORY_LABELS, UNIT_LABELS } from "@/constants/product";
+import { IProduct } from "@/types/dto";
+
+import QuantitySelector from "./QuantitySelector";
 
 function ProductCard({ product }: { product: IProduct }) {
   const [mounted, setMounted] = useState(false);
@@ -55,9 +58,7 @@ function ProductCard({ product }: { product: IProduct }) {
       transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
       className={cn(
         "group relative bg-white rounded-2xl overflow-hidden border flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50",
-        isInCart
-          ? "border-rose-200/60 ring-1 ring-rose-300/80"
-          : "border-gray-200/60 hover:border-gray-300/80"
+        "border-gray-200/60 hover:border-gray-300/80"
       )}
     >
       {/* Like button */}
@@ -120,11 +121,11 @@ function ProductCard({ product }: { product: IProduct }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute bottom-0 left-0 right-0 bg-linear-to-r from-rose-600 via-rose-500 to-rose-600 rounded-t-2xl px-5 py-2.5 shadow-lg"
+              className="absolute bottom-0 left-0 right-0 bg-linear-to-r from-rose-600 via-rose-500 to-rose-600 px-5 py-2.5 shadow-inner shadow-rose-400/30"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full bg-rose-700 flex items-center justify-center">
                     <Check className="w-3 h-3 text-white" strokeWidth={3} />
                   </div>
                   <span className="text-white text-sm font-semibold">
@@ -172,37 +173,13 @@ function ProductCard({ product }: { product: IProduct }) {
               <span className="text-sm font-medium text-gray-600">
                 Quantity:
               </span>
-              <div className="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
-                >
-                  <Minus
-                    className="w-3.5 h-3.5 text-gray-600"
-                    strokeWidth={2.5}
-                  />
-                </motion.button>
-
-                <span className="w-10 text-center text-sm font-semibold text-gray-800">
-                  {quantity}
-                </span>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= remainingStock}
-                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
-                >
-                  <Plus
-                    className="w-3.5 h-3.5 text-gray-600"
-                    strokeWidth={2.5}
-                  />
-                </motion.button>
-              </div>
+              <QuantitySelector
+                quantity={quantity}
+                onDecrease={() => handleQuantityChange(-1)}
+                onIncrease={() => handleQuantityChange(1)}
+                increaseDisabled={quantity >= remainingStock}
+                decreaseDisabled={quantity <= 1}
+              />
             </div>
 
             {/* Add to cart button */}
@@ -210,11 +187,12 @@ function ProductCard({ product }: { product: IProduct }) {
               className={cn(
                 "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-200 text-white text-sm font-medium group/btn cursor-pointer",
                 isInCart
-                  ? "bg-linear-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800"
-                  : "bg-rose-800 hover:bg-rose-700"
+                  ? "bg-linear-to-r from-rose-500 via-rose-600 to-rose-500"
+                  : "from-rose-600 via-rose-500 to-rose-600 bg-linear-to-r"
               )}
-              whileHover={{ y: -2 }}
+              whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.3 }}
               onClick={handleAddToCart}
             >
               {isInCart ? (

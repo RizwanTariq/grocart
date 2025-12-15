@@ -4,6 +4,7 @@ import { useStore } from "@/store/useStore";
 
 function useCart() {
   const cartItems = useStore((s) => s.cartItems);
+  const totalItems = useStore((s) => s.cartItems.length);
   const cartCount = useStore((s) =>
     s.cartItems.reduce((sum, i) => sum + i.quantity, 0)
   );
@@ -19,6 +20,7 @@ function useCart() {
     cartCount,
     cartTotal,
     cartItems,
+    totalItems,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
