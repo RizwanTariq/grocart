@@ -1,10 +1,10 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { IProduct } from "@/types/dto";
 import { CATEGORY_LABELS, UNIT_LABELS } from "@/constants/product";
-import { ShoppingBag, Heart, Plus, Minus } from "lucide-react";
+import { ShoppingBag, Heart, Plus, Minus, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useStore } from "@/store/useStore";
 import { cn } from "@/utils/cn";
@@ -14,7 +14,6 @@ function ProductCard({ product }: { product: IProduct }) {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
-  const [isLiked, setIsLiked] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
   const quantityCart = useStore((s) =>
@@ -29,6 +28,10 @@ function ProductCard({ product }: { product: IProduct }) {
 
   const addToCart = useStore((s) => s.addToCart);
 
+  const toggleFavorite = useStore((s) => s.toggleFavorite);
+
+  const isFavorite = useStore((s) => s.favorites.includes(product._id));
+
   const handleQuantityChange = (delta: number) => {
     const newQuantity = quantity + delta;
     if (newQuantity >= 1 && newQuantity <= remainingStock) {
@@ -41,26 +44,32 @@ function ProductCard({ product }: { product: IProduct }) {
     setQuantity(1);
   };
 
-  const isLowStock = remainingStock < 20;
+  const isLowStock = remainingStock < 30;
+  const isInCart = quantityCart > 0;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.4, 0.25, 1] }}
-      className="group relative bg-white rounded-2xl overflow-hidden border border-gray-200/60 hover:border-gray-300/80 flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: false, amount: 0.3 }}
+      transition={{ duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
+      className={cn(
+        "group relative bg-white rounded-2xl overflow-hidden border flex flex-col transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50",
+        isInCart
+          ? "border-rose-200/60 ring-1 ring-rose-300/80"
+          : "border-gray-200/60 hover:border-gray-300/80"
+      )}
     >
-      {/* Like button - minimalist */}
+      {/* Like button */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsLiked(!isLiked)}
-        className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-all duration-200 hover:bg-white"
+        onClick={() => toggleFavorite(product._id)}
+        className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center transition-all duration-200 hover:bg-white cursor-pointer"
       >
         <Heart
           className={`w-4 h-4 transition-all duration-200 ${
-            isLiked ? "fill-rose-500 stroke-rose-500" : "stroke-gray-400"
+            isFavorite ? "fill-rose-500 stroke-rose-500" : "stroke-gray-400"
           }`}
           strokeWidth={2}
         />
@@ -89,7 +98,7 @@ function ProductCard({ product }: { product: IProduct }) {
         </motion.div>
       ) : null}
 
-      {/* Image container - clean and spacious */}
+      {/* Image container */}
       <div
         className={cn(
           "relative w-full aspect-square bg-gray-50/50 overflow-hidden",
@@ -103,21 +112,47 @@ function ProductCard({ product }: { product: IProduct }) {
           className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 ease-out"
           sizes="(max-width:768px) 100vw, 33vw"
         />
+
+        {/* In Cart Overlay Badge */}
+        <AnimatePresence>
+          {isInCart && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-0 left-0 right-0 bg-linear-to-r from-rose-600 via-rose-500 to-rose-600 rounded-t-2xl px-5 py-2.5 shadow-lg"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                  </div>
+                  <span className="text-white text-sm font-semibold">
+                    {quantityCart} in cart
+                  </span>
+                </div>
+                <div className="text-white/90 text-xs font-medium">
+                  Rs. {product.price * quantityCart}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Content - refined spacing */}
+      {/* Content */}
       <div className="p-5 flex flex-col flex-1">
-        {/* Category - subtle */}
+        {/* Category */}
         <span className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
           {CATEGORY_LABELS[product.category]}
         </span>
 
-        {/* Product name - clear hierarchy */}
+        {/* Product name */}
         <h3 className="text-base font-semibold text-gray-800 mb-3 line-clamp-2 leading-snug">
           {product.name}
         </h3>
 
-        {/* Price section - elegant */}
+        {/* Price section */}
         <div className="flex items-end justify-between mb-4">
           <div className="flex flex-col">
             <span className="text-2xl font-bold text-gray-800 tracking-tight">
@@ -132,7 +167,7 @@ function ProductCard({ product }: { product: IProduct }) {
         {/* Quantity selector and Add to cart - only show if in stock */}
         {remainingStock > 0 ? (
           <>
-            {/* Quantity selector - sleek design */}
+            {/* Quantity selector */}
             <div className="flex items-center gap-3 mb-3">
               <span className="text-sm font-medium text-gray-600">
                 Quantity:
@@ -143,7 +178,7 @@ function ProductCard({ product }: { product: IProduct }) {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
-                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
                 >
                   <Minus
                     className="w-3.5 h-3.5 text-gray-600"
@@ -160,7 +195,7 @@ function ProductCard({ product }: { product: IProduct }) {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleQuantityChange(1)}
                   disabled={quantity >= remainingStock}
-                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+                  className="w-7 h-7 rounded-md bg-white shadow-sm flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
                 >
                   <Plus
                     className="w-3.5 h-3.5 text-gray-600"
@@ -170,18 +205,35 @@ function ProductCard({ product }: { product: IProduct }) {
               </div>
             </div>
 
-            {/* Add to cart button - sleek design */}
+            {/* Add to cart button */}
             <motion.button
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-800 hover:bg-rose-700 transition-colors duration-200 text-white text-sm font-medium group/btn cursor-pointer"
+              className={cn(
+                "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-200 text-white text-sm font-medium group/btn cursor-pointer",
+                isInCart
+                  ? "bg-linear-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800"
+                  : "bg-rose-800 hover:bg-rose-700"
+              )}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleAddToCart}
             >
-              <ShoppingBag
-                className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-200"
-                strokeWidth={3}
-              />
-              <span>Add to Cart</span>
+              {isInCart ? (
+                <>
+                  <Plus
+                    className="w-5 h-5 group-hover/btn:rotate-90 transition-transform duration-200"
+                    strokeWidth={2.5}
+                  />
+                  <span>Add More</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag
+                    className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-200"
+                    strokeWidth={2.5}
+                  />
+                  <span>Add to Cart</span>
+                </>
+              )}
             </motion.button>
           </>
         ) : (
