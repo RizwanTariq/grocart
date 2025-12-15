@@ -14,7 +14,7 @@ function HeroSection() {
       content:
         "Fresh fruits, vegetables, and pantry items delivered to your doorstep.",
       Icon: (
-        <Salad className="w-18 h-18 sm:w-28 sm:h-28 text-rose-400 drop-shadow-xl" />
+        <Salad className="w-14 h-14 sm:w-28 sm:h-28 text-rose-400 drop-shadow-xl" />
       ),
       buttonText: "Order Now",
       bgImage:
@@ -26,7 +26,7 @@ function HeroSection() {
       content:
         "Fast and reliable delivery right to your doorstep, ensuring your groceries arrive fresh and on time.",
       Icon: (
-        <TruckElectric className="w-18 h-18 sm:w-28 sm:h-28 text-blue-400 drop-shadow-xl" />
+        <TruckElectric className="w-14 h-14 sm:w-28 sm:h-28 text-blue-400 drop-shadow-xl" />
       ),
       buttonText: "Shop Now",
       bgImage:
@@ -38,7 +38,7 @@ function HeroSection() {
       content:
         "Shop from the comfort of your home or office, with our convenient delivery service available 24/7.",
       Icon: (
-        <Smartphone className="w-18 h-18 sm:w-28 sm:h-28 text-emerald-400 drop-shadow-xl" />
+        <Smartphone className="w-14 h-14 sm:w-28 sm:h-28 text-emerald-400 drop-shadow-xl" />
       ),
       buttonText: "Get Started",
       bgImage:
@@ -71,7 +71,6 @@ function HeroSection() {
             className="object-cover"
             fill
             priority
-            // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
         </motion.div>
@@ -87,10 +86,10 @@ function HeroSection() {
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-full shadow-lg">
             {slides[activeSlide - 1].Icon}
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight drop-shadow-lg">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight drop-shadow-lg">
             {slides[activeSlide - 1].title}
           </h1>
-          <p className="text-lg sm:text-xl text-gray-100 max-w-2xl">
+          <p className="text-base sm:text-xl text-gray-100 max-w-2xl">
             {slides[activeSlide - 1].content}
           </p>
           <motion.button
@@ -102,8 +101,8 @@ function HeroSection() {
             whileTap={{ scale: 0.95 }}
             className="bg-black/10 backdrop-blur-md px-6 py-3 rounded-full shadow-lg flex items-center gap-2 hover:scale-105 transition-all cursor-pointer"
           >
-            <Store className="w-8 h-8 sm:w-10 sm:h-10" />
-            <span className="text-lg font-semibold">
+            <Store className="w-6 h-6 sm:w-10 sm:h-10" />
+            <span className="text-sm sm:text-lg font-semibold">
               {slides[activeSlide - 1].buttonText}
             </span>
           </motion.button>
