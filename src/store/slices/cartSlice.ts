@@ -18,6 +18,8 @@ export type CartSlice = {
   addToCart: (product: IProduct, qty?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, qty: number) => void;
+  increaseQuantity: (productId: string) => void;
+  decreaseQuantity: (productId: string) => void;
   clearCart: () => void;
 };
 
@@ -66,6 +68,30 @@ export const createCartSlice: StateCreator<CartSlice, [], [], CartSlice> = (
           ? {
               ...i,
               quantity: Math.min(qty, i.countInStock),
+            }
+          : i
+      ),
+    })),
+
+  increaseQuantity: (productId) =>
+    set((state) => ({
+      cartItems: state.cartItems.map((i) =>
+        i.productId === productId
+          ? {
+              ...i,
+              quantity: Math.min(i.quantity + 1, i.countInStock),
+            }
+          : i
+      ),
+    })),
+
+  decreaseQuantity: (productId) =>
+    set((state) => ({
+      cartItems: state.cartItems.map((i) =>
+        i.productId === productId
+          ? {
+              ...i,
+              quantity: Math.max(i.quantity - 1, 1),
             }
           : i
       ),
