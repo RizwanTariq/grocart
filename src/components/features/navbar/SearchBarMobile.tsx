@@ -24,7 +24,7 @@ function SearchBarMobile() {
   return (
     <div className="relative" ref={searchCont}>
       <div
-        className="md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-all cursor-pointer relative"
+        className="sm:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-all cursor-pointer relative"
         onClick={() => setOpen((pre) => !pre)}
       >
         <Search className="h-6 w-6 text-rose-700" />

@@ -15,15 +15,13 @@ import useCart from "@/hooks/useCart";
 import QuantitySelector from "@/components/QuantitySelector";
 import IconButton from "@/components/common/IconButton";
 import CheckoutSection from "@/components/features/cart/CheckoutSection";
+import { useRouter } from "next/navigation";
 
 function CartPage() {
-  const {
-    cartItems,
+  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity } =
+    useCart();
 
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-  } = useCart();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -35,6 +33,7 @@ function CartPage() {
               whileHover={{ scale: 1.05, x: -2 }}
               whileTap={{ scale: 0.95 }}
               className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              onClick={() => router.back()}
             >
               <ArrowLeft className="w-5 h-5 text-gray-700" strokeWidth={2.5} />
             </motion.button>
@@ -81,9 +80,9 @@ function CartPage() {
             </motion.button>
           </motion.div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="md:col-span-2 space-y-4">
               {cartItems.map((item, index) => (
                 <motion.div
                   key={item.productId}
@@ -94,11 +93,12 @@ function CartPage() {
                 >
                   <div className="flex gap-6">
                     {/* Product Image */}
-                    <div className="w-32 h-32 rounded-xl bg-gray-50 overflow-hidden shrink-0 relative">
+                    <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-xl bg-gray-50 overflow-hidden shrink-0 relative">
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
+                        sizes="(max-width: 768px) 30vw, 50vw"
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -132,7 +132,7 @@ function CartPage() {
                       {/* Quantity and Subtotal */}
                       <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
                         {/* Quantity Controls */}
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 sm:gap-3">
                           <span className="text-sm font-medium text-gray-600">
                             Quantity:
                           </span>
@@ -150,7 +150,7 @@ function CartPage() {
                         {/* Item Subtotal */}
                         <div className="text-right">
                           <p className="text-xs text-gray-500 mb-1">Subtotal</p>
-                          <p className="text-xl font-bold text-gray-800">
+                          <p className="text-sm sm:text-xl font-bold text-gray-800">
                             Rs. {item.price * item.quantity}
                           </p>
                         </div>
@@ -185,7 +185,7 @@ function CartPage() {
             </div>
 
             {/* Order Summary */}
-            <div className="lg:col-span-1">
+            <div className="md:col-span-1">
               <div className="sticky top-8 space-y-6">
                 {/* Summary Card */}
                 <motion.div

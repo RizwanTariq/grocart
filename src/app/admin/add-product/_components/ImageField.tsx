@@ -138,6 +138,7 @@ const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
                   src={preview}
                   alt="Preview"
                   fill
+                  sizes="(max-width: 768px) 30vw, 50vw"
                   className="object-cover"
                   unoptimized
                 />

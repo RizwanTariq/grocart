@@ -100,6 +100,7 @@ function CartSideBar({
                         alt={item.name}
                         fill
                         className="w-full h-full object-cover"
+                        sizes="(max-width: 768px) 30vw, 50vw"
                       />
                     </div>
 

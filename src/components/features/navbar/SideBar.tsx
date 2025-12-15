@@ -4,7 +4,9 @@ import {
   Boxes,
   ClipboardList,
   LogOut,
+  Package2,
   PlusCircle,
+  ShoppingCart,
   User,
   X,
 } from "lucide-react";
@@ -23,16 +25,16 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
   const isAdmin = user.role === "admin";
   return (
     <motion.div
-      initial={{ x: "100%" }}
+      initial={{ x: "-100%" }}
       animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      exit={{ x: "-100%" }}
       transition={{
         duration: 2,
         type: "spring",
         stiffness: 300,
         damping: 30,
       }}
-      className="fixed top-0 left-0 w-[80%] sm:w-[70%] h-full bg-black/30 z-9999 bg-linear-to-b from-rose-600/90 via-pink-600/80 to-rose-600/90 backdrop-blur-xl border-r border-rose-600/10 shadow-lg shadow-black/30 flex md:hidden flex-col justify-between text-white p-6"
+      className="fixed top-0 left-0 w-[70%] h-full bg-black/30 z-9999 bg-linear-to-b from-rose-600/90 via-pink-600/80 to-rose-600/90 backdrop-blur-xl border-r border-rose-600/10 shadow-lg shadow-black/30 flex sm:hidden flex-col justify-between text-white p-6"
     >
       <div>
         <div className="flex justify-between items-center mb-2">
@@ -56,7 +58,7 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
                 src={user.image}
                 alt={user.name}
                 fill
-                sizes="(max-width: 768px) 33vw, (max-width: 1200px) 33vw, 33vw"
+                sizes="(max-width: 768px) 30vw, 50vw"
                 loading="eager"
                 className="object-cover rounded-full"
               />
@@ -64,38 +66,58 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
               <User className="h-6 w-6 text-rose-700" />
             )}
           </div>
-          <div>
+          <div className="line-clamp-2 max-w-24">
             <h2 className="text-gray-50 font-semibold">{user.name}</h2>
             <p className="text-sm text-gray-100 capitalize tracking-wide">
               {user.role}
             </p>
           </div>
         </div>
-        {user.role === "admin" && (
-          <div className="flex flex-col gap-3 font-medium mt-6">
-            <Link
-              className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-              href="/admin/add-product"
-            >
-              <PlusCircle className="w-6 h-6 text-rose-200" />
-              <span className="text-md">Add Product</span>
-            </Link>
-            <Link
-              className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-              href=""
-            >
-              <Boxes className="w-6 h-6 text-rose-200" />
-              <span className="text-md">View Products</span>
-            </Link>
-            <Link
-              className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-              href=""
-            >
-              <ClipboardList className="w-6 h-6 text-rose-200" />
-              <span className="text-md">Manage Orders</span>
-            </Link>
-          </div>
-        )}
+        <div className="flex flex-col gap-3 font-medium mt-6">
+          {user.role === "admin" && (
+            <>
+              <Link
+                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                href="/admin/add-product"
+              >
+                <PlusCircle className="w-6 h-6 text-rose-200" />
+                <span className="text-md">Add Product</span>
+              </Link>
+              <Link
+                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                href=""
+              >
+                <Boxes className="w-6 h-6 text-rose-200" />
+                <span className="text-md">View Products</span>
+              </Link>
+              <Link
+                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                href=""
+              >
+                <ClipboardList className="w-6 h-6 text-rose-200" />
+                <span className="text-md">Manage Orders</span>
+              </Link>
+            </>
+          )}
+          {user.role === "user" && (
+            <>
+              <Link
+                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                href="/user/cart"
+              >
+                <ShoppingCart className="w-5 h-5 text-rose-200" />
+                My Cart
+              </Link>
+              <Link
+                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
+                href=""
+              >
+                <Package2 className="w-5 h-5 text-rose-200" />
+                My Orders
+              </Link>
+            </>
+          )}
+        </div>
         <div className="my-5 border-t border-white/30" />
       </div>
       <div className="mb-10">

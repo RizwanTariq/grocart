@@ -78,7 +78,7 @@ function NavBar({ user }: { user: IUser }) {
           </>
         )}
         {user.role === "admin" && (
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3">
             <Tooltip tooltip="Add Product">
               <Link
                 href="/admin/add-product"
@@ -106,7 +106,7 @@ function NavBar({ user }: { user: IUser }) {
           </div>
         )}
         <div
-          className="md:hidden bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all cursor-pointer"
+          className="sm:hidden bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all cursor-pointer"
           onClick={() => setMobileMenu((pre) => !pre)}
         >
           <Menu className="w-6 h-6 text-rose-600" />
