@@ -1,122 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import Image from "next/image";
 import { signOut } from "next-auth/react";
-import {
-  Boxes,
-  ClipboardList,
-  LogOut,
-  Menu,
-  PlusCircle,
-  User,
-  X,
-} from "lucide-react";
+import { Boxes, ClipboardList, Menu, PlusCircle } from "lucide-react";
 
 import { IUser } from "@/types";
-
-import ClientOnly from "../common/ClientOnly";
 
 import ProfileDropdown from "./ProfileDropdown";
 import SearchBar from "./SearchBar";
 import SearchBarMobile from "./SearchBarMobile";
 import TooltipIconButton from "./TooltipIconButton";
-import CartLinkButton from "./CartLinkButton";
+import CartButton from "./CartButton";
+import SideBar from "./SideBar";
+import CartSideBar from "./CartSideBar";
 
 function NavBar({ user }: { user: IUser }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
   const isUser = user.role === "user";
+
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [cartMenu, setCartMenu] = useState(false);
 
   async function handleLogOut() {
     setMobileMenu((pre) => !pre);
     await signOut({ redirect: true, redirectTo: "/login" });
   }
 
-  const sideBar = mobileMenu
+  const sideBar = mounted
     ? createPortal(
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ x: -100 }}
-            transition={{ type: "spring", stiffness: 100, damping: 15 }}
-            className="fixed top-0 left-0 w-[75%] sm:w-[60%] h-full bg-black/30 z-9999 bg-linear-to-b from-rose-600/90 via-pink-600/80 to-rose-600/90 backdrop-blur-xl border-r border-rose-600/10 shadow-lg shadow-black/30 flex flex-col justify-between text-white p-6"
-          >
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <h1 className="text-2xl font-extrabold tracking-wide text-white/90">
-                  Admin Panel
-                </h1>
-                <button
-                  className="text-white hover:text-red-400 hover:bg-red-100 rounded-full cursor-pointer p-1.5 text-2xl font-bold transition-all"
-                  onClick={() => setMobileMenu((pre) => !pre)}
-                >
-                  <X className="w-5 h-5" strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-4 p-3 mt-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all shadow-inner">
-                <div className="bg-rose-50 rounded-full w-12 h-12 overflow-hidden flex items-center justify-center relative border-2 border-rose-400 shadow-lg">
-                  {user.image ? (
-                    <Image
-                      src={user.image}
-                      alt={user.name}
-                      fill
-                      sizes="(max-width: 768px) 33vw, (max-width: 1200px) 33vw, 33vw"
-                      loading="eager"
-                      className="object-cover rounded-full"
-                    />
-                  ) : (
-                    <User className="h-6 w-6 text-rose-700" />
-                  )}
-                </div>
-                <div>
-                  <h2 className="text-gray-50 font-semibold">{user.name}</h2>
-                  <p className="text-sm text-gray-100 capitalize tracking-wide">
-                    {user.role}
-                  </p>
-                </div>
-              </div>
-              {user.role === "admin" && (
-                <div className="flex flex-col gap-3 font-medium mt-6">
-                  <Link
-                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                    href="/admin/add-product"
-                  >
-                    <PlusCircle className="w-6 h-6 text-rose-200" />
-                    <span className="text-md">Add Product</span>
-                  </Link>
-                  <Link
-                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                    href=""
-                  >
-                    <Boxes className="w-6 h-6 text-rose-200" />
-                    <span className="text-md">View Products</span>
-                  </Link>
-                  <Link
-                    className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                    href=""
-                  >
-                    <ClipboardList className="w-6 h-6 text-rose-200" />
-                    <span className="text-md">Manage Orders</span>
-                  </Link>
-                </div>
-              )}
-              <div className="my-5 border-t border-white/30" />
-            </div>
-            <div className="mb-10">
-              <button
-                className="flex items-center gap-3 w-full px-3 py-2.5 bg-red-200/30 hover:bg-red-400/30 rounded-xl text-rose-100 font-medium transition-all cursor-pointer"
-                onClick={handleLogOut}
-              >
-                <LogOut className="h-6 w-6 text-red-100" />
-                Log Out
-              </button>
-            </div>
-          </motion.div>
+        <AnimatePresence mode="wait">
+          {mobileMenu ? (
+            <SideBar
+              user={user}
+              handleLogOut={handleLogOut}
+              setMobileMenu={setMobileMenu}
+            />
+          ) : null}
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
+  const cartSideBar = mounted
+    ? createPortal(
+        <AnimatePresence mode="wait">
+          {cartMenu ? <CartSideBar setCartMenu={setCartMenu} /> : null}
         </AnimatePresence>,
         document.body
       )
@@ -139,9 +74,7 @@ function NavBar({ user }: { user: IUser }) {
         {isUser && (
           <>
             <SearchBarMobile />
-            <ClientOnly>
-              <CartLinkButton />
-            </ClientOnly>
+            <CartButton handleClick={() => setCartMenu((pre) => !pre)} />
           </>
         )}
         {user.role === "admin" && (
@@ -172,6 +105,7 @@ function NavBar({ user }: { user: IUser }) {
         <ProfileDropdown user={user} />
       </div>
       {sideBar}
+      {cartSideBar}
     </motion.div>
   );
 }
