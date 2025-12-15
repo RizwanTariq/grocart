@@ -12,7 +12,7 @@ import { IUser } from "@/types";
 import ProfileDropdown from "./ProfileDropdown";
 import SearchBar from "./SearchBar";
 import SearchBarMobile from "./SearchBarMobile";
-import TooltipIconButton from "./TooltipIconButton";
+import Tooltip from "../../common/Tooltip";
 import CartButton from "./CartButton";
 import SideBar from "./SideBar";
 import CartSideBar from "./CartSideBar";
@@ -79,21 +79,30 @@ function NavBar({ user }: { user: IUser }) {
         )}
         {user.role === "admin" && (
           <div className="hidden md:flex items-center gap-3">
-            <TooltipIconButton
-              href="/admin/add-product"
-              icon={<PlusCircle className="w-5 h-5 text-rose-700" />}
-              tooltip="Add Product"
-            />
-            <TooltipIconButton
-              href=""
-              icon={<Boxes className="w-5 h-5 text-rose-700" />}
-              tooltip="View Products"
-            />
-            <TooltipIconButton
-              href=""
-              icon={<ClipboardList className="w-5 h-5 text-rose-700" />}
-              tooltip="Manage Orders"
-            />
+            <Tooltip tooltip="Add Product">
+              <Link
+                href="/admin/add-product"
+                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
+              >
+                <PlusCircle className="w-5 h-5 text-rose-700" />
+              </Link>
+            </Tooltip>
+            <Tooltip tooltip="View Products">
+              <Link
+                href=""
+                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
+              >
+                <Boxes className="w-5 h-5 text-rose-700" />
+              </Link>
+            </Tooltip>
+            <Tooltip tooltip="Manage Orders">
+              <Link
+                href=""
+                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
+              >
+                <ClipboardList className="w-5 h-5 text-rose-700" />
+              </Link>
+            </Tooltip>
           </div>
         )}
         <div

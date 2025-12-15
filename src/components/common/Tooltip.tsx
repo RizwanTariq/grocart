@@ -1,20 +1,14 @@
 "use client";
 
 import { motion } from "motion/react";
-import Link from "next/link";
 import { ReactNode, useState } from "react";
 
-interface TooltipIconButtonProps {
-  href: string;
-  icon: ReactNode;
+interface Props {
+  children: ReactNode;
   tooltip: string;
 }
 
-export default function TooltipIconButton({
-  href,
-  icon,
-  tooltip,
-}: TooltipIconButtonProps) {
+export default function Tooltip({ children, tooltip }: Props) {
   const [show, setShow] = useState(false);
 
   return (
@@ -23,12 +17,7 @@ export default function TooltipIconButton({
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
     >
-      <Link
-        href={href}
-        className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
-      >
-        {icon}
-      </Link>
+      {children}
 
       {show && (
         <motion.div
