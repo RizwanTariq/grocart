@@ -1,15 +1,16 @@
 "use client";
 
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
 
 import CheckoutButton from "./CheckoutButton";
 import useCart from "@/hooks/useCart";
 
 function CheckoutSection() {
-  const { totalItems, cartTotal } = useCart();
-  const deliveryFee = cartTotal > 1000 ? 0 : 50;
-  const discount = 80;
-  const total = cartTotal + deliveryFee - discount;
+  const router = useRouter();
+  const { totalItems, cartTotal, deliveryFee, discount, grossTotal } =
+    useCart();
+
   return (
     <>
       <div className="space-y-4 mb-4">
@@ -51,12 +52,14 @@ function CheckoutSection() {
       <div className="border-t border-gray-200 pt-4 mb-6">
         <div className="flex justify-between items-center">
           <span className="text-lg font-bold text-gray-800">Total</span>
-          <span className="text-2xl font-bold text-rose-600">Rs. {total}</span>
+          <span className="text-2xl font-bold text-rose-600">
+            Rs. {grossTotal}
+          </span>
         </div>
       </div>
 
       {/* Checkout Button */}
-      <CheckoutButton onClick={() => null} />
+      <CheckoutButton onClick={() => router.push("/user/checkout")} />
 
       <p className="text-center text-xs text-gray-500 mt-3">
         Secure checkout with end-to-end encryption

@@ -12,6 +12,10 @@ function useCart() {
     s.cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
   );
 
+  const deliveryFee = cartTotal > 1000 ? 0 : 50;
+  const discount = 80;
+  const grossTotal = cartTotal + deliveryFee - discount;
+
   const removeFromCart = useStore((s) => s.removeFromCart);
   const increaseQuantity = useStore((s) => s.increaseQuantity);
   const decreaseQuantity = useStore((s) => s.decreaseQuantity);
@@ -21,6 +25,9 @@ function useCart() {
     cartTotal,
     cartItems,
     totalItems,
+    deliveryFee,
+    discount,
+    grossTotal,
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,

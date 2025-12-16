@@ -33,7 +33,7 @@ function CategoryFilters({
             className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all shadow-sm ${
               selectedCategory === category.id
                 ? "bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-rose-200"
-                : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300"
+                : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 cursor-pointer"
             }`}
           >
             {category.label}

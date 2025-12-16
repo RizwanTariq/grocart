@@ -46,7 +46,7 @@ function SearchAndFiltersBar({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onToggleFilters}
-          className="sm:hidden flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm transition-all"
+          className="sm:hidden flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm transition-all cursor-pointer"
         >
           <SlidersHorizontal className="w-4 h-4 text-gray-600" />
           <span className="font-medium text-gray-700 text-sm">Filters</span>

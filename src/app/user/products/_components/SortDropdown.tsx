@@ -24,7 +24,7 @@ function SortDropdown({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={onToggle}
-        className="w-full sm:w-auto flex items-center justify-between gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-3.5 rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm transition-all"
+        className="w-full sm:w-auto flex items-center justify-between gap-2 sm:gap-3 px-4 sm:px-6 py-3.5 sm:py-3.5 rounded-xl bg-white border border-gray-200 hover:border-gray-300 shadow-sm transition-all cursor-pointer"
       >
         <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">
           {selectedLabel}

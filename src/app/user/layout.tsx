@@ -1,14 +1,9 @@
-import NavBar from "@/components/features/navbar/NavBar";
+import { LayoutUI } from "./_components/LayoutUI";
 
 export default function UserLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <>
-      <NavBar />
-      {children}
-    </>
-  );
+  return <LayoutUI>{children}</LayoutUI>;
 }

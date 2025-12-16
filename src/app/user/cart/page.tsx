@@ -26,7 +26,11 @@ function CartPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white border-b border-gray-200"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-4">
             <motion.button
@@ -47,7 +51,7 @@ function CartPage() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -74,6 +78,7 @@ function CartPage() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="px-8 py-3 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2"
+              onClick={() => router.push("/user/products")}
             >
               <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
               <span>Continue Shopping</span>
@@ -178,6 +183,7 @@ function CartPage() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-rose-300 hover:bg-rose-50/50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-rose-600 font-medium"
+                onClick={() => router.push("/user/products")}
               >
                 <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
                 <span>Continue Shopping</span>
