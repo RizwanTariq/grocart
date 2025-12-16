@@ -25,7 +25,7 @@ export const units = [
   { id: "OZ", label: "oz (Ounce)" },
 ];
 export const categories = [
-  { id: "VAGETABLES", label: "Vegetables" },
+  { id: "VEGETABLES", label: "Vegetables" },
   { id: "FRUITS", label: "Fruits" },
   { id: "DAIRY_EGGS", label: "Dairy & Eggs" },
   { id: "GRAINS", label: "Grains" },

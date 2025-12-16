@@ -9,10 +9,13 @@ import {
   ShoppingCart,
   User,
   X,
+  Home,
+  Store,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { IUser } from "@/types";
 
@@ -21,112 +24,169 @@ type Props = {
   handleLogOut(): Promise<void>;
   setMobileMenu: (value: boolean) => void;
 };
+
 function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
+  const pathname = usePathname();
   const isAdmin = user.role === "admin";
+  const isUser = user.role === "user";
+
+  const handleLinkClick = () => {
+    setMobileMenu(false);
+  };
+
   return (
     <motion.div
       initial={{ x: "-100%" }}
       animate={{ x: 0 }}
       exit={{ x: "-100%" }}
       transition={{
-        duration: 2,
+        duration: 0.4,
         type: "spring",
         stiffness: 300,
         damping: 30,
       }}
-      className="fixed top-0 left-0 w-[70%] h-full bg-black/30 z-9999 bg-linear-to-b from-rose-600/90 via-pink-600/80 to-rose-600/90 backdrop-blur-xl border-r border-rose-600/10 shadow-lg shadow-black/30 flex sm:hidden flex-col justify-between text-white p-6"
+      className="fixed top-0 left-0 w-[75%] h-full bg-linear-to-b from-rose-600/95 via-pink-600/90 to-rose-600/95 backdrop-blur-xl border-r border-rose-400/20 shadow-2xl flex sm:hidden flex-col text-white z-9999"
     >
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          {isAdmin && (
-            <h1 className="text-2xl font-extrabold tracking-wide text-white/90">
-              Admin Panel
-            </h1>
-          )}
+      {/* Header */}
+      <div className="px-6 pt-6 pb-4 border-b border-white/10">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-extrabold tracking-wide text-white">
+            {isAdmin ? "Admin Panel" : "Menu"}
+          </h1>
           <button
-            className="text-white bg-white/20 hover:text-red-400 hover:bg-red-100 rounded-full cursor-pointer p-1.5 text-2xl font-bold transition-all"
+            className="text-white bg-white/20 hover:bg-white/30 rounded-full p-2 transition-all"
             onClick={() => setMobileMenu(false)}
           >
-            <X className="w-6 h-6" strokeWidth={2.5} />
+            <X className="w-5 h-5" strokeWidth={2.5} />
           </button>
         </div>
 
-        <div className="flex items-center gap-4 p-3 mt-2 rounded-xl bg-white/10 hover:bg-white/15 transition-all shadow-inner">
-          <div className="bg-rose-50 rounded-full w-12 h-12 overflow-hidden flex items-center justify-center relative border-2 border-rose-400 shadow-lg">
+        {/* User Profile Card */}
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 backdrop-blur-sm">
+          <div className="bg-white rounded-full w-12 h-12 overflow-hidden flex items-center justify-center relative border-2 border-white/50 shadow-lg shrink-0">
             {user.image ? (
               <Image
                 src={user.image}
                 alt={user.name}
                 fill
-                sizes="(max-width: 768px) 30vw, 50vw"
+                sizes="48px"
                 loading="eager"
-                className="object-cover rounded-full"
+                className="object-cover"
               />
             ) : (
-              <User className="h-6 w-6 text-rose-700" />
+              <User className="h-6 w-6 text-rose-600" />
             )}
           </div>
-          <div className="line-clamp-2 max-w-24">
-            <h2 className="text-gray-50 font-semibold">{user.name}</h2>
-            <p className="text-sm text-gray-100 capitalize tracking-wide">
+          <div className="overflow-hidden">
+            <h2 className="text-white font-semibold truncate">{user.name}</h2>
+            <p className="text-xs text-white/80 capitalize tracking-wide">
               {user.role}
             </p>
           </div>
         </div>
-        <div className="flex flex-col gap-3 font-medium mt-6">
-          {user.role === "admin" && (
+      </div>
+
+      {/* Navigation Links */}
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="space-y-2">
+          {/* Main Navigation - For All Users */}
+          {isUser && (
             <>
+              <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                Navigation
+              </p>
               <Link
-                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                href="/admin/add-product"
+                href="/"
+                onClick={handleLinkClick}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                  pathname === "/"
+                    ? "bg-white text-rose-600 shadow-md font-semibold"
+                    : "bg-white/10 hover:bg-white/20 text-white"
+                }`}
               >
-                <PlusCircle className="w-6 h-6 text-rose-200" />
-                <span className="text-md">Add Product</span>
+                <Home className="w-5 h-5" />
+                <span className="text-sm">Home</span>
               </Link>
               <Link
-                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                href=""
+                href="/user/products"
+                onClick={handleLinkClick}
+                className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                  pathname === "/user/products"
+                    ? "bg-white text-rose-600 shadow-md font-semibold"
+                    : "bg-white/10 hover:bg-white/20 text-white"
+                }`}
               >
-                <Boxes className="w-6 h-6 text-rose-200" />
-                <span className="text-md">View Products</span>
+                <Store className="w-5 h-5" />
+                <span className="text-sm">Products</span>
+              </Link>
+
+              <div className="my-4 border-t border-white/20" />
+
+              <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                My Account
+              </p>
+              <Link
+                href="/user/cart"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <span className="text-sm">My Cart</span>
               </Link>
               <Link
-                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                href=""
+                href="/user/orders"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
               >
-                <ClipboardList className="w-6 h-6 text-rose-200" />
-                <span className="text-md">Manage Orders</span>
+                <Package2 className="w-5 h-5" />
+                <span className="text-sm">My Orders</span>
               </Link>
             </>
           )}
-          {user.role === "user" && (
+
+          {/* Admin Navigation */}
+          {isAdmin && (
             <>
+              <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
+                Admin Actions
+              </p>
               <Link
-                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                href="/user/cart"
+                href="/admin/add-product"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
               >
-                <ShoppingCart className="w-5 h-5 text-rose-200" />
-                My Cart
+                <PlusCircle className="w-5 h-5" />
+                <span className="text-sm">Add Product</span>
               </Link>
               <Link
-                className="flex items-center justify-start gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all shadow-inner"
-                href=""
+                href="/products"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
               >
-                <Package2 className="w-5 h-5 text-rose-200" />
-                My Orders
+                <Boxes className="w-5 h-5" />
+                <span className="text-sm">View Products</span>
+              </Link>
+              <Link
+                href="/orders"
+                onClick={handleLinkClick}
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
+              >
+                <ClipboardList className="w-5 h-5" />
+                <span className="text-sm">Manage Orders</span>
               </Link>
             </>
           )}
         </div>
-        <div className="my-5 border-t border-white/30" />
       </div>
-      <div className="mb-10">
+
+      {/* Logout Button */}
+      <div className="px-6 pb-6 pt-4 border-t border-white/10">
         <button
-          className="flex items-center gap-3 w-full px-3 py-2.5 bg-red-200/30 hover:bg-red-400/30 rounded-xl text-rose-100 font-medium transition-all cursor-pointer"
+          className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-red-500/30 hover:bg-red-500/50 rounded-xl text-white font-medium transition-all shadow-lg"
           onClick={handleLogOut}
         >
-          <LogOut className="h-6 w-6 text-red-100" />
-          Log Out
+          <LogOut className="h-5 w-5" />
+          <span>Log Out</span>
         </button>
       </div>
     </motion.div>

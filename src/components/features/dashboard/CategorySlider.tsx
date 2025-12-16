@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/utils/cn";
+import Link from "next/link";
 
 export default function CategorySlider() {
   const categories = [
@@ -214,7 +215,8 @@ export default function CategorySlider() {
         className="flex gap-6 overflow-x-auto px-12 pb-6 no-scrollbar scroll-smooth"
       >
         {infiniteCategories.map(({ id, label, Icon, color, bgColor }, i) => (
-          <div
+          <Link
+            href={`/user/products?category=${id}`}
             key={cn(id, "-", i)}
             className={cn(
               "min-w-[180px] shrink-0 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer hover:scale-105 active:scale-95",
@@ -227,7 +229,7 @@ export default function CategorySlider() {
                 {label}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

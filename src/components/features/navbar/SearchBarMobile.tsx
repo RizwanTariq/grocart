@@ -36,19 +36,21 @@ function SearchBarMobile() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.3 }}
             exit={{ opacity: 0, y: -10, scale: 0.9 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 flex items-center bg-white rounded-full px-4 py-2.5 w-[90%] shadow-lg"
+            className="fixed top-22 left-1/2 -translate-x-1/2 z-50 w-[90%] flex sm:hidden"
           >
-            <Search className="w-5 h-5 text-gray-500" />
-            <input
-              type="search"
-              placeholder="Search groceries..."
-              className="w-full px-3 focus:outline-none text-gray-500 placeholder-gray-500"
-            />
-            <div
-              className="p-2 rounded-full hover:bg-gray-100"
-              onClick={() => setOpen((pre) => !pre)}
-            >
-              <X className="w-5 h-5 text-gray-500 cursor-pointer" />
+            <div className="w-full h-full flex items-center">
+              <Search className="w-5 h-5 text-gray-500 absolute left-3" />
+              <input
+                type="search"
+                placeholder="Search products..."
+                className="w-full px-10 py-3 bg-white rounded-xl focus:outline-none text-gray-500 placeholder-gray-500 focus:border-rose-300 focus:ring-4 focus:ring-rose-100 shadow-lg "
+              />
+              <div
+                className="absolute right-3 p-2 rounded-full hover:bg-gray-100"
+                onClick={() => setOpen((pre) => !pre)}
+              >
+                <X className="w-5 h-5 text-gray-500 cursor-pointer" />
+              </div>
             </div>
           </motion.form>
         )}

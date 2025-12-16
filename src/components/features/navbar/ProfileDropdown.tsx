@@ -37,7 +37,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
         className="bg-white rounded-full w-10 h-10 flex items-center justify-center overflow-hidden shadow-md hover:scale-105 transition-all cursor-pointer relative"
         onClick={() => setOpen((pre) => !pre)}
       >
-        {user.image ? (
+        {user?.image ? (
           <Image
             src={user.image}
             alt={user.name}
@@ -102,10 +102,10 @@ function ProfileDropdown({ user }: { user: IUser }) {
               </>
             )}
             <button
-              className="flex items-center gap-3 w-full px-4 py-2.5 bg-red-500 hover:bg-red-400 rounded-xl text-white font-medium transition-all cursor-pointer"
+              className="flex items-center gap-3 w-full px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-xl text-white font-medium transition-all cursor-pointer"
               onClick={handleLogOut}
             >
-              <LogOut className="h-5 w-5 text-red-800" />
+              <LogOut className="h-5 w-5 text-white" />
               Log Out
             </button>
           </motion.div>

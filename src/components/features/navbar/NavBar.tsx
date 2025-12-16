@@ -3,28 +3,38 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { signOut } from "next-auth/react";
-import { Boxes, ClipboardList, Menu, PlusCircle } from "lucide-react";
+import {
+  Boxes,
+  ClipboardList,
+  Menu,
+  PlusCircle,
+  Store,
+  Home,
+} from "lucide-react";
 
 import { IUser } from "@/types";
 
 import ProfileDropdown from "./ProfileDropdown";
-import SearchBar from "./SearchBar";
-import SearchBarMobile from "./SearchBarMobile";
 import Tooltip from "../../common/Tooltip";
 import CartButton from "./CartButton";
 import SideBar from "./SideBar";
 import CartSideBar from "./CartSideBar";
+import { useStore } from "@/store/useStore";
 
-function NavBar({ user }: { user: IUser }) {
+function NavBar() {
   const [mounted, setMounted] = useState(false);
+  const user = useStore((s) => s.user);
+  const pathname = usePathname();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
-  const isUser = user.role === "user";
+
+  const isUser = user?.role === "user";
 
   const [mobileMenu, setMobileMenu] = useState(false);
   const [cartMenu, setCartMenu] = useState(false);
@@ -39,7 +49,7 @@ function NavBar({ user }: { user: IUser }) {
         <AnimatePresence mode="wait">
           {mobileMenu ? (
             <SideBar
-              user={user}
+              user={user as IUser}
               handleLogOut={handleLogOut}
               setMobileMenu={setMobileMenu}
             />
@@ -63,21 +73,50 @@ function NavBar({ user }: { user: IUser }) {
       transition={{ duration: 0.8 }}
       className="w-[96%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 rounded-2xl shadow-xl shadow-black/20 flex justify-between items-center h-18 px-5 md:px-8 z-50"
     >
-      <Link
-        href="/"
-        className="text-white font-extrabold text-xl sm:text-2xl tracking-wide hover:scale-105 transition-all"
-      >
-        GroCart
-      </Link>
-      {isUser && <SearchBar />}
+      <div className="flex items-center gap-8">
+        <Link
+          href="/"
+          className="text-white font-extrabold text-xl sm:text-2xl tracking-wide hover:scale-105 transition-all"
+        >
+          GroCart
+        </Link>
+
+        {/* Navigation Links for Users */}
+        {isUser && (
+          <nav className="hidden sm:flex items-center gap-2">
+            <Link
+              href="/"
+              className={`flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${
+                pathname === "/"
+                  ? "bg-white text-rose-600 shadow-md"
+                  : "text-white/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              <span>Home</span>
+            </Link>
+            <Link
+              href="/user/products"
+              className={`flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${
+                pathname === "/user/products"
+                  ? "bg-white text-rose-600 shadow-md"
+                  : "text-white/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Store className="w-4 h-4" />
+              <span>Products</span>
+            </Link>
+          </nav>
+        )}
+      </div>
+
       <div className="flex items-center gap-3 md:gap-5">
         {isUser && (
           <>
-            <SearchBarMobile />
             <CartButton handleClick={() => setCartMenu((pre) => !pre)} />
           </>
         )}
-        {user.role === "admin" && (
+        {user?.role === "admin" && (
           <div className="hidden sm:flex items-center gap-3">
             <Tooltip tooltip="Add Product">
               <Link
@@ -89,7 +128,7 @@ function NavBar({ user }: { user: IUser }) {
             </Tooltip>
             <Tooltip tooltip="View Products">
               <Link
-                href=""
+                href="/products"
                 className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
               >
                 <Boxes className="w-5 h-5 text-rose-700" />
@@ -97,7 +136,7 @@ function NavBar({ user }: { user: IUser }) {
             </Tooltip>
             <Tooltip tooltip="Manage Orders">
               <Link
-                href=""
+                href="/orders"
                 className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
               >
                 <ClipboardList className="w-5 h-5 text-rose-700" />
@@ -111,7 +150,7 @@ function NavBar({ user }: { user: IUser }) {
         >
           <Menu className="w-6 h-6 text-rose-600" />
         </div>
-        <ProfileDropdown user={user} />
+        <ProfileDropdown user={user as IUser} />
       </div>
       {sideBar}
       {cartSideBar}
