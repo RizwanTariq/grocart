@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { ArrowLeft, LoaderCircle, PlusCircle, PlusIcon } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, LoaderCircle, PlusIcon } from "lucide-react";
 import { motion } from "motion/react";
 import axios from "axios";
 
@@ -16,8 +15,10 @@ import ImageUploadField, {
 import TextArea from "./_components/TextArea";
 import TextField from "./_components/TextField";
 import { categories, units } from "@/constants/product";
+import { useRouter } from "next/navigation";
 
 function AddProductPage() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
@@ -78,103 +79,111 @@ function AddProductPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-rose-50 to-white py-18 px-4 relative">
-      <Link
-        href={"/"}
-        className="absolute top-6 left-6 flex items-center gap-2 text-rose-700 font-semibold bg-white px-4 py-2 rounded-2xl shadow-md hover:bg-rose-100 hover:shadow-lg transition-all"
-      >
-        <ArrowLeft className="w-5 h-5" />{" "}
-        <span className="hidden md:flex">Back to Home</span>
-      </Link>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="bg-white w-full max-w-3xl shadow-2xl border border-rose-100 rounded-2xl p-8 md:px-10"
-      >
-        <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center gap-3">
-            <PlusCircle className="w-8 h-8 text-rose-600" />
-            <h1 className="text-xl font-semibold">Add Your Product</h1>
+    <div className="min-h-screen">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05, x: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors cursor-pointer"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-700" strokeWidth={2.5} />
+            </motion.button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Add Your Product
+              </h1>
+              <p className="text-sm text-gray-500 mt-0.5">
+                Fill the fields below to add your product
+              </p>
+            </div>
           </div>
-          <p className="text-gray-500 text-sm mt-2 text-center">
-            Fill the fields below to add your product
-          </p>
         </div>
-        <form className="flex flex-col gap-6 w-full" onSubmit={addProduct}>
-          <TextField
-            name="name"
-            label="Product Name"
-            value={name}
-            placeholder="eg. Banana"
-            required
-            onChange={(n) => setName(n)}
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Dropdown
-              label="Category"
-              name="category"
-              key="category"
-              optionsArray={categories}
-              onSelected={setCategory}
-              value={category}
+      </div>
+      <div className="flex flex-col items-center justify-center py-10 px-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="bg-white w-full max-w-3xl shadow-2xl border border-rose-100 rounded-2xl p-8 md:px-10"
+        >
+          <form className="flex flex-col gap-6 w-full" onSubmit={addProduct}>
+            <TextField
+              name="name"
+              label="Product Name"
+              value={name}
+              placeholder="eg. Banana"
+              required
+              onChange={(n) => setName(n)}
             />
-            <Dropdown
-              label="Unit"
-              name="unit"
-              key="unit"
-              optionsArray={units}
-              onSelected={setUnit}
-              value={unit}
-            />
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Dropdown
+                label="Category"
+                name="category"
+                key="category"
+                optionsArray={categories}
+                onSelected={setCategory}
+                value={category}
+              />
+              <Dropdown
+                label="Unit"
+                name="unit"
+                key="unit"
+                optionsArray={units}
+                onSelected={setUnit}
+                value={unit}
+              />
+            </div>
 
-          <TextArea
-            name="description"
-            label="Description"
-            value={description}
-            onChange={(d) => setDescription(d)}
-            rows={3}
-            placeholder="Write a short description..."
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <NumberField
-              name="price"
-              label="Price"
-              value={price}
-              onChange={(p) => setPrice(p)}
+            <TextArea
+              name="description"
+              label="Description"
+              value={description}
+              onChange={(d) => setDescription(d)}
+              rows={3}
+              placeholder="Write a short description..."
             />
-            <NumberField
-              name="countInStock"
-              label="Stock Quantity"
-              value={countInStock}
-              onChange={(c) => setCountInStock(c)}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <NumberField
+                name="price"
+                label="Price"
+                value={price}
+                onChange={(p) => setPrice(p)}
+              />
+              <NumberField
+                name="countInStock"
+                label="Stock Quantity"
+                value={countInStock}
+                onChange={(c) => setCountInStock(c)}
+              />
+            </div>
+
+            <ImageUploadField
+              currentImage={image}
+              onCurrentImage={setImage}
+              ref={imageFieldRef}
             />
-          </div>
 
-          <ImageUploadField
-            currentImage={image}
-            onCurrentImage={setImage}
-            ref={imageFieldRef}
-          />
-
-          <motion.button
-            disabled={!isValidForm || isPending}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            className="bg-linear-to-r from-pink-500 via-pink-600 to-pink-700 transition-all text-white font-semibold py-2.5 px-6 rounded-xl w-full cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Add Product
-            {isPending ? (
-              <LoaderCircle className="animate-spin w-5 h-5" />
-            ) : (
-              <PlusIcon className="w-5 h-5" />
-            )}
-          </motion.button>
-          {error && <p className="text-red-500">{error}</p>}
-        </form>
-      </motion.div>
+            <motion.button
+              disabled={!isValidForm || isPending}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              className="bg-linear-to-r from-pink-500 via-pink-600 to-pink-700 transition-all text-white font-semibold py-2.5 px-6 rounded-xl w-full cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add Product
+              {isPending ? (
+                <LoaderCircle className="animate-spin w-5 h-5" />
+              ) : (
+                <PlusIcon className="w-5 h-5" />
+              )}
+            </motion.button>
+            {error && <p className="text-red-500">{error}</p>}
+          </form>
+        </motion.div>
+      </div>
     </div>
   );
 }

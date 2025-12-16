@@ -44,7 +44,7 @@ function Welcome({ onNext }: WelcomeProps) {
         className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 px-8 mt-10 rounded-2xl cursor-pointer shadow-md"
         onClick={onNext}
       >
-        Next
+        Register
         <ArrowRight />
       </motion.button>
     </div>

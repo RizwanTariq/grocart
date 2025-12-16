@@ -24,7 +24,7 @@ function CartPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -32,7 +32,7 @@ function CartPage() {
             <motion.button
               whileHover={{ scale: 1.05, x: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors cursor-pointer"
               onClick={() => router.back()}
             >
               <ArrowLeft className="w-5 h-5 text-gray-700" strokeWidth={2.5} />

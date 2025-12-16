@@ -112,7 +112,7 @@ function LoginForm() {
           className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
         >
           Don&apos;t have an account? <LogIn className="w-4 h-4" />
-          <span className="text-rose-700">Sign up</span>
+          <span className="text-rose-700 font-semibold">Sign up</span>
         </motion.p>
       </Link>
     </div>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import {
-  ArrowLeft,
   BadgeCheck,
   LoaderCircle,
   Lock,
@@ -22,10 +21,7 @@ import AuthInput from "@/components/features/auth/AuthInput";
 import Divider from "@/components/common/Divider";
 import GoogleLogin from "@/components/features/auth/GoogleLogin";
 
-type RegisterFormProps = {
-  onBack: () => void;
-};
-function RegisterForm({ onBack }: RegisterFormProps) {
+function RegisterForm() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirectUrl") || "/";
   const router = useRouter();
@@ -56,15 +52,6 @@ function RegisterForm({ onBack }: RegisterFormProps) {
   }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 absolute top-6 left-6 md:top-8 md:left-8 text-rose-500 hover:text-rose-600 font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer"
-      >
-        <ArrowLeft w-5 h-5 /> Back
-      </motion.button>
       <motion.h1
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,7 +130,7 @@ function RegisterForm({ onBack }: RegisterFormProps) {
           className="text-gray-500 mt-6 text-sm flex items-center gap-1.5 cursor-pointer"
         >
           Already have an account? <LogIn className="w-4 h-4" />
-          <span className="text-rose-700">Sign in</span>
+          <span className="text-rose-700 font-semibold">Sign in</span>
         </motion.p>
       </Link>
     </div>

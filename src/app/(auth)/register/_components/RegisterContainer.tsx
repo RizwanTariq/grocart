@@ -9,18 +9,8 @@ function RegisterContainer() {
   function handleNext() {
     setStep((prev) => prev + 1);
   }
-  function handleBack() {
-    setStep((prev) => prev - 1);
-  }
-  return (
-    <>
-      {step === 0 ? (
-        <Welcome onNext={handleNext} />
-      ) : (
-        <RegisterForm onBack={handleBack} />
-      )}
-    </>
-  );
+
+  return <>{step === 0 ? <Welcome onNext={handleNext} /> : <RegisterForm />}</>;
 }
 
 export default RegisterContainer;
