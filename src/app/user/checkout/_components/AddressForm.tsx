@@ -1,28 +1,40 @@
 "use client";
 import { CheckCircle, MapPin } from "lucide-react";
 import { motion } from "motion/react";
+import dynamic from "next/dynamic";
 
 import Input from "./Input";
 
+const LocationPickerMap = dynamic(
+  () => import("@/components/LocationPickerMap"),
+  { ssr: false }
+);
+
+export type FormData = {
+  fullName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
+};
+
 type Props = {
-  formData: {
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    latitude: number | null;
-    longitude: number | null;
-  };
+  formData: FormData;
+  showMap: boolean;
+  position: { lat: number; lng: number } | null;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleGetLocation: () => void;
+  onChangePosition: (coords: { lat: number; lng: number }) => void;
 };
 
 function AddressForm({
   formData,
+  position,
+  showMap,
   handleInputChange,
   handleGetLocation,
+  onChangePosition,
 }: Props) {
   return (
     <motion.div
@@ -37,7 +49,7 @@ function AddressForm({
         <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
       </div>
 
-      <form className="space-y-4">
+      <form className="space-y-4 mb-3">
         <div className="grid sm:grid-cols-2 gap-4">
           <Input
             type="text"
@@ -78,7 +90,7 @@ function AddressForm({
             <button
               type="button"
               onClick={handleGetLocation}
-              className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium"
+              className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium cursor-pointer"
             >
               <MapPin className="w-4 h-4" />
               Use My Location
@@ -116,7 +128,7 @@ function AddressForm({
           />
         </div>
 
-        {formData.latitude && formData.longitude && (
+        {position?.lat && position?.lng && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
             <div>
@@ -124,13 +136,19 @@ function AddressForm({
                 Location captured
               </p>
               <p className="text-xs text-green-700 mt-1">
-                Lat: {formData.latitude.toFixed(6)}, Long:{" "}
-                {formData.longitude.toFixed(6)}
+                Lat: {position?.lat.toFixed(6)}, Long:{" "}
+                {position?.lng.toFixed(6)}
               </p>
             </div>
           </div>
         )}
       </form>
+      {showMap && (
+        <LocationPickerMap
+          value={position ?? undefined}
+          onChange={onChangePosition}
+        />
+      )}
     </motion.div>
   );
 }

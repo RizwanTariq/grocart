@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useUser } from "@/hooks/useUser";
-import AddressForm from "./_components/AddressForm";
+import AddressForm, { FormData } from "./_components/AddressForm";
 import PaymentSelector from "./_components/PaymentSelector";
 import Header from "./_components/Header";
 import OrderSummary from "./_components/OrderSummary";
@@ -16,44 +16,31 @@ export default function CheckoutPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const user = useUser();
 
-  const [formData, setFormData] = useState<{
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    city: string;
-    postalCode: string;
-    latitude: number | null;
-    longitude: number | null;
-  }>({
+  const [formData, setFormData] = useState<FormData>({
     fullName: user?.name || "",
     email: user?.email || "",
     phone: user?.contact || "",
     address: "",
     city: "",
     postalCode: "",
-    latitude: null,
-    longitude: null,
   });
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
   };
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setFormData({
-            ...formData,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+          setPosition({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
           });
           setShowMap(true);
-          // In production, you'd reverse geocode to get the address
-          alert(
-            `Location captured: ${position.coords.latitude}, ${position.coords.longitude}`
-          );
         },
         (error) => {
           alert("Unable to get location. Please enter address manually.");
@@ -95,6 +82,9 @@ export default function CheckoutPage() {
             {/* Delivery Address */}
             <AddressForm
               formData={formData}
+              position={position}
+              onChangePosition={setPosition}
+              showMap={showMap}
               handleInputChange={handleInputChange}
               handleGetLocation={handleGetLocation}
             />
