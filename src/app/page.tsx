@@ -30,7 +30,7 @@ export default async function Home() {
   }
   return (
     <>
-      <NavBar user={user} />
+      <NavBar />
       {user.role === "user" ? (
         <>
           <UserDashboard />
