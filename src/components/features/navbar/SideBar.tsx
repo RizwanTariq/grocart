@@ -96,10 +96,10 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
                 Navigation
               </p>
               <Link
-                href="/"
+                href="/user"
                 onClick={handleLinkClick}
                 className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                  pathname === "/"
+                  pathname === "/user"
                     ? "bg-white text-rose-600 shadow-md font-semibold"
                     : "bg-white/10 hover:bg-white/20 text-white"
                 }`}
@@ -182,7 +182,7 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
       {/* Logout Button */}
       <div className="px-6 pb-6 pt-4 border-t border-white/10">
         <button
-          className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-red-500/30 hover:bg-red-500/50 rounded-xl text-white font-medium transition-all shadow-lg"
+          className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-red-500/30 hover:bg-red-500/50 hover:scale-105 active:scale-95 rounded-xl text-white font-medium transition-all shadow-lg cursor-pointer"
           onClick={handleLogOut}
         >
           <LogOut className="h-5 w-5" />

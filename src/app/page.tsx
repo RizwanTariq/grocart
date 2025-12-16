@@ -7,7 +7,6 @@ import UserModel from "@/models/user.model";
 import NavBar from "@/components/features/navbar/NavBar";
 import AdminDashboard from "@/components/features/dashboard/AdminDashboard";
 import DeliveryBoyDashboard from "@/components/features/dashboard/DeliveryBoyDashboard";
-import UserDashboard from "@/components/features/dashboard/UserDashboard";
 import { convertId, IUser } from "@/types";
 
 export default async function Home() {
@@ -28,20 +27,14 @@ export default async function Home() {
   if (isIncompleteProfile) {
     return <EditRoleAndContact user={user} />;
   }
+  if (user.role === "user") {
+    redirect("/user");
+  }
+
   return (
     <>
       <NavBar />
-      {user.role === "user" ? (
-        <>
-          <UserDashboard />
-        </>
-      ) : user.role === "admin" ? (
-        <>
-          <AdminDashboard />
-        </>
-      ) : (
-        <DeliveryBoyDashboard />
-      )}
+      {user.role === "admin" ? <AdminDashboard /> : <DeliveryBoyDashboard />}
     </>
   );
 }

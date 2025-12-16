@@ -85,25 +85,25 @@ function NavBar() {
         {isUser && (
           <nav className="hidden sm:flex items-center gap-2">
             <Link
-              href="/"
-              className={`flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${
-                pathname === "/"
+              href="/user"
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
+                pathname === "/user"
                   ? "bg-white text-rose-600 shadow-md"
                   : "text-white/90 hover:text-white hover:bg-white/10"
               }`}
             >
-              <Home className="w-4 h-4" />
+              <Home className="w-5 h-5" strokeWidth={2.5} />
               <span>Home</span>
             </Link>
             <Link
               href="/user/products"
-              className={`flex items-center gap-2 px-5 py-2 rounded-full font-medium text-sm transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
                 pathname === "/user/products"
                   ? "bg-white text-rose-600 shadow-md"
                   : "text-white/90 hover:text-white hover:bg-white/10"
               }`}
             >
-              <Store className="w-4 h-4" />
+              <Store className="w-5 h-5" strokeWidth={2.5} />
               <span>Products</span>
             </Link>
           </nav>

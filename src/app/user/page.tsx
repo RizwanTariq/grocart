@@ -1,12 +1,12 @@
 import connectDB from "@/libs/db";
-import CategorySlider from "../../../app/user/_components/CategorySlider";
-import HeroSection from "../../../app/user/_components/HeroSection";
 import ProductModel from "@/models/products.model";
 import { convertIds, IProduct } from "@/types";
+import ProductCard from "@/components/ProductCard";
 
-import ProductCard from "../../ProductCard";
+import CategorySlider from "./_components/CategorySlider";
+import HeroSection from "./_components/HeroSection";
 
-async function UserDashboard() {
+export default async function UserHome() {
   await connectDB();
   const _products = await ProductModel.find().lean();
   const products = convertIds(_products) as IProduct[];
@@ -28,5 +28,3 @@ async function UserDashboard() {
     </>
   );
 }
-
-export default UserDashboard;

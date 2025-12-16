@@ -165,55 +165,49 @@ function ProductCard({ product }: { product: IProduct }) {
           </div>
         </div>
 
-        {/* Quantity selector and Add to cart - only show if in stock */}
+        {/* Quantity selector */}
+        <div className="flex items-center gap-3 mb-3">
+          <span className="text-sm font-medium text-gray-600">Quantity:</span>
+          <QuantitySelector
+            quantity={quantity}
+            onDecrease={() => handleQuantityChange(-1)}
+            onIncrease={() => handleQuantityChange(1)}
+            increaseDisabled={quantity >= remainingStock}
+            decreaseDisabled={quantity <= 1}
+          />
+        </div>
+        {/*Add to cart - only show if in stock */}
         {remainingStock > 0 ? (
-          <>
-            {/* Quantity selector */}
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-sm font-medium text-gray-600">
-                Quantity:
-              </span>
-              <QuantitySelector
-                quantity={quantity}
-                onDecrease={() => handleQuantityChange(-1)}
-                onIncrease={() => handleQuantityChange(1)}
-                increaseDisabled={quantity >= remainingStock}
-                decreaseDisabled={quantity <= 1}
-              />
-            </div>
-
-            {/* Add to cart button */}
-            <motion.button
-              className={cn(
-                "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-200 text-white text-sm font-medium group/btn cursor-pointer",
-                isInCart
-                  ? "bg-linear-to-r from-rose-500 via-rose-600 to-rose-500"
-                  : "from-rose-600 via-rose-500 to-rose-600 bg-linear-to-r"
-              )}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.3 }}
-              onClick={handleAddToCart}
-            >
-              {isInCart ? (
-                <>
-                  <Plus
-                    className="w-5 h-5 group-hover/btn:rotate-90 transition-transform duration-200"
-                    strokeWidth={2.5}
-                  />
-                  <span>Add More</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingBag
-                    className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-200"
-                    strokeWidth={2.5}
-                  />
-                  <span>Add to Cart</span>
-                </>
-              )}
-            </motion.button>
-          </>
+          <motion.button
+            className={cn(
+              "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-200 text-white text-sm font-medium group/btn cursor-pointer",
+              isInCart
+                ? "bg-linear-to-r from-rose-500 via-rose-600 to-rose-500"
+                : "from-rose-600 via-rose-500 to-rose-600 bg-linear-to-r"
+            )}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.3 }}
+            onClick={handleAddToCart}
+          >
+            {isInCart ? (
+              <>
+                <Plus
+                  className="w-5 h-5 group-hover/btn:rotate-90 transition-transform duration-200"
+                  strokeWidth={2.5}
+                />
+                <span>Add More</span>
+              </>
+            ) : (
+              <>
+                <ShoppingBag
+                  className="w-5 h-5 group-hover/btn:rotate-12 transition-transform duration-200"
+                  strokeWidth={2.5}
+                />
+                <span>Add to Cart</span>
+              </>
+            )}
+          </motion.button>
         ) : (
           /* Out of stock message */
           <div className="w-full py-3 px-4 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center">
