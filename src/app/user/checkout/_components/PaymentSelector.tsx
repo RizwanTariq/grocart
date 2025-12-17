@@ -1,11 +1,12 @@
 "use client";
 
+import { PAYMENT_METHOD } from "@/types/enums";
 import { CreditCard, Package, Wallet } from "lucide-react";
 import { motion } from "motion/react";
 
 type Props = {
-  paymentMethod: "cod" | "stripe";
-  setPaymentMethod: (value: "cod" | "stripe") => void;
+  paymentMethod: PAYMENT_METHOD;
+  setPaymentMethod: (value: PAYMENT_METHOD) => void;
 };
 
 function PaymentSelector({ paymentMethod, setPaymentMethod }: Props) {
@@ -25,7 +26,7 @@ function PaymentSelector({ paymentMethod, setPaymentMethod }: Props) {
       <div className="space-y-3">
         <label
           className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-            paymentMethod === "cod"
+            paymentMethod === PAYMENT_METHOD.COD
               ? "border-rose-500 bg-rose-50"
               : "border-gray-200 hover:border-gray-300"
           }`}
@@ -33,9 +34,9 @@ function PaymentSelector({ paymentMethod, setPaymentMethod }: Props) {
           <input
             type="radio"
             name="payment"
-            value="cod"
-            checked={paymentMethod === "cod"}
-            onChange={(e) => setPaymentMethod(e.target.value as "cod")}
+            value={PAYMENT_METHOD.COD}
+            checked={paymentMethod === PAYMENT_METHOD.COD}
+            onChange={(e) => setPaymentMethod(e.target.value as PAYMENT_METHOD)}
             className="w-5 h-5 text-rose-600"
           />
           <Package className="w-5 h-5 text-gray-600" />
@@ -51,7 +52,7 @@ function PaymentSelector({ paymentMethod, setPaymentMethod }: Props) {
 
         <label
           className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
-            paymentMethod === "stripe"
+            paymentMethod === PAYMENT_METHOD.CARD
               ? "border-rose-500 bg-rose-50"
               : "border-gray-200 hover:border-gray-300"
           }`}
@@ -59,9 +60,9 @@ function PaymentSelector({ paymentMethod, setPaymentMethod }: Props) {
           <input
             type="radio"
             name="payment"
-            value="stripe"
-            checked={paymentMethod === "stripe"}
-            onChange={(e) => setPaymentMethod(e.target.value as "stripe")}
+            value={PAYMENT_METHOD.CARD}
+            checked={paymentMethod === PAYMENT_METHOD.CARD}
+            onChange={(e) => setPaymentMethod(e.target.value as PAYMENT_METHOD)}
             className="w-5 h-5 text-rose-600"
           />
           <CreditCard className="w-5 h-5 text-gray-600" />

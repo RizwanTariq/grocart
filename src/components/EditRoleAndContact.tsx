@@ -14,12 +14,17 @@ import { useState, useTransition } from "react";
 import { updateUserAction } from "@/app/actions/updateUser";
 import { IUser } from "@/types";
 import { cn } from "@/utils/cn";
+import { USER_ROLE } from "@/types/enums";
 
 function EditRoleAndContact({ user }: { user: IUser }) {
   const [roles, setRoles] = useState([
-    { id: "admin", label: "Admin", Icon: UserCog2 },
-    { id: "user", label: "Customer", Icon: User },
-    { id: "delivery_boy", label: "Delivery Rider", Icon: TruckElectric },
+    { id: USER_ROLE.ADMIN, label: "Admin", Icon: UserCog2 },
+    { id: USER_ROLE.USER, label: "Customer", Icon: User },
+    {
+      id: USER_ROLE.DELIVERY_BOY,
+      label: "Delivery Rider",
+      Icon: TruckElectric,
+    },
   ]);
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "");
   const [contact, setContact] = useState<string | undefined>(

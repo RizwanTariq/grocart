@@ -1,5 +1,6 @@
 import mongoose, { Model } from "mongoose";
 import { IUserDB } from "@/types";
+import { USER_ROLE } from "@/types/enums";
 
 export const userSchema = new mongoose.Schema<IUserDB>(
   {
@@ -10,8 +11,8 @@ export const userSchema = new mongoose.Schema<IUserDB>(
     image: { type: String, required: false },
     role: {
       type: String,
-      enum: ["user", "delivery_boy", "admin"],
-      default: "user",
+      enum: Object.values(USER_ROLE),
+      default: USER_ROLE.USER,
     },
   },
   {

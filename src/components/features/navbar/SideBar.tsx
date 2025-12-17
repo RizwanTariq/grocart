@@ -18,6 +18,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { IUser } from "@/types";
+import { USER_ROLE } from "@/types/enums";
 
 type Props = {
   user: IUser;
@@ -27,8 +28,8 @@ type Props = {
 
 function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
   const pathname = usePathname();
-  const isAdmin = user.role === "admin";
-  const isUser = user.role === "user";
+  const isAdmin = user.role === USER_ROLE.ADMIN;
+  const isUser = user.role === USER_ROLE.USER;
 
   const handleLinkClick = () => {
     setMobileMenu(false);

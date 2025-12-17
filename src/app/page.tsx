@@ -8,6 +8,7 @@ import NavBar from "@/components/features/navbar/NavBar";
 import AdminDashboard from "@/components/features/dashboard/AdminDashboard";
 import DeliveryBoyDashboard from "@/components/features/dashboard/DeliveryBoyDashboard";
 import { convertId, IUser } from "@/types";
+import { USER_ROLE } from "@/types/enums";
 
 export default async function Home() {
   await connectDB();
@@ -27,14 +28,18 @@ export default async function Home() {
   if (isIncompleteProfile) {
     return <EditRoleAndContact user={user} />;
   }
-  if (user.role === "user") {
+  if (user.role === USER_ROLE.USER) {
     redirect("/user");
   }
 
   return (
     <>
       <NavBar />
-      {user.role === "admin" ? <AdminDashboard /> : <DeliveryBoyDashboard />}
+      {user.role === USER_ROLE.ADMIN ? (
+        <AdminDashboard />
+      ) : (
+        <DeliveryBoyDashboard />
+      )}
     </>
   );
 }

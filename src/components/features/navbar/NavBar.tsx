@@ -23,6 +23,7 @@ import CartButton from "./CartButton";
 import SideBar from "./SideBar";
 import CartSideBar from "./CartSideBar";
 import { useStore } from "@/store/useStore";
+import { USER_ROLE } from "@/types/enums";
 
 function NavBar() {
   const [mounted, setMounted] = useState(false);
@@ -34,7 +35,7 @@ function NavBar() {
     setMounted(true);
   }, []);
 
-  const isUser = user?.role === "user";
+  const isUser = user?.role === USER_ROLE.USER;
 
   const [mobileMenu, setMobileMenu] = useState(false);
   const [cartMenu, setCartMenu] = useState(false);
@@ -116,7 +117,7 @@ function NavBar() {
             <CartButton handleClick={() => setCartMenu((pre) => !pre)} />
           </>
         )}
-        {user?.role === "admin" && (
+        {user?.role === USER_ROLE.ADMIN && (
           <div className="hidden sm:flex items-center gap-3">
             <Tooltip tooltip="Add Product">
               <Link

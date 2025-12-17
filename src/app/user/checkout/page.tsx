@@ -11,12 +11,15 @@ import OrderPlacedCard from "./_components/OrderPlacedCard";
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
+import { PAYMENT_METHOD } from "@/types/enums";
 
 export default function CheckoutPage() {
   const user = useUser();
   const { getCurrentLocation } = useGeoLocation();
 
-  const [paymentMethod, setPaymentMethod] = useState<"cod" | "stripe">("cod");
+  const [paymentMethod, setPaymentMethod] = useState<PAYMENT_METHOD>(
+    PAYMENT_METHOD.COD
+  );
   const [processing, setProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
@@ -99,7 +102,7 @@ export default function CheckoutPage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    if (paymentMethod === "stripe") {
+    if (paymentMethod === PAYMENT_METHOD.CARD) {
       // In production, redirect to Stripe checkout
       alert("Redirecting to Stripe payment...");
     } else {

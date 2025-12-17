@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import { USER_ROLE } from "./types/enums";
 
 export default auth(async function proxy(req) {
   const { nextUrl } = req;
@@ -32,9 +33,10 @@ export default auth(async function proxy(req) {
 
   // 🔥 3. If logged in and visiting a unauthorized route
   if (
-    (path.includes("/admin") && req.auth?.user?.role !== "admin") ||
-    (path.includes("/delivery") && req.auth?.user?.role !== "delivery_boy") ||
-    (path.includes("/user") && req.auth?.user?.role !== "user")
+    (path.includes("/admin") && req.auth?.user?.role !== USER_ROLE.ADMIN) ||
+    (path.includes("/delivery") &&
+      req.auth?.user?.role !== USER_ROLE.DELIVERY_BOY) ||
+    (path.includes("/user") && req.auth?.user?.role !== USER_ROLE.USER)
   ) {
     return NextResponse.redirect(new URL("/unauthorized", req.url));
   }

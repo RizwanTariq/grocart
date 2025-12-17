@@ -3,6 +3,7 @@ import { uploadOnCloudinary } from "@/libs/cloudinary";
 import connectDB from "@/libs/db";
 import ProductModel from "@/models/products.model";
 import { convertId } from "@/types";
+import { USER_ROLE } from "@/types/enums";
 import { NextResponse } from "next/server";
 
 export const POST = auth(async function (request) {
@@ -14,7 +15,7 @@ export const POST = auth(async function (request) {
       });
     }
 
-    if (request.auth?.user?.role !== "admin") {
+    if (request.auth?.user?.role !== USER_ROLE.ADMIN) {
       return new NextResponse("Unauthorized: Only admin can add product", {
         status: 401,
       });

@@ -4,11 +4,12 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { AlertCircle, Loader2, ShoppingBag } from "lucide-react";
 import useCart from "@/hooks/useCart";
+import { PAYMENT_METHOD } from "@/types/enums";
 
 type Props = {
   handleSubmit: (e: React.FormEvent) => void;
   processing: boolean;
-  paymentMethod: "cod" | "stripe";
+  paymentMethod: PAYMENT_METHOD;
 };
 
 function OrderSummary({ handleSubmit, processing, paymentMethod }: Props) {
@@ -94,7 +95,9 @@ function OrderSummary({ handleSubmit, processing, paymentMethod }: Props) {
             </>
           ) : (
             <>
-              {paymentMethod === "cod" ? "Place Order" : "Proceed to Payment"}
+              {paymentMethod === PAYMENT_METHOD.COD
+                ? "Place Order"
+                : "Proceed to Payment"}
             </>
           )}
         </button>

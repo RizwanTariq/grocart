@@ -16,6 +16,7 @@ import TextArea from "./_components/TextArea";
 import TextField from "./_components/TextField";
 import { categories, units } from "@/constants/product";
 import { useRouter } from "next/navigation";
+import { PRODUCT_CATEGORY, PRODUCT_UNIT } from "@/types/enums";
 
 function AddProductPage() {
   const router = useRouter();
@@ -24,8 +25,8 @@ function AddProductPage() {
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
-  const [unit, setUnit] = useState<string>("");
+  const [category, setCategory] = useState<PRODUCT_CATEGORY | "">("");
+  const [unit, setUnit] = useState<PRODUCT_UNIT | "">("");
   const [countInStock, setCountInStock] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [image, setImage] = useState<Blob | null>(null);
@@ -124,7 +125,7 @@ function AddProductPage() {
                 name="category"
                 key="category"
                 optionsArray={categories}
-                onSelected={setCategory}
+                onSelected={(value) => setCategory(value as PRODUCT_CATEGORY)}
                 value={category}
               />
               <Dropdown
@@ -132,7 +133,7 @@ function AddProductPage() {
                 name="unit"
                 key="unit"
                 optionsArray={units}
-                onSelected={setUnit}
+                onSelected={(value) => setUnit(value as PRODUCT_UNIT)}
                 value={unit}
               />
             </div>

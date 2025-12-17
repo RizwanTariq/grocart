@@ -1,4 +1,5 @@
 import { Types } from "mongoose";
+import { USER_ROLE } from "../enums";
 
 export interface IUserDB {
   _id?: Types.ObjectId;
@@ -7,7 +8,7 @@ export interface IUserDB {
   password?: string;
   contact?: string;
   image?: string;
-  role: "user" | "delivery_boy" | "admin";
+  role: USER_ROLE;
   createdAt?: Date;
   updatedAt?: Date;
 }

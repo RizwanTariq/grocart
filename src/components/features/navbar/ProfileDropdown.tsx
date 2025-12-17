@@ -9,6 +9,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 
 import { IUser } from "@/types";
+import { USER_ROLE } from "@/types/enums";
 
 function ProfileDropdown({ user }: { user: IUser }) {
   const [open, setOpen] = useState(false);
@@ -81,7 +82,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
                 </div>
               </div>
             </div>
-            {user.role === "user" && (
+            {user.role === USER_ROLE.USER && (
               <>
                 <Link
                   href="/user/cart"
