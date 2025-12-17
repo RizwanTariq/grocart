@@ -57,7 +57,7 @@ function AddressForm({
         <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
       </div>
 
-      <form className="space-y-4 mb-3">
+      <form className="space-y-4 mb-6">
         <div className="grid sm:grid-cols-2 gap-4">
           <Input
             type="text"

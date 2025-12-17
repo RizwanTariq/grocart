@@ -146,7 +146,7 @@ function ProductsContainer({ products }: { products: IProduct[] }) {
         </motion.div>
 
         <AnimatePresence mode="wait">
-          {products.length > 0 ? (
+          {filteredAndSortedProducts.length > 0 ? (
             <motion.div
               key="products-grid"
               initial={{ opacity: 0 }}
@@ -155,7 +155,7 @@ function ProductsContainer({ products }: { products: IProduct[] }) {
               transition={{ duration: 0.4 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mx-8 sm:mx-0"
             >
-              {products.map((product) => (
+              {filteredAndSortedProducts.map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </motion.div>

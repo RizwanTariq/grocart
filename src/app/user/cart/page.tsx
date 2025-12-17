@@ -77,7 +77,7 @@ function CartPage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-8 py-3 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2"
+              className="px-8 py-3 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl transition-colors inline-flex items-center gap-2 cursor-pointer"
               onClick={() => router.push("/user/products")}
             >
               <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
@@ -182,7 +182,7 @@ function CartPage() {
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-rose-300 hover:bg-rose-50/50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-rose-600 font-medium"
+                className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-rose-300 hover:bg-rose-50/50 transition-all flex items-center justify-center gap-2 text-gray-600 hover:text-rose-600 font-medium cursor-pointer"
                 onClick={() => router.push("/user/products")}
               >
                 <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />

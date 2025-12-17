@@ -21,11 +21,7 @@ function OrderSummary({ handleSubmit, processing, paymentMethod }: Props) {
     totalItems,
   } = useCart();
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="lg:col-span-1"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center">

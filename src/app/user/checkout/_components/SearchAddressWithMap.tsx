@@ -111,8 +111,8 @@ function SearchAddressWithMap({
 
   return (
     <div className="flex flex-col gap-3">
-      <div ref={searchRef} className="relative w-full max-w-2xl mx-auto">
-        <div className="relative">
+      <div ref={searchRef} className="relative w-full mx-auto">
+        <div className="w-full relative">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
             <Search className="w-5 h-5" />
           </div>

@@ -26,7 +26,7 @@ function EmptyState({ onClearFilters }: { onClearFilters: () => void }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClearFilters}
-        className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-medium shadow-lg hover:shadow-xl transition-all text-sm sm:text-base"
+        className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-medium shadow-lg hover:shadow-xl transition-all text-sm sm:text-base cursor-pointer"
       >
         Clear all filters
       </motion.button>

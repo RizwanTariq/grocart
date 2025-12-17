@@ -116,7 +116,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Section - Forms */}
           <div className="lg:col-span-2 space-y-6">
@@ -129,20 +129,21 @@ export default function CheckoutPage() {
               handleInputChange={handleInputChange}
               handleGetLocation={() => getCurrentLocation(handlePositionChange)}
             />
-
+          </div>
+          <div className="lg:col-span-1 flex flex-col gap-4">
             {/* Payment Method */}
             <PaymentSelector
               paymentMethod={paymentMethod}
               setPaymentMethod={setPaymentMethod}
             />
-          </div>
 
-          {/* Right Section - Order Summary */}
-          <OrderSummary
-            handleSubmit={handleSubmit}
-            processing={processing}
-            paymentMethod={paymentMethod}
-          />
+            {/* Right Section - Order Summary */}
+            <OrderSummary
+              handleSubmit={handleSubmit}
+              processing={processing}
+              paymentMethod={paymentMethod}
+            />
+          </div>
         </div>
       </div>
     </div>
