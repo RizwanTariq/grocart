@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useUser } from "@/hooks/useUser";
 import AddressForm, { FormData } from "./_components/AddressForm";
@@ -8,47 +8,88 @@ import PaymentSelector from "./_components/PaymentSelector";
 import Header from "./_components/Header";
 import OrderSummary from "./_components/OrderSummary";
 import OrderPlacedCard from "./_components/OrderPlacedCard";
+import axios from "axios";
+import useLocalStorageState from "use-local-storage-state";
+import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
 
 export default function CheckoutPage() {
+  const user = useUser();
+  const { getCurrentLocation } = useGeoLocation();
+
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "stripe">("cod");
-  const [showMap, setShowMap] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const user = useUser();
 
-  const [formData, setFormData] = useState<FormData>({
-    fullName: user?.name || "",
-    email: user?.email || "",
-    phone: user?.contact || "",
-    address: "",
-    city: "",
-    postalCode: "",
-  });
-  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
-    null
+  const [position, setPosition] = useLocalStorageState<Coordinates | null>(
+    "checkout-position",
+    { defaultValue: null }
   );
+
+  const [formData, setFormData] = useLocalStorageState<FormData>(
+    "checkout-form-data",
+    {
+      defaultValue: {
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+      },
+    }
+  );
+
+  const showMap = !!position?.lat && !!position?.lng;
+
+  useEffect(() => {
+    if (user) {
+      setFormData((pre) => ({
+        ...pre,
+        fullName: pre.fullName || user?.name || "",
+        email: pre.email || user?.email || "",
+        phone: pre.phone || user?.contact || "",
+      }));
+    }
+  }, [user, setFormData]);
+
+  const handlePositionChange = async (coords: Coordinates) => {
+    if (coords.lat === position?.lat && coords.lng === position?.lng) return;
+    setPosition(coords);
+    try {
+      const res = await axios.post("/api/reverse-geocode", coords);
+      const { address, displayName } = res.data;
+
+      setFormData((pre) => ({
+        ...pre,
+        address: displayName || "",
+        city:
+          address?.city ||
+          address?.municipality ||
+          address?.subdistrict ||
+          address?.town ||
+          address?.district ||
+          "",
+        postalCode: address?.postcode || "",
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
   };
 
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setPosition({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          setShowMap(true);
-        },
-        (error) => {
-          alert("Unable to get location. Please enter address manually.");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser.");
-    }
+  const resetForm = () => {
+    setFormData({
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      postalCode: "",
+    });
+    setPosition(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,7 +105,7 @@ export default function CheckoutPage() {
     } else {
       setOrderPlaced(true);
     }
-
+    resetForm();
     setProcessing(false);
   };
 
@@ -83,10 +124,10 @@ export default function CheckoutPage() {
             <AddressForm
               formData={formData}
               position={position}
-              onChangePosition={setPosition}
+              onChangePosition={handlePositionChange}
               showMap={showMap}
               handleInputChange={handleInputChange}
-              handleGetLocation={handleGetLocation}
+              handleGetLocation={() => getCurrentLocation(handlePositionChange)}
             />
 
             {/* Payment Method */}

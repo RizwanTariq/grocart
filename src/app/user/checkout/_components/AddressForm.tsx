@@ -1,14 +1,22 @@
 "use client";
-import { CheckCircle, MapPin } from "lucide-react";
+import {
+  AtSign,
+  BookUser,
+  Building2,
+  MailSearch,
+  MapPin,
+  MapPinHouse,
+  UserRoundPen,
+} from "lucide-react";
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 
 import Input from "./Input";
+import { Coordinates } from "@/hooks/useGeoLocation";
 
-const LocationPickerMap = dynamic(
-  () => import("@/components/LocationPickerMap"),
-  { ssr: false }
-);
+const SearchAddressWithMap = dynamic(() => import("./SearchAddressWithMap"), {
+  ssr: false,
+});
 
 export type FormData = {
   fullName: string;
@@ -22,10 +30,10 @@ export type FormData = {
 type Props = {
   formData: FormData;
   showMap: boolean;
-  position: { lat: number; lng: number } | null;
+  position: Coordinates | null;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleGetLocation: () => void;
-  onChangePosition: (coords: { lat: number; lng: number }) => void;
+  onChangePosition: (coords: Coordinates) => Promise<void>;
 };
 
 function AddressForm({
@@ -59,6 +67,7 @@ function AddressForm({
             label="Full Name"
             placeholder="eg. John Doe"
             required
+            Icon={UserRoundPen}
           />
 
           <Input
@@ -69,6 +78,7 @@ function AddressForm({
             label="Phone Number"
             placeholder="eg. 2345678900"
             required
+            Icon={BookUser}
           />
         </div>
 
@@ -80,12 +90,13 @@ function AddressForm({
           label="Email Address"
           placeholder="eg. john@example.com"
           required={false}
+          Icon={AtSign}
         />
 
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Street Address
+              Street Address <span className="text-red-500">*</span>
             </label>
             <button
               type="button"
@@ -96,15 +107,18 @@ function AddressForm({
               Use My Location
             </button>
           </div>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-transparent outline-none transition-all"
-            placeholder="123 Main Street, Apt 4B"
-            required
-          />
+          <div className="relative">
+            <MapPinHouse className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              className="w-full pl-10 px-3 py-3 text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-rose-300 focus:border-transparent outline-none transition-all"
+              placeholder="123 Main Street, Apt 4B"
+              required
+            />
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -116,6 +130,7 @@ function AddressForm({
             label="City"
             placeholder="eg. New York"
             required
+            Icon={Building2}
           />
           <Input
             type="text"
@@ -123,32 +138,17 @@ function AddressForm({
             value={formData.postalCode}
             onChange={handleInputChange}
             label="Postal Code"
-            placeholder="eg. 380000"
+            placeholder="eg. 38000"
             required
+            Icon={MailSearch}
           />
         </div>
-
-        {position?.lat && position?.lng && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-green-900">
-                Location captured
-              </p>
-              <p className="text-xs text-green-700 mt-1">
-                Lat: {position?.lat.toFixed(6)}, Long:{" "}
-                {position?.lng.toFixed(6)}
-              </p>
-            </div>
-          </div>
-        )}
       </form>
-      {showMap && (
-        <LocationPickerMap
-          value={position ?? undefined}
-          onChange={onChangePosition}
-        />
-      )}
+      <SearchAddressWithMap
+        onChangePosition={onChangePosition}
+        showMap={showMap}
+        position={position}
+      />
     </motion.div>
   );
 }
