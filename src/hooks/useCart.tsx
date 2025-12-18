@@ -19,6 +19,7 @@ function useCart() {
   const removeFromCart = useStore((s) => s.removeFromCart);
   const increaseQuantity = useStore((s) => s.increaseQuantity);
   const decreaseQuantity = useStore((s) => s.decreaseQuantity);
+  const clearCart = useStore((s) => s.clearCart);
 
   return {
     cartCount,
@@ -31,6 +32,7 @@ function useCart() {
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
+    clearCart,
   };
 }
 

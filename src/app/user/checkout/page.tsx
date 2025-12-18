@@ -12,16 +12,18 @@ import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
 import { PAYMENT_METHOD } from "@/types/enums";
+import useCart from "@/hooks/useCart";
 
 export default function CheckoutPage() {
   const user = useUser();
   const { getCurrentLocation } = useGeoLocation();
+  const { clearCart, cartItems, grossTotal } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<PAYMENT_METHOD>(
     PAYMENT_METHOD.COD
   );
   const [processing, setProcessing] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderPlacedNum, setOrderPlacedNum] = useState("");
 
   const [position, setPosition] = useLocalStorageState<Coordinates | null>(
     "checkout-position",
@@ -93,27 +95,52 @@ export default function CheckoutPage() {
       postalCode: "",
     });
     setPosition(null);
+    clearCart();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProcessing(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (paymentMethod === PAYMENT_METHOD.COD) {
+      handleCodOrder();
+    }
 
     if (paymentMethod === PAYMENT_METHOD.CARD) {
       // In production, redirect to Stripe checkout
       alert("Redirecting to Stripe payment...");
     } else {
-      setOrderPlaced(true);
     }
-    resetForm();
-    setProcessing(false);
   };
 
-  if (orderPlaced) {
-    return <OrderPlacedCard />;
+  const handleCodOrder = async () => {
+    setProcessing(true);
+    try {
+      const res = await axios.post("/api/user/order", {
+        paymentMethod,
+        totalAmount: grossTotal,
+        address: { ...formData, coordinates: position },
+        items: cartItems.map((i) => ({
+          _id: i.productId,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          unit: i.unit,
+        })),
+      });
+
+      if (res.status === 201) {
+        setOrderPlacedNum(res.data?.orderNumber);
+        resetForm();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  if (orderPlacedNum) {
+    return <OrderPlacedCard orderNumber={orderPlacedNum} />;
   }
 
   return (

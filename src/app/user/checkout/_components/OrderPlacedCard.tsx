@@ -1,7 +1,7 @@
 import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-function OrderPlacedCard() {
+function OrderPlacedCard({ orderNumber }: { orderNumber: string }) {
   const router = useRouter();
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -15,9 +15,7 @@ function OrderPlacedCard() {
         </p>
         <div className="bg-gray-50 rounded-lg p-4 mb-6">
           <p className="text-sm text-gray-500 mb-1">Order Number</p>
-          <p className="text-2xl font-bold text-rose-600">
-            #ORD-98879kjbnkjh576576
-          </p>
+          <p className="text-2xl font-bold text-rose-600">#{orderNumber}</p>
         </div>
         <button
           onClick={() => router.push("/user/products")}
