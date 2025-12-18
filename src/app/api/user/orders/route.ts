@@ -30,8 +30,6 @@ export const POST = auth(async function (request) {
     const { paymentMethod, address, items, totalAmount, coordinates } =
       await request.json();
 
-    console.log({ paymentMethod, address, items, totalAmount, coordinates });
-
     if (!paymentMethod || !address || !items || !items.length || !totalAmount) {
       return new NextResponse("Missing required fields", { status: 400 });
     }

@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
-import { ORDER_STATUS, PAYMENT_METHOD, PRODUCT_UNIT } from "../enums";
+import {
+  ORDER_STATUS,
+  PAYMENT_METHOD,
+  PAYMENT_STATUS,
+  PRODUCT_UNIT,
+} from "../enums";
 
 export interface IOrderItemDB {
   product: mongoose.Types.ObjectId;
@@ -17,6 +22,9 @@ export interface IOrderDB {
   totalAmount: number;
   status: ORDER_STATUS;
   paymentMethod: PAYMENT_METHOD;
+  paymentStatus: PAYMENT_STATUS;
+  stripeSessionId?: string;
+  stripePaymentIntentId?: string;
   address: {
     fullName: string;
     email: string;

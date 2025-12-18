@@ -93,7 +93,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
                   My Cart
                 </Link>
                 <Link
-                  href=""
+                  href="/user/orders"
                   className="flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-rose-50 transition-all rounded-xl font-medium"
                   onClick={() => setOpen((pre) => !pre)}
                 >

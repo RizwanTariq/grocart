@@ -5,7 +5,7 @@ import { USER_ROLE } from "@/types/enums";
 export const userSchema = new mongoose.Schema<IUserDB>(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: false },
     contact: { type: String, required: false },
     image: { type: String, required: false },
