@@ -6,7 +6,12 @@ export default auth(async function proxy(req) {
   const { nextUrl } = req;
   const path = nextUrl.pathname;
 
-  const publicRoutes = ["/favicon.ico", "/_next", "/api/auth"];
+  const publicRoutes = [
+    "/favicon.ico",
+    "/_next",
+    "/api/auth",
+    "/api/webhooks/stripe",
+  ];
   const authRoutes = ["/login", "/register"];
 
   // Skip public asset routes

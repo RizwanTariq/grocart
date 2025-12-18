@@ -13,11 +13,12 @@ import useLocalStorageState from "use-local-storage-state";
 import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
 import { PAYMENT_METHOD } from "@/types/enums";
 import useCart from "@/hooks/useCart";
+import { extractApiError } from "@/types";
 
 export default function CheckoutPage() {
   const user = useUser();
   const { getCurrentLocation } = useGeoLocation();
-  const { clearCart, cartItems, grossTotal } = useCart();
+  const { clearCart, cartItems, grossTotal, cartCount } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<PAYMENT_METHOD>(
     PAYMENT_METHOD.COD
@@ -106,16 +107,44 @@ export default function CheckoutPage() {
     }
 
     if (paymentMethod === PAYMENT_METHOD.CARD) {
-      // In production, redirect to Stripe checkout
-      alert("Redirecting to Stripe payment...");
-    } else {
+      handleCardPayment();
+    }
+  };
+
+  const handleCardPayment = async () => {
+    setProcessing(true);
+    try {
+      const res = await axios.post("/api/user/payment", {
+        paymentMethod,
+        totalItemsCount: cartCount,
+        totalAmount: grossTotal,
+        address: { ...formData, coordinates: position },
+        items: cartItems.map((i) => ({
+          _id: i.productId,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          unit: i.unit,
+        })),
+      });
+
+      if (res.status === 201) {
+        window.location.href = res.data.paymentRedirectUrl;
+      }
+    } catch (err: unknown) {
+      const error = extractApiError(err);
+      if (error) {
+        toast.error(error.message);
+      }
+    } finally {
+      setProcessing(false);
     }
   };
 
   const handleCodOrder = async () => {
     setProcessing(true);
     try {
-      const res = await axios.post("/api/user/order", {
+      const res = await axios.post("/api/user/orders", {
         paymentMethod,
         totalAmount: grossTotal,
         address: { ...formData, coordinates: position },
