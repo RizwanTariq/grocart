@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Provider from "@/Provider";
 import AuthStoreBootstrap from "@/AuthStoreBootstrap";
+import HotToaster from "@/components/HotToaster";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <Provider>
           <AuthStoreBootstrap />
           {children}
+          <HotToaster />
         </Provider>
       </body>
     </html>

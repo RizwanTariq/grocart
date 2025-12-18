@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
 import AddressForm, { FormData } from "./_components/AddressForm";
 import PaymentSelector from "./_components/PaymentSelector";
@@ -131,6 +131,7 @@ export default function CheckoutPage() {
       if (res.status === 201) {
         setOrderPlacedNum(res.data?.orderNumber);
         resetForm();
+        toast.success("Order Placed Successfully!");
       }
     } catch (error) {
       console.error(error);
