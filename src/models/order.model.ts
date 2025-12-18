@@ -6,9 +6,11 @@ import { ORDER_STATUS, PAYMENT_METHOD, PRODUCT_UNIT } from "@/types/enums";
 const orderSchema = new mongoose.Schema<IOrderDB>(
   {
     user: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+    orderNumber: { type: String, required: true, unique: true, index: true },
 
     items: [
       {
+        _id: false,
         product: {
           type: mongoose.Types.ObjectId,
           ref: "Product",
@@ -25,7 +27,7 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
       },
     ],
 
-    total: { type: Number, required: true },
+    totalAmount: { type: Number, required: true, min: 0 },
     status: {
       type: String,
       enum: Object.values(ORDER_STATUS),
@@ -39,15 +41,16 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
       required: true,
     },
     address: {
+      _id: false,
       fullName: { type: String, required: true },
-      email: { type: String, required: true },
-      phone: { type: String, required: true },
+      email: { type: String, required: true, lowercase: true, trim: true },
+      phone: { type: String, required: true, trim: true },
       fullAddress: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       coordinates: {
-        lat: { type: Number, required: false },
-        lng: { type: Number, required: false },
+        lat: { type: Number, required: false, default: null },
+        lng: { type: Number, required: false, default: null },
       },
     },
   },

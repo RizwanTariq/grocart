@@ -1,17 +1,20 @@
 import mongoose from "mongoose";
 import { ORDER_STATUS, PAYMENT_METHOD, PRODUCT_UNIT } from "../enums";
 
+export interface IOrderItemDB {
+  product: mongoose.Types.ObjectId;
+  name: string;
+  price: number;
+  quantity: number;
+  unit: PRODUCT_UNIT;
+}
+
 export interface IOrderDB {
   _id?: mongoose.Types.ObjectId;
   user: mongoose.Types.ObjectId;
-  items: {
-    product: mongoose.Types.ObjectId;
-    name: string;
-    price: number;
-    quantity: number;
-    unit: PRODUCT_UNIT;
-  }[];
-  total: number;
+  orderNumber: string;
+  items: IOrderItemDB[];
+  totalAmount: number;
   status: ORDER_STATUS;
   paymentMethod: PAYMENT_METHOD;
   address: {
@@ -21,9 +24,9 @@ export interface IOrderDB {
     fullAddress: string;
     city: string;
     postalCode: string;
-    coordinates?: {
-      lat: number;
-      lng: number;
+    coordinates: {
+      lat: number | null;
+      lng: number | null;
     };
   };
   createdAt?: Date;
