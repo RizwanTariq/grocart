@@ -13,9 +13,11 @@ import useLocalStorageState from "use-local-storage-state";
 import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
 import { PAYMENT_METHOD } from "@/types/enums";
 import useCart from "@/hooks/useCart";
-import { extractApiError } from "@/types";
+import { extractApiError } from "@/utils/api-error-extractor";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const user = useUser();
   const { getCurrentLocation } = useGeoLocation();
   const { clearCart, cartItems, grossTotal, cartCount } = useCart();
@@ -24,7 +26,7 @@ export default function CheckoutPage() {
     PAYMENT_METHOD.COD
   );
   const [processing, setProcessing] = useState(false);
-  const [orderPlacedNum, setOrderPlacedNum] = useState("");
+  const [orderPlacedId, setOrderPlacedId] = useState("");
 
   const [position, setPosition] = useLocalStorageState<Coordinates | null>(
     "checkout-position",
@@ -114,8 +116,7 @@ export default function CheckoutPage() {
   const handleCardPayment = async () => {
     setProcessing(true);
     try {
-      const res = await axios.post("/api/user/payment", {
-        paymentMethod,
+      const res = await axios.post("/api/user/orders/payment", {
         totalItemsCount: cartCount,
         totalAmount: grossTotal,
         address: { ...formData, coordinates: position },
@@ -125,6 +126,7 @@ export default function CheckoutPage() {
           price: i.price,
           quantity: i.quantity,
           unit: i.unit,
+          image: i.image,
         })),
       });
 
@@ -134,6 +136,8 @@ export default function CheckoutPage() {
     } catch (err: unknown) {
       const error = extractApiError(err);
       if (error) {
+        if (error.code === "PAYMENT_FAILED")
+          router.replace(`/user/orders/cancel?order_id=${error.orderId}`);
         toast.error(error.message);
       }
     } finally {
@@ -145,7 +149,6 @@ export default function CheckoutPage() {
     setProcessing(true);
     try {
       const res = await axios.post("/api/user/orders", {
-        paymentMethod,
         totalAmount: grossTotal,
         address: { ...formData, coordinates: position },
         items: cartItems.map((i) => ({
@@ -154,11 +157,12 @@ export default function CheckoutPage() {
           price: i.price,
           quantity: i.quantity,
           unit: i.unit,
+          image: i.image,
         })),
       });
 
       if (res.status === 201) {
-        setOrderPlacedNum(res.data?.orderNumber);
+        setOrderPlacedId(res.data?._id);
         resetForm();
         toast.success("Order Placed Successfully!");
       }
@@ -169,8 +173,8 @@ export default function CheckoutPage() {
     }
   };
 
-  if (orderPlacedNum) {
-    return <OrderPlacedCard orderNumber={orderPlacedNum} />;
+  if (orderPlacedId) {
+    return <OrderPlacedCard orderId={orderPlacedId} />;
   }
 
   return (

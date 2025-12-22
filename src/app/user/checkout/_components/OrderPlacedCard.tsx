@@ -4,25 +4,25 @@ import { CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import useCart from "@/hooks/useCart";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 
-function OrderPlacedCard({ orderNumber }: { orderNumber: string }) {
+function OrderPlacedCard({ orderId }: { orderId: string }) {
   const router = useRouter();
   const { clearCart } = useCart();
+  const [orderNumber, setOrderNumber] = useState("");
 
   // Only clear cart if payment is successful or payment method is COD
   useEffect(() => {
     async function finalize() {
-      const res = await axios.get(
-        `/api/user/orders/verify?order_no=${orderNumber}`
-      );
+      const res = await axios.get(`/api/user/orders/${orderId}/verify`);
 
       if (
         res.data.paymentStatus === PAYMENT_STATUS.PAYMENT_PAID ||
         res.data.paymentMethod === PAYMENT_METHOD.COD
       ) {
+        setOrderNumber(res.data.orderNumber);
         clearCart(); // ✅ ONLY HERE
       }
     }

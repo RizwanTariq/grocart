@@ -5,11 +5,11 @@ async function OrderSuccessPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const orderNumber = (await searchParams).order_no;
-  if (!orderNumber) {
+  const orderId = (await searchParams).order_id;
+  if (!orderId) {
     return null;
   }
-  return <OrderPlacedCard orderNumber={orderNumber as string} />;
+  return <OrderPlacedCard orderId={orderId as string} />;
 }
 
 export default OrderSuccessPage;
