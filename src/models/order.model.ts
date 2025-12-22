@@ -29,6 +29,7 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
         name: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true },
+        image: { type: String, required: true },
         unit: {
           type: String,
           enum: Object.values(PRODUCT_UNIT),
@@ -59,8 +60,24 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
       required: true,
       index: true,
     },
-    stripeSessionId: { type: String, index: true },
-    stripePaymentIntentId: { type: String, index: true },
+    stripeSessionId: {
+      type: String,
+      index: true,
+      unique: true,
+      sparse: true,
+      default: null,
+    },
+    stripePaymentIntentId: {
+      type: String,
+      index: true,
+      unique: true,
+      sparse: true,
+      default: null,
+    },
+    paymentAttempts: {
+      type: Number,
+      default: 0,
+    },
     address: {
       _id: false,
       fullName: { type: String, required: true },
@@ -73,6 +90,11 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
         lat: { type: Number, required: false, default: null },
         lng: { type: Number, required: false, default: null },
       },
+    },
+    expiresAt: {
+      type: Date,
+      required: false,
+      index: true,
     },
   },
   {

@@ -11,6 +11,7 @@ export default auth(async function proxy(req) {
     "/_next",
     "/api/auth",
     "/api/webhooks/stripe",
+    "/api/cron",
   ];
   const authRoutes = ["/login", "/register"];
 

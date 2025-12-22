@@ -1,9 +1,11 @@
-import connectDB from "@/libs/db";
-import OrderModel from "@/models/order.model";
-import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
-import { Types } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+
+import connectDB from "@/libs/db";
+import OrderModel from "@/models/order.model";
+import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
+import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_TOKEN!);
 
@@ -28,44 +30,83 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Ignore test events in production
-  //   if (process.env.NODE_ENV === "production" && !event.livemode) {
-  //     return NextResponse.json({ received: true });
-  //   }
-
   await connectDB();
-  const session = event.data.object as Stripe.Checkout.Session;
-  const orderId = session.metadata?.orderId;
+
+  console.log(event, "stripe event-----------------");
 
   try {
     switch (event.type) {
+      /**
+       * ✅ PAYMENT SUCCESS
+       */
       case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = session.metadata?.orderId;
         if (!orderId || session.payment_status !== "paid") break;
 
-        const order = await OrderModel.findById(new Types.ObjectId(orderId));
-        if (!order || order.paymentStatus === PAYMENT_STATUS.PAYMENT_PAID)
-          break;
-
-        await OrderModel.findByIdAndUpdate(new Types.ObjectId(orderId), {
-          paymentStatus: PAYMENT_STATUS.PAYMENT_PAID,
-          stripePaymentIntentId: session.payment_intent || undefined,
-        });
+        await OrderModel.findOneAndUpdate(
+          {
+            _id: castIdToObjectId(orderId),
+            paymentStatus: { $ne: PAYMENT_STATUS.PAYMENT_PAID },
+            status: { $ne: ORDER_STATUS.CONFIRMED },
+          },
+          {
+            paymentStatus: PAYMENT_STATUS.PAYMENT_PAID,
+            status: ORDER_STATUS.CONFIRMED,
+            stripeSessionId: session.id,
+            stripePaymentIntentId: session.payment_intent || null,
+            expiresAt: null,
+          }
+        );
 
         break;
       }
-      case "checkout.session.expired":
-      case "payment_intent.payment_failed":
-      case "payment_intent.canceled": {
+      /**
+       * ⚠️ SESSION EXPIRED (NON-FATAL)
+       * Session is unusable, payment may still complete later
+       */
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orderId = session.metadata?.orderId;
         if (!orderId) break;
 
-        const order = await OrderModel.findById(new Types.ObjectId(orderId));
-        if (!order || order.paymentStatus === PAYMENT_STATUS.PAYMENT_PAID)
-          break;
+        await OrderModel.findOneAndUpdate(
+          {
+            _id: castIdToObjectId(orderId),
+            paymentStatus: PAYMENT_STATUS.PAYMENT_PENDING,
+          },
+          {
+            stripeSessionId: null, // allow for retry
+          }
+        );
+        break;
+      }
+      /**
+       * ❌ Attempt failed → retry allowed
+       */
+      case "payment_intent.payment_failed":
+      case "payment_intent.canceled": {
+        const intent = event.data.object as Stripe.PaymentIntent;
+        console.log(intent, "Intent ----");
 
-        await OrderModel.findByIdAndUpdate(new Types.ObjectId(orderId), {
-          paymentStatus: PAYMENT_STATUS.PAYMENT_FAILED,
-          status: ORDER_STATUS.CANCELLED,
-        });
+        // payment_intent does NOT always carry metadata
+        const orderId = intent.metadata?.orderId;
+        if (!orderId) break;
+
+        await OrderModel.findOneAndUpdate(
+          {
+            _id: castIdToObjectId(orderId),
+            paymentStatus: PAYMENT_STATUS.PAYMENT_PENDING,
+          },
+          {
+            // Do NOT cancel
+            // Do NOT mark failed
+            // Allow retry
+            stripePaymentIntentId: intent.id,
+            stripeSessionId: null,
+          }
+        );
+
         break;
       }
       default:
@@ -77,7 +118,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("Error handling webhook:", err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      prepareErrorResponse("STRIPE_ERROR", "Error handling webhook"),
       { status: 500 }
     );
   }

@@ -11,6 +11,7 @@ export interface IOrderItemDB {
   name: string;
   price: number;
   quantity: number;
+  image: string;
   unit: PRODUCT_UNIT;
 }
 
@@ -23,8 +24,9 @@ export interface IOrderDB {
   status: ORDER_STATUS;
   paymentMethod: PAYMENT_METHOD;
   paymentStatus: PAYMENT_STATUS;
-  stripeSessionId?: string;
-  stripePaymentIntentId?: string;
+  stripeSessionId?: string | null;
+  stripePaymentIntentId?: string | null;
+  paymentAttempts?: number;
   address: {
     fullName: string;
     email: string;
@@ -37,6 +39,7 @@ export interface IOrderDB {
       lng: number | null;
     };
   };
+  expiresAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }

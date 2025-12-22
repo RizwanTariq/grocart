@@ -4,22 +4,23 @@ import connectDB from "@/libs/db";
 import OrderModel from "@/models/order.model";
 import { convertIds, IOrderItem } from "@/types";
 import { NextResponse } from "next/server";
-import UserModel from "@/models/user.model";
 import { generateOrderNumber } from "@/libs/orderNumGenerator";
+import { assertUser } from "@/server/auth/assertUser";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
+import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 
 export const GET = auth(async function (request) {
   try {
     await connectDB();
-    if (!request.auth) {
-      return new NextResponse("Unauthenticated", {
-        status: 401,
-      });
-    }
-    const orders = await OrderModel.find({}).lean();
+    const user = await assertUser(request);
+    const orders = await OrderModel.find({
+      user: user._id,
+    }).lean();
 
     return NextResponse.json(convertIds(orders), { status: 200 });
   } catch (error) {
-    return new NextResponse(`Unexpected error: ${error}`, { status: 500 });
+    return handleGenericError(error);
   }
 });
 
@@ -27,28 +28,16 @@ export const POST = auth(async function (request) {
   try {
     await connectDB();
 
-    const { paymentMethod, address, items, totalAmount, coordinates } =
-      await request.json();
+    const { address, items, totalAmount, coordinates } = await request.json();
 
-    if (!paymentMethod || !address || !items || !items.length || !totalAmount) {
-      return new NextResponse("Missing required fields", { status: 400 });
+    if (!address || !items || !items.length || !totalAmount) {
+      throw NextResponse.json(
+        prepareErrorResponse("BAD_REQUEST", "Missing required fields"),
+        { status: 400 }
+      );
     }
 
-    if (!request.auth) {
-      return new NextResponse("Unauthenticated", {
-        status: 401,
-      });
-    }
-
-    const user = await UserModel.findById(
-      new mongoose.Types.ObjectId(request.auth?.user?.id)
-    ).lean();
-
-    if (!user) {
-      return new NextResponse("Unauthenticated: User not found", {
-        status: 404,
-      });
-    }
+    const user = await assertUser(request);
 
     const orderNumber = await generateOrderNumber();
 
@@ -61,10 +50,12 @@ export const POST = auth(async function (request) {
         price: i.price,
         quantity: i.quantity,
         unit: i.unit,
+        image: i.image,
       })),
       totalAmount: totalAmount,
-      status: "PENDING",
-      paymentMethod: paymentMethod,
+      status: ORDER_STATUS.PENDING,
+      paymentMethod: PAYMENT_METHOD.COD,
+      paymentStatus: PAYMENT_STATUS.PAYMENT_PENDING,
       address: {
         fullName: address.fullName,
         email: address.email,
@@ -84,6 +75,6 @@ export const POST = auth(async function (request) {
       { status: 201 }
     );
   } catch (error) {
-    return new NextResponse(`Unexpected error: ${error}`, { status: 500 });
+    return handleGenericError(error);
   }
 });
