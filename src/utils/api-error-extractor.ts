@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ApiError, ApiErrorResponse } from "../api/errors";
+import { ApiError, ApiErrorResponse } from "@/types/api/errors";
 
 export function extractApiError(err: unknown): ApiError | null {
   if (axios.isAxiosError<ApiErrorResponse>(err)) {
