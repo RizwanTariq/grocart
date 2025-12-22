@@ -2,6 +2,9 @@ import { auth } from "@/auth";
 import { uploadOnCloudinary } from "@/libs/cloudinary";
 import connectDB from "@/libs/db";
 import ProductModel from "@/models/products.model";
+import { assertUser } from "@/server/auth/assertUser";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 import { convertId } from "@/types";
 import { USER_ROLE } from "@/types/enums";
 import { NextResponse } from "next/server";
@@ -9,16 +12,17 @@ import { NextResponse } from "next/server";
 export const POST = auth(async function (request) {
   try {
     await connectDB();
-    if (!request.auth) {
-      return new NextResponse("Unauthenticated", {
-        status: 401,
-      });
-    }
+    const user = await assertUser(request);
 
-    if (request.auth?.user?.role !== USER_ROLE.ADMIN) {
-      return new NextResponse("Unauthorized: Only admin can add product", {
-        status: 401,
-      });
+    if (user.role !== USER_ROLE.ADMIN) {
+      throw NextResponse.json(
+        prepareErrorResponse(
+          "UNAUTHORIZED",
+          "Unauthorized: Only admin can add product"
+        ),
+
+        { status: 401 }
+      );
     }
     const formData = await request.formData();
     const name = formData.get("name")?.toString();
@@ -39,7 +43,10 @@ export const POST = auth(async function (request) {
       !countInStock ||
       !image
     ) {
-      return new NextResponse("Missing required fields", { status: 400 });
+      throw NextResponse.json(
+        prepareErrorResponse("BAD_REQUEST", "Missing required fields"),
+        { status: 400 }
+      );
     }
     const imgeUrl = await uploadOnCloudinary(image);
 
@@ -57,6 +64,6 @@ export const POST = auth(async function (request) {
       status: 201,
     });
   } catch (error) {
-    return new NextResponse(`Unexpected error: ${error}`, { status: 500 });
+    return handleGenericError(error);
   }
 });

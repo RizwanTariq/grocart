@@ -1,4 +1,6 @@
 import { auth } from "@/auth";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 import { NextResponse } from "next/server";
 
 type ReverseGeocodeRequest = {
@@ -11,8 +13,11 @@ export const POST = auth(async function (req: Request) {
     const { lat, lng }: ReverseGeocodeRequest = await req.json();
 
     if (!lat || !lng) {
-      return NextResponse.json(
-        { error: "Latitude and longitude are required" },
+      throw NextResponse.json(
+        prepareErrorResponse(
+          "BAD_REQUEST",
+          "Latitude and longitude are required"
+        ),
         { status: 400 }
       );
     }
@@ -27,7 +32,10 @@ export const POST = auth(async function (req: Request) {
     });
 
     if (!res.ok) {
-      throw new Error("Geocoding failed");
+      throw NextResponse.json(
+        prepareErrorResponse("INTERNAL_SERVER_ERROR", "Geocoding failed"),
+        { status: 500 }
+      );
     }
 
     const data = await res.json();
@@ -37,9 +45,6 @@ export const POST = auth(async function (req: Request) {
       address: data.address,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: `Unable to fetch address details. ${error}` },
-      { status: 500 }
-    );
+    return handleGenericError(error);
   }
 });

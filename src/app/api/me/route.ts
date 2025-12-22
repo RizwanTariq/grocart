@@ -4,14 +4,17 @@ import { auth } from "@/auth";
 import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
 import { convertId } from "@/types";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 
 export const GET = auth(async function (request) {
   try {
     await connectDB();
-    if (!request.auth) {
-      return new NextResponse("Unauthenticated", {
-        status: 401,
-      });
+    if (!request.auth?.user?.id) {
+      throw NextResponse.json(
+        prepareErrorResponse("UNAUTHENTICATED", "User not found"),
+        { status: 401 }
+      );
     }
     const user = await UserModel.findOne({
       email: request.auth?.user?.email,
@@ -20,13 +23,14 @@ export const GET = auth(async function (request) {
       .lean();
 
     if (!user) {
-      return new NextResponse("User not found", {
-        status: 404,
-      });
+      throw NextResponse.json(
+        prepareErrorResponse("UNAUTHENTICATED", "User not found"),
+        { status: 401 }
+      );
     }
 
     return NextResponse.json(convertId(user), { status: 200 });
   } catch (error) {
-    return new NextResponse(`Unexpected error: ${error}`, { status: 500 });
+    return handleGenericError(error);
   }
 });

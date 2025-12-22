@@ -1,5 +1,7 @@
 import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
+import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 import { convertId } from "@/types";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,23 +13,32 @@ export async function POST(request: NextRequest) {
     const { name, email, password } = await request.json();
 
     if (!name || !email || !password) {
-      return NextResponse.json(
-        { message: "Missing required fields" },
-        { status: 400 }
+      throw NextResponse.json(
+        prepareErrorResponse("BAD_REQUEST", "Missing required fields"),
+        {
+          status: 400,
+        }
       );
     }
 
     const user = await UserModel.findOne({ email });
     if (user) {
-      return NextResponse.json(
-        { message: "Email already exists" },
-        { status: 400 }
+      throw NextResponse.json(
+        prepareErrorResponse("BAD_REQUEST", "Email already exists"),
+        {
+          status: 400,
+        }
       );
     }
     if (password.length < 8) {
-      return NextResponse.json(
-        { message: "Password must be at least 8 characters long" },
-        { status: 400 }
+      throw NextResponse.json(
+        prepareErrorResponse(
+          "BAD_REQUEST",
+          "Password must be at least 8 characters long"
+        ),
+        {
+          status: 400,
+        }
       );
     }
 
@@ -43,10 +54,6 @@ export async function POST(request: NextRequest) {
       status: 201,
     });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: "Internal Server Error", error },
-      { status: 500 }
-    );
+    return handleGenericError(error);
   }
 }
