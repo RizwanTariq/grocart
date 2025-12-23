@@ -1,4 +1,4 @@
-import OrdersContainer from "./_components/OrdersContainer";
+import OrdersWrapper from "./_components/OrdersWrapper";
 import { convertIds, IOrder } from "@/types";
 import { auth } from "@/auth";
 import OrderModel from "@/models/order.model";
@@ -37,7 +37,7 @@ const OrdersPage = async () => {
     },
     { $unset: ["user", "items.product"] }, // removes user and items.product
   ]);
-  return <OrdersContainer orders={convertIds(orders) as IOrder[]} />;
+  return <OrdersWrapper orders={convertIds(orders) as IOrder[]} />;
 };
 
 export default OrdersPage;

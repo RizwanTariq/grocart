@@ -1,8 +1,16 @@
 import { motion } from "motion/react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-function Header() {
+function Header({
+  title,
+  Icon,
+  subtitle,
+}: {
+  title: string;
+  Icon?: LucideIcon;
+  subtitle: string;
+}) {
   const router = useRouter();
   return (
     <motion.div
@@ -21,9 +29,18 @@ function Header() {
             <ArrowLeft className="w-5 h-5 text-gray-700" strokeWidth={2.5} />
           </motion.button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Checkout</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Complete your order in a few simple steps
+            <div className="flex items-center gap-3 mb-2">
+              {Icon && (
+                <div className="w-8 h-8 bg-linear-to-br from-rose-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+              )}
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                {title}
+              </h1>
+            </div>
+            <p className="text-sm md:text-base text-gray-500 mt-0.5">
+              {subtitle}
             </p>
           </div>
         </div>

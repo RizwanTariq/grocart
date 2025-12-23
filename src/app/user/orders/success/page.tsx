@@ -1,4 +1,4 @@
-import OrderPlacedCard from "../../checkout/_components/OrderPlacedCard";
+import OrderPlacedCard from "../../_components/OrderPlacedCard";
 
 async function OrderSuccessPage({
   searchParams,

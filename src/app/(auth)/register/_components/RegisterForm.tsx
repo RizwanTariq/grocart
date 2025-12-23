@@ -20,6 +20,7 @@ import { cn } from "@/utils/cn";
 import AuthInput from "@/components/features/auth/AuthInput";
 import Divider from "@/components/common/Divider";
 import GoogleLogin from "@/components/features/auth/GoogleLogin";
+import toast from "react-hot-toast";
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -38,7 +39,7 @@ function RegisterForm() {
       setError("");
       try {
         await registerAction(data); // ⬅ server action
-        console.log("User registered!");
+        toast.success("Your Account has been created successfully!");
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);

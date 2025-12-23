@@ -116,7 +116,10 @@ export const POST = auth(async function (req, context) {
       );
     }
 
-    return NextResponse.json({ redirectUrl: session.url });
+    return NextResponse.json(
+      { paymentRedirectUrl: session.url },
+      { status: 200 }
+    );
   } catch (error) {
     if (error instanceof NextResponse) {
       return error;

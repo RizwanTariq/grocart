@@ -17,6 +17,7 @@ import TextField from "./_components/TextField";
 import { categories, units } from "@/constants/product";
 import { useRouter } from "next/navigation";
 import { PRODUCT_CATEGORY, PRODUCT_UNIT } from "@/types/enums";
+import toast from "react-hot-toast";
 
 function AddProductPage() {
   const router = useRouter();
@@ -66,8 +67,11 @@ function AddProductPage() {
     startTransition(async () => {
       setError("");
       try {
-        const result = await axios.post("/api/admin/add-product", formData);
-        console.log(result.data as IProduct);
+        const result: { data: IProduct } = await axios.post(
+          "/api/admin/add-product",
+          formData
+        );
+        toast.success(`${result.data.name} added successfully!}`);
         resetForm();
       } catch (error) {
         if (error instanceof Error) {

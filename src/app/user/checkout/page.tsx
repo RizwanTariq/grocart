@@ -5,9 +5,9 @@ import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
 import AddressForm, { FormData } from "./_components/AddressForm";
 import PaymentSelector from "./_components/PaymentSelector";
-import Header from "./_components/Header";
+import Header from "../_components/Header";
 import OrderSummary from "./_components/OrderSummary";
-import OrderPlacedCard from "./_components/OrderPlacedCard";
+import OrderPlacedCard from "../_components/OrderPlacedCard";
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 import useGeoLocation, { Coordinates } from "@/hooks/useGeoLocation";
@@ -15,6 +15,7 @@ import { PAYMENT_METHOD } from "@/types/enums";
 import useCart from "@/hooks/useCart";
 import { extractApiError } from "@/utils/api-error-extractor";
 import { useRouter } from "next/navigation";
+import { MapPin } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -179,7 +180,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header
+        title="Checkout"
+        Icon={MapPin}
+        subtitle="Complete your order in a few simple steps"
+      />
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Section - Forms */}

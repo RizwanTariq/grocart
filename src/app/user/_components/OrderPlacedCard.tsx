@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, LucideLoader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import useCart from "@/hooks/useCart";
@@ -74,7 +74,7 @@ function OrderPlacedCard({ orderId }: { orderId: string }) {
             We&apos;re processing it now. You can track your order in the{" "}
             <span
               className="font-semibold text-rose-600 cursor-pointer"
-              onClick={() => router.push("/user/orders")}
+              onClick={() => router.replace("/user/orders")}
             >
               Orders
             </span>{" "}
@@ -83,12 +83,16 @@ function OrderPlacedCard({ orderId }: { orderId: string }) {
         </p>
         <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-3 sm:mb-6">
           <p className="text-sm text-gray-500 mb-1">Order Number</p>
-          <p className="text-xl sm:text-2xl font-bold text-rose-600">
-            #{orderNumber}
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 flex justify-center items-center">
+            {orderNumber ? (
+              `#${orderNumber}`
+            ) : (
+              <LucideLoader className="w-5 h-5 animate-spin" />
+            )}
           </p>
         </div>
         <button
-          onClick={() => router.push("/user/products")}
+          onClick={() => router.replace("/user/products")}
           className="w-full bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white py-2 sm:py-3 rounded-xl font-medium hover:shadow-lg transition-all cursor-pointer text-sm sm:text-base"
         >
           Continue Shopping

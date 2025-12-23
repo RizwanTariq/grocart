@@ -32,8 +32,6 @@ export async function POST(request: NextRequest) {
 
   await connectDB();
 
-  console.log(event, "stripe event-----------------");
-
   try {
     switch (event.type) {
       /**
@@ -87,7 +85,6 @@ export async function POST(request: NextRequest) {
       case "payment_intent.payment_failed":
       case "payment_intent.canceled": {
         const intent = event.data.object as Stripe.PaymentIntent;
-        console.log(intent, "Intent ----");
 
         // payment_intent does NOT always carry metadata
         const orderId = intent.metadata?.orderId;
