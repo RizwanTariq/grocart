@@ -136,7 +136,7 @@ function SideBar({ user, closeMobileMenu }: Props) {
                 Admin Actions
               </p>
               <SidebarLink
-                pathToGo="/admin/add-product"
+                pathToGo="/admin/products/add"
                 label="Add Product"
                 icon={PlusCircle}
                 closeMobileMenu={closeMobileMenu}

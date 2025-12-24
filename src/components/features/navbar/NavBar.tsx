@@ -90,7 +90,7 @@ function NavBar() {
           {isAdmin && (
             <>
               <NavLink
-                pathToGo="/admin/add-product"
+                pathToGo="/admin/products/add"
                 label="Add Product"
                 icon={PlusCircle}
               />

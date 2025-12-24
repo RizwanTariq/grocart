@@ -112,6 +112,7 @@ function ProductCard({ product }: { product: IProduct }) {
           fill
           className="object-contain p-8 group-hover:scale-105 transition-transform duration-500 ease-out"
           sizes="(max-width: 768px) 30vw, 50vw"
+          loading="eager"
         />
 
         {/* In Cart Overlay Badge */}

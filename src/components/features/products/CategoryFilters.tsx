@@ -1,5 +1,6 @@
 "use client";
 
+import { PRODUCT_CATEGORY_WITH_ALL } from "@/types/enums";
 import { motion } from "motion/react";
 
 function CategoryFilters({
@@ -9,8 +10,8 @@ function CategoryFilters({
   showFilters,
 }: {
   categories: Array<{ id: string; label: string }>;
-  selectedCategory: string;
-  onSelectCategory: (id: string) => void;
+  selectedCategory: PRODUCT_CATEGORY_WITH_ALL;
+  onSelectCategory: (id: PRODUCT_CATEGORY_WITH_ALL) => void;
   showFilters: boolean;
 }) {
   return (
@@ -29,7 +30,9 @@ function CategoryFilters({
             transition={{ duration: 0.3, delay: index * 0.02 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onSelectCategory(category.id)}
+            onClick={() =>
+              onSelectCategory(category.id as PRODUCT_CATEGORY_WITH_ALL)
+            }
             className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all shadow-sm ${
               selectedCategory === category.id
                 ? "bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-rose-200"

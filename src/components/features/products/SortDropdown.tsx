@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from "motion/react";
 
-import { SORT_OPTIONS, SortOptionId } from "./ProductsContainer";
 import { ChevronDown } from "lucide-react";
+import { SORT_OPTIONS_USER, SortOptionId } from "@/constants/filters";
 
 function SortDropdown({
   isOpen,
@@ -47,7 +47,7 @@ function SortDropdown({
               transition={{ duration: 0.2 }}
               className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-full sm:w-56 bg-white rounded-lg sm:rounded-xl shadow-xl border border-gray-100 py-2 z-20"
             >
-              {SORT_OPTIONS.map((option) => (
+              {SORT_OPTIONS_USER.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => onSelect(option.id)}

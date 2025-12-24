@@ -3,17 +3,17 @@
 import { motion } from "motion/react";
 import { SlidersHorizontal } from "lucide-react";
 
-import { SortOptionId } from "./ProductsContainer";
+import { SortOptionId } from "@/constants/filters";
+
 import SearchInput from "./SearchInput";
 import SortDropdown from "./SortDropdown";
+import { useState } from "react";
 
 function SearchAndFiltersBar({
   searchQuery,
   onSearchChange,
   onClearSearch,
   onToggleFilters,
-  showSortDropdown,
-  onToggleSortDropdown,
   selectedSortLabel,
   sortBy,
   onSortSelect,
@@ -22,12 +22,15 @@ function SearchAndFiltersBar({
   onSearchChange: (value: string) => void;
   onClearSearch: () => void;
   onToggleFilters: () => void;
-  showSortDropdown: boolean;
-  onToggleSortDropdown: () => void;
   selectedSortLabel: string | undefined;
   sortBy: SortOptionId;
   onSortSelect: (id: SortOptionId) => void;
 }) {
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const handleSelect = (id: SortOptionId) => {
+    onSortSelect(id);
+    setShowSortDropdown(false);
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -55,10 +58,10 @@ function SearchAndFiltersBar({
         <div className="flex-1 sm:flex-none">
           <SortDropdown
             isOpen={showSortDropdown}
-            onToggle={onToggleSortDropdown}
+            onToggle={() => setShowSortDropdown((prev) => !prev)}
             selectedLabel={selectedSortLabel}
             selectedId={sortBy}
-            onSelect={onSortSelect}
+            onSelect={handleSelect}
           />
         </div>
       </div>

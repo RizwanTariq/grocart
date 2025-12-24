@@ -67,7 +67,7 @@ function AddProductPage() {
       setError("");
       try {
         const result: { data: IProduct } = await axios.post(
-          "/api/admin/add-product",
+          "/api/admin/products/add",
           formData
         );
         toast.success(`${result.data.name} added successfully!}`);

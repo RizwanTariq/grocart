@@ -1,4 +1,8 @@
-import { PRODUCT_UNIT, PRODUCT_CATEGORY } from "@/types/enums";
+import {
+  PRODUCT_UNIT,
+  PRODUCT_CATEGORY,
+  PRODUCT_CATEGORY_WITH_ALL,
+} from "@/types/enums";
 
 export const units = [
   { id: PRODUCT_UNIT.KG, label: "Kg" },
@@ -45,6 +49,11 @@ export const categories = [
   { id: PRODUCT_CATEGORY.FROZEN, label: "Frozen" },
   { id: PRODUCT_CATEGORY.OTHERS, label: "Others" },
 ];
+
+export const ALL_CATEGORY = {
+  id: PRODUCT_CATEGORY_WITH_ALL.ALL,
+  label: "All Products",
+};
 
 export const CATEGORY_LABELS = Object.fromEntries(
   categories.map((c) => [c.id, c.label])
