@@ -16,7 +16,7 @@ import QuantitySelector from "@/components/QuantitySelector";
 import IconButton from "@/components/common/IconButton";
 import CheckoutSection from "@/components/features/cart/CheckoutSection";
 import { useRouter } from "next/navigation";
-import Header from "../_components/Header";
+import Header from "@/components/common/PageHeader";
 
 function CartPage() {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity } =

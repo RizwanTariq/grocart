@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { signOut } from "next-auth/react";
+
 import {
   Boxes,
   ClipboardList,
@@ -16,19 +15,18 @@ import {
 } from "lucide-react";
 
 import { IUser } from "@/types";
+import { useStore } from "@/store/useStore";
+import { USER_ROLE } from "@/types/enums";
 
 import ProfileDropdown from "./ProfileDropdown";
-import Tooltip from "../../common/Tooltip";
 import CartButton from "./CartButton";
 import SideBar from "./SideBar";
 import CartSideBar from "./CartSideBar";
-import { useStore } from "@/store/useStore";
-import { USER_ROLE } from "@/types/enums";
+import NavLink from "./NavLink";
 
 function NavBar() {
   const [mounted, setMounted] = useState(false);
   const user = useStore((s) => s.user);
-  const pathname = usePathname();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -36,14 +34,10 @@ function NavBar() {
   }, []);
 
   const isUser = user?.role === USER_ROLE.USER;
+  const isAdmin = user?.role === USER_ROLE.ADMIN;
 
   const [mobileMenu, setMobileMenu] = useState(false);
   const [cartMenu, setCartMenu] = useState(false);
-
-  async function handleLogOut() {
-    setMobileMenu((pre) => !pre);
-    await signOut({ redirect: true, redirectTo: "/login" });
-  }
 
   const sideBar = mounted
     ? createPortal(
@@ -51,8 +45,7 @@ function NavBar() {
           {mobileMenu ? (
             <SideBar
               user={user as IUser}
-              handleLogOut={handleLogOut}
-              setMobileMenu={setMobileMenu}
+              closeMobileMenu={() => setMobileMenu(false)}
             />
           ) : null}
         </AnimatePresence>,
@@ -83,32 +76,39 @@ function NavBar() {
         </Link>
 
         {/* Navigation Links for Users */}
-        {isUser && (
-          <nav className="hidden sm:flex items-center gap-2">
-            <Link
-              href="/user"
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
-                pathname === "/user"
-                  ? "bg-white text-rose-600 shadow-md"
-                  : "text-white/90 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              <Home className="w-5 h-5" strokeWidth={2.5} />
-              <span>Home</span>
-            </Link>
-            <Link
-              href="/user/products"
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
-                pathname === "/user/products"
-                  ? "bg-white text-rose-600 shadow-md"
-                  : "text-white/90 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              <Store className="w-5 h-5" strokeWidth={2.5} />
-              <span>Products</span>
-            </Link>
-          </nav>
-        )}
+        <nav className="hidden sm:flex items-center gap-2">
+          {isUser && (
+            <>
+              <NavLink pathToGo="/user" label="Home" icon={Home} />
+              <NavLink
+                pathToGo="/user/products"
+                label="Products"
+                icon={Store}
+              />
+            </>
+          )}
+          {isAdmin && (
+            <>
+              <NavLink
+                pathToGo="/admin/add-product"
+                label="Add Product"
+                icon={PlusCircle}
+              />
+
+              <NavLink
+                pathToGo="/admin/products"
+                label="View Products"
+                icon={Boxes}
+              />
+
+              <NavLink
+                pathToGo="/admin/orders"
+                label="Manage Orders"
+                icon={ClipboardList}
+              />
+            </>
+          )}
+        </nav>
       </div>
 
       <div className="flex items-center gap-3 md:gap-5">
@@ -117,34 +117,7 @@ function NavBar() {
             <CartButton handleClick={() => setCartMenu((pre) => !pre)} />
           </>
         )}
-        {user?.role === USER_ROLE.ADMIN && (
-          <div className="hidden sm:flex items-center gap-3">
-            <Tooltip tooltip="Add Product">
-              <Link
-                href="/admin/add-product"
-                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
-              >
-                <PlusCircle className="w-5 h-5 text-rose-700" />
-              </Link>
-            </Tooltip>
-            <Tooltip tooltip="View Products">
-              <Link
-                href="/products"
-                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
-              >
-                <Boxes className="w-5 h-5 text-rose-700" />
-              </Link>
-            </Tooltip>
-            <Tooltip tooltip="Manage Orders">
-              <Link
-                href="/orders"
-                className="bg-white w-9 h-9 flex items-center justify-center rounded-full shadow-md hover:bg-rose-100 shadow-black/30 hover:scale-105 transition-all"
-              >
-                <ClipboardList className="w-5 h-5 text-rose-700" />
-              </Link>
-            </Tooltip>
-          </div>
-        )}
+
         <div
           className="sm:hidden bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md shadow-black/30 hover:scale-105 transition-all cursor-pointer"
           onClick={() => setMobileMenu((pre) => !pre)}

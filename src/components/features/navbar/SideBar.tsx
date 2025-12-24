@@ -3,7 +3,6 @@
 import {
   Boxes,
   ClipboardList,
-  LogOut,
   Package2,
   PlusCircle,
   ShoppingCart,
@@ -14,26 +13,26 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 import { IUser } from "@/types";
 import { USER_ROLE } from "@/types/enums";
+import SidebarLink from "./SidebarLink";
+import LogoutButton from "./LogoutButton";
 
 type Props = {
   user: IUser;
-  handleLogOut(): Promise<void>;
-  setMobileMenu: (value: boolean) => void;
+  closeMobileMenu: () => void;
 };
 
-function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
-  const pathname = usePathname();
+function SideBar({ user, closeMobileMenu }: Props) {
   const isAdmin = user.role === USER_ROLE.ADMIN;
   const isUser = user.role === USER_ROLE.USER;
 
-  const handleLinkClick = () => {
-    setMobileMenu(false);
-  };
+  async function handleLogOut() {
+    closeMobileMenu();
+    await signOut({ redirect: true, redirectTo: "/login" });
+  }
 
   return (
     <motion.div
@@ -56,7 +55,7 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
           </h1>
           <button
             className="text-white bg-white/20 hover:bg-white/30 rounded-full p-2 transition-all"
-            onClick={() => setMobileMenu(false)}
+            onClick={() => closeMobileMenu()}
           >
             <X className="w-5 h-5" strokeWidth={2.5} />
           </button>
@@ -96,52 +95,37 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
               <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
                 Navigation
               </p>
-              <Link
-                href="/user"
-                onClick={handleLinkClick}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                  pathname === "/user"
-                    ? "bg-white text-rose-600 shadow-md font-semibold"
-                    : "bg-white/10 hover:bg-white/20 text-white"
-                }`}
-              >
-                <Home className="w-5 h-5" />
-                <span className="text-sm">Home</span>
-              </Link>
-              <Link
-                href="/user/products"
-                onClick={handleLinkClick}
-                className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                  pathname === "/user/products"
-                    ? "bg-white text-rose-600 shadow-md font-semibold"
-                    : "bg-white/10 hover:bg-white/20 text-white"
-                }`}
-              >
-                <Store className="w-5 h-5" />
-                <span className="text-sm">Products</span>
-              </Link>
+
+              <SidebarLink
+                pathToGo="/user"
+                label="Home"
+                icon={Home}
+                closeMobileMenu={closeMobileMenu}
+              />
+              <SidebarLink
+                pathToGo="/user/products"
+                label="Products"
+                icon={Store}
+                closeMobileMenu={closeMobileMenu}
+              />
 
               <div className="my-4 border-t border-white/20" />
 
               <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
                 My Account
               </p>
-              <Link
-                href="/user/cart"
-                onClick={handleLinkClick}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <span className="text-sm">My Cart</span>
-              </Link>
-              <Link
-                href="/user/orders"
-                onClick={handleLinkClick}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
-              >
-                <Package2 className="w-5 h-5" />
-                <span className="text-sm">My Orders</span>
-              </Link>
+              <SidebarLink
+                pathToGo="/user/cart"
+                label="My Cart"
+                icon={ShoppingCart}
+                closeMobileMenu={closeMobileMenu}
+              />
+              <SidebarLink
+                pathToGo="/user/orders"
+                label="My Orders"
+                icon={Package2}
+                closeMobileMenu={closeMobileMenu}
+              />
             </>
           )}
 
@@ -151,30 +135,24 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
               <p className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">
                 Admin Actions
               </p>
-              <Link
-                href="/admin/add-product"
-                onClick={handleLinkClick}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
-              >
-                <PlusCircle className="w-5 h-5" />
-                <span className="text-sm">Add Product</span>
-              </Link>
-              <Link
-                href="/products"
-                onClick={handleLinkClick}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
-              >
-                <Boxes className="w-5 h-5" />
-                <span className="text-sm">View Products</span>
-              </Link>
-              <Link
-                href="/orders"
-                onClick={handleLinkClick}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
-              >
-                <ClipboardList className="w-5 h-5" />
-                <span className="text-sm">Manage Orders</span>
-              </Link>
+              <SidebarLink
+                pathToGo="/admin/add-product"
+                label="Add Product"
+                icon={PlusCircle}
+                closeMobileMenu={closeMobileMenu}
+              />
+              <SidebarLink
+                pathToGo="/admin/products"
+                label="View Products"
+                icon={Boxes}
+                closeMobileMenu={closeMobileMenu}
+              />
+              <SidebarLink
+                pathToGo="/admin/orders"
+                label="Manage Orders"
+                icon={ClipboardList}
+                closeMobileMenu={closeMobileMenu}
+              />
             </>
           )}
         </div>
@@ -182,13 +160,7 @@ function SideBar({ user, setMobileMenu, handleLogOut }: Props) {
 
       {/* Logout Button */}
       <div className="px-6 pb-6 pt-4 border-t border-white/10">
-        <button
-          className="flex items-center justify-center gap-3 w-full px-4 py-3 bg-red-500/30 hover:bg-red-500/50 hover:scale-105 active:scale-95 rounded-xl text-white font-medium transition-all shadow-lg cursor-pointer"
-          onClick={handleLogOut}
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Log Out</span>
-        </button>
+        <LogoutButton handleLogOut={handleLogOut} />
       </div>
     </motion.div>
   );

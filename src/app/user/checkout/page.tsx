@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useUser } from "@/hooks/useUser";
 import AddressForm, { FormData } from "./_components/AddressForm";
 import PaymentSelector from "./_components/PaymentSelector";
-import Header from "../_components/Header";
+import Header from "@/components/common/PageHeader";
 import OrderSummary from "./_components/OrderSummary";
 import OrderPlacedCard from "../_components/OrderPlacedCard";
 import axios from "axios";

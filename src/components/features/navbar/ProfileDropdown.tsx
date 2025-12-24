@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Package2, ShoppingCart, User } from "lucide-react";
+import { Package2, ShoppingCart, User } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +10,7 @@ import { signOut } from "next-auth/react";
 
 import { IUser } from "@/types";
 import { USER_ROLE } from "@/types/enums";
+import LogoutButton from "./LogoutButton";
 
 function ProfileDropdown({ user }: { user: IUser }) {
   const [open, setOpen] = useState(false);
@@ -28,9 +29,9 @@ function ProfileDropdown({ user }: { user: IUser }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  function handleLogOut() {
+  async function handleLogOut() {
     setOpen((pre) => !pre);
-    signOut({ redirect: true, redirectTo: "/login" });
+    await signOut({ redirect: true, redirectTo: "/login" });
   }
   return (
     <div className="relative hidden sm:block" ref={dropdownCont}>
@@ -102,13 +103,7 @@ function ProfileDropdown({ user }: { user: IUser }) {
                 </Link>
               </>
             )}
-            <button
-              className="flex items-center gap-3 w-full px-4 py-2.5 bg-rose-500 hover:bg-rose-600 rounded-xl text-white font-medium transition-all cursor-pointer"
-              onClick={handleLogOut}
-            >
-              <LogOut className="h-5 w-5 text-white" />
-              Log Out
-            </button>
+            <LogoutButton handleLogOut={handleLogOut} isNav={true} />
           </motion.div>
         )}
       </AnimatePresence>

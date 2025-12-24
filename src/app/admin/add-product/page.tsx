@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { ArrowLeft, LoaderCircle, PlusIcon } from "lucide-react";
+import { CirclePlus, LoaderCircle, PlusIcon } from "lucide-react";
 import { motion } from "motion/react";
 import axios from "axios";
 
@@ -15,12 +15,11 @@ import ImageUploadField, {
 import TextArea from "./_components/TextArea";
 import TextField from "./_components/TextField";
 import { categories, units } from "@/constants/product";
-import { useRouter } from "next/navigation";
 import { PRODUCT_CATEGORY, PRODUCT_UNIT } from "@/types/enums";
 import toast from "react-hot-toast";
+import PageHeader from "@/components/common/PageHeader";
 
 function AddProductPage() {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
@@ -85,28 +84,11 @@ function AddProductPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05, x: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors cursor-pointer"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-700" strokeWidth={2.5} />
-            </motion.button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                Add Your Product
-              </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                Fill the fields below to add your product
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Add Product"
+        Icon={CirclePlus}
+        subtitle="Fill the fields below to add your product"
+      />
       <div className="flex flex-col items-center justify-center py-10 px-4 relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

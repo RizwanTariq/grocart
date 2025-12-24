@@ -81,7 +81,7 @@ function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           key={activeSlide}
-          className="flex flex-col items-center justify-center gap-6 max-w-3xl"
+          className="flex flex-col items-center justify-center gap-3 sm:gap-6 max-w-3xl"
         >
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-full shadow-lg">
             {slides[activeSlide - 1].Icon}
@@ -108,7 +108,7 @@ function HeroSection() {
           </motion.button>
         </motion.div>
       </div>
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2.5">
+      <div className="absolute bottom-3  sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-2.5">
         {slides.map((_) => (
           <button
             key={_.id}

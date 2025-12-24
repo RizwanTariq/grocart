@@ -6,7 +6,7 @@ import { MapPin, Phone, ShoppingBag, Navigation, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { IOrder } from "@/types";
 import { useSearchParams } from "next/navigation";
-import Header from "../../_components/Header";
+import Header from "@/components/common/PageHeader";
 import NoOrdersCard from "./NoOrdersCard";
 import { totalItems } from "./utils";
 import OrderCard from "./OrderCard";
