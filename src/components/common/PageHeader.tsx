@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "motion/react";
 import { ArrowLeft, LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";

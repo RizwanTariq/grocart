@@ -1,26 +1,37 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import Image from "next/image";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { Upload, X, ImageIcon } from "lucide-react";
 
 export type ImageUploadFieldRef = {
   reset: () => void;
 };
+
 type Props = {
   currentImage: Blob | null;
   onCurrentImage: (image: Blob | null) => void;
+  existingImageUrl?: string | null; // NEW: existing image URL prop
 };
 
 const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
-  ({ onCurrentImage }, ref) => {
+  ({ onCurrentImage, existingImageUrl }, ref) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+
+    // NEW: Initialize preview with existing URL
+    useEffect(() => {
+      if (existingImageUrl && !preview) {
+        setPreview(existingImageUrl);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [existingImageUrl]);
 
     // --- EXPOSE API TO PARENT ---
     useImperativeHandle(ref, () => ({
       reset() {
-        setPreview(null);
+        // NEW: Reset to existing URL if available, otherwise null
+        setPreview(existingImageUrl || null);
         onCurrentImage(null);
 
         const input = document.getElementById("image") as HTMLInputElement;
@@ -80,11 +91,17 @@ const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
     };
 
     const removeImage = () => {
-      setPreview(null);
+      // NEW: Reset to existing URL if available, otherwise null
+      setPreview(existingImageUrl || null);
+      onCurrentImage(null);
+
       const input = document.getElementById("image") as HTMLInputElement;
-      if (input) {
-        input.value = "";
-      }
+      const input2 = document.getElementById(
+        "image-change"
+      ) as HTMLInputElement;
+
+      if (input) input.value = "";
+      if (input2) input2.value = "";
     };
 
     return (
@@ -113,7 +130,7 @@ const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
                 name="image"
                 id="image"
                 accept="image/*"
-                required
+                required={!existingImageUrl}
                 onChange={handleImageChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
@@ -148,7 +165,10 @@ const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
                     <div className="flex items-center gap-2 text-white">
                       <ImageIcon className="w-5 h-5" />
                       <span className="text-sm font-medium">
-                        Image uploaded
+                        Image{" "}
+                        {existingImageUrl && preview === existingImageUrl
+                          ? "loaded"
+                          : "uploaded"}
                       </span>
                     </div>
                   </div>
@@ -159,6 +179,11 @@ const ImageUploadField = forwardRef<ImageUploadFieldRef, Props>(
                 type="button"
                 onClick={removeImage}
                 className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                title={
+                  existingImageUrl
+                    ? "Remove (will revert to original)"
+                    : "Remove image"
+                }
               >
                 <X className="w-5 h-5" />
               </button>

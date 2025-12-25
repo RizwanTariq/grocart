@@ -105,7 +105,7 @@ function ProductCard({
 
         {/* Actions */}
         <div className="space-y-2">
-          <Link href={`/admin/edit-product/${product._id}`} className="block">
+          <Link href={`/admin/products/${product._id}`} className="block">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
