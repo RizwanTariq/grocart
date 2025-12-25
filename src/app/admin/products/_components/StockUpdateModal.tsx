@@ -2,15 +2,15 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { IProduct } from "@/types";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 function StockUpdateModal({
   product,
   onClose,
-  onUpdate,
 }: {
   product: IProduct;
   onClose: () => void;
-  onUpdate: (productId: string, newStock: number) => Promise<void>;
 }) {
   const [stockValue, setStockValue] = useState(product.countInStock);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -22,7 +22,15 @@ function StockUpdateModal({
   const handleSubmit = async () => {
     try {
       setIsUpdating(true);
-      await onUpdate(product._id, stockValue);
+      const formData = new FormData();
+
+      formData.append("countInStock", stockValue as unknown as string);
+
+      const result: { data: IProduct } = await axios.patch(
+        `/api/admin/products/${product._id}/update-stock`,
+        formData
+      );
+      toast.success(`${result.data.name} stock updated successfully!}`);
       onClose();
     } catch (error) {
       console.error("Failed to update stock:", error);
@@ -84,7 +92,7 @@ function StockUpdateModal({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleQuickAdjust(delta)}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
                   delta < 0
                     ? "bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200"
                     : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200"
@@ -140,7 +148,7 @@ function StockUpdateModal({
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
             disabled={isUpdating}
-            className="flex-1 px-4 py-3 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-all disabled:opacity-50"
+            className="flex-1 px-4 py-3 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-all disabled:opacity-50 cursor-pointer"
           >
             Cancel
           </motion.button>
@@ -149,7 +157,7 @@ function StockUpdateModal({
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
             disabled={isUpdating || stockValue === product.countInStock}
-            className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 rounded-xl bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-semibold shadow-lg cursor-pointer hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUpdating ? "Updating..." : "Update Stock"}
           </motion.button>

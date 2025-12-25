@@ -50,16 +50,6 @@ function AdminProductsList({ products }: AdminProductsListProps) {
       setArchivingId(null);
     }
   }, []);
-  const handleStockUpdate = useCallback(
-    async (productId: string, stockValue: number) => {
-      try {
-      } catch (error) {
-        console.error("Failed to update stock:", error);
-      } finally {
-      }
-    },
-    []
-  );
 
   const lowStockCount = products.filter((p) => p.countInStock < 30).length;
   const outOfStockCount = products.filter((p) => p.countInStock === 0).length;
@@ -135,7 +125,6 @@ function AdminProductsList({ products }: AdminProductsListProps) {
             <StockUpdateModal
               product={stockModalProduct}
               onClose={() => setStockModalProduct(null)}
-              onUpdate={handleStockUpdate}
             />
           )}
         </AnimatePresence>

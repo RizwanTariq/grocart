@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
 import connectDB from "@/libs/db";
 import ProductModel from "@/models/products.model";
 import { assertUser } from "@/server/auth/assertUser";
@@ -38,10 +37,11 @@ export const PATCH = auth(async function (request, context) {
     }
 
     const product = await ProductModel.findByIdAndUpdate(
-      castIdToObjectId(productId),
+      productId,
       {
         countInStock,
-      }
+      },
+      { new: true }
     );
 
     if (!product) {
