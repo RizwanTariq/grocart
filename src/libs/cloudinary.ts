@@ -8,8 +8,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (file: Blob): Promise<string | null> => {
-  if (!file) return null;
+const uploadOnCloudinary = async (file: Blob): Promise<string | undefined> => {
+  if (!file) return undefined;
   try {
     const arryBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arryBuffer);
@@ -23,7 +23,7 @@ const uploadOnCloudinary = async (file: Blob): Promise<string | null> => {
           if (error) {
             reject(error);
           } else {
-            resolve(result?.secure_url ?? null);
+            resolve(result?.secure_url ?? undefined);
           }
         }
       );
@@ -31,7 +31,7 @@ const uploadOnCloudinary = async (file: Blob): Promise<string | null> => {
     });
   } catch (error) {
     console.error(error);
-    return null;
+    return undefined;
   }
 };
 

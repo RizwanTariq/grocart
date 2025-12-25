@@ -60,7 +60,7 @@ export const POST = auth(async function (request) {
       image: imgeUrl || "",
     });
 
-    return NextResponse.json(convertId(product), {
+    return NextResponse.json(convertId(product.toObject()), {
       status: 201,
     });
   } catch (error) {

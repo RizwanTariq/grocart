@@ -51,7 +51,7 @@ export const PATCH = auth(async function (request, context) {
       );
     }
 
-    return NextResponse.json(convertId(product), {
+    return NextResponse.json(convertId(product.toObject()), {
       status: 201,
     });
   } catch (error) {
