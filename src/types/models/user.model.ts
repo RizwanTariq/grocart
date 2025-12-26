@@ -14,6 +14,8 @@ export interface IUserDB {
     coordinates: [number, number];
   };
   lastActiveAt?: Date;
+  socketId?: string;
+  isOnline?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

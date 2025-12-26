@@ -12,6 +12,7 @@ export default auth(async function proxy(req) {
     "/api/auth",
     "/api/webhooks/stripe",
     "/api/cron",
+    "/api/socket",
   ];
   const authRoutes = ["/login", "/register"];
 

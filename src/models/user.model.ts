@@ -47,6 +47,18 @@ export const userSchema = new mongoose.Schema<IUserDB>(
       type: Date,
       index: true,
     },
+    socketId: {
+      type: String,
+      required: false,
+      index: true,
+      unique: true,
+      sparse: true,
+    },
+    isOnline: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,

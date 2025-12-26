@@ -5,6 +5,7 @@ import "./globals.css";
 import Provider from "@/Provider";
 import AuthStoreBootstrap from "@/AuthStoreBootstrap";
 import HotToaster from "@/components/HotToaster";
+import GeoLocationUpdater from "@/components/GeoLocationUpdater";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
           <AuthStoreBootstrap />
           {children}
           <HotToaster />
+          <GeoLocationUpdater />
         </Provider>
       </body>
     </html>
