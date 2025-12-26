@@ -3,7 +3,7 @@
 import { CirclePlus } from "lucide-react";
 import { motion } from "motion/react";
 
-import PageHeader from "@/components/common/PageHeader";
+import PageHeader from "@/components/common/NonNavHeader";
 import ProductForm from "../_components/ProductForm";
 
 function AddProductPage() {

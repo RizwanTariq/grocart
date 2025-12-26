@@ -2,7 +2,7 @@
 
 import { Pencil } from "lucide-react";
 
-import PageHeader from "@/components/common/PageHeader";
+import PageHeader from "@/components/common/NonNavHeader";
 
 import { IProduct } from "@/types";
 import ProductForm from "../../_components/ProductForm";

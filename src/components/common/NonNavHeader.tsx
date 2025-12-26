@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { ArrowLeft, LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-function PageHeader({
+function NonNavHeader({
   title,
   Icon,
   subtitle,
@@ -51,4 +51,4 @@ function PageHeader({
   );
 }
 
-export default PageHeader;
+export default NonNavHeader;

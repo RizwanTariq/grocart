@@ -10,10 +10,12 @@ import ResultsSummary from "@/components/features/products/ResultSummary";
 import EmptyState from "@/components/features/products/EmptyState";
 import { useProducts } from "@/components/features/products/useProducts";
 
-import PageHeader from "./PageHeader";
 import StatsGrid from "./StatsGrid";
 import StockUpdateModal from "./StockUpdateModal";
 import ProductCard from "./ProductCard";
+import { CirclePlus, Plus } from "lucide-react";
+import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
 
 interface AdminProductsListProps {
   products: IProduct[];
@@ -61,7 +63,22 @@ function AdminProductsList({ products }: AdminProductsListProps) {
   return (
     <div className="min-h-screen pt-28 sm:pt-32 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <PageHeader />
+        <PageHeader
+          icon={CirclePlus}
+          title="Product Inventory"
+          subTitle="Manage and monitor your product catalog"
+        >
+          <Link href="/admin/products/add">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="hidden sm:flex items-center gap-2 px-6 py-3.5 rounded-xl bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-200 cursor-pointer hover:shadow-xl hover:shadow-rose-300 transition-all "
+            >
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+              Add New Product
+            </motion.button>
+          </Link>
+        </PageHeader>
 
         <StatsGrid
           totalProducts={products.length}

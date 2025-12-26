@@ -10,8 +10,9 @@ import SearchAndFiltersBar from "@/components/features/products/SearchAndFilters
 import ResultsSummary from "@/components/features/products/ResultSummary";
 import EmptyState from "@/components/features/products/EmptyState";
 
-import PageHeader from "./PageHeader";
 import { useProducts } from "@/components/features/products/useProducts";
+import PageHeader from "@/components/PageHeader";
+import { Boxes } from "lucide-react";
 
 function ProductsContainer({ products }: { products: IProduct[] }) {
   const {
@@ -33,7 +34,11 @@ function ProductsContainer({ products }: { products: IProduct[] }) {
   return (
     <div className="min-h-screen pt-28 sm:pt-32 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <PageHeader />
+        <PageHeader
+          icon={Boxes}
+          title="Our Products"
+          subTitle="Discover fresh groceries and daily essentials"
+        />
 
         <SearchAndFiltersBar
           searchQuery={searchQuery}
