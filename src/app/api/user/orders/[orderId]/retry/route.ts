@@ -97,7 +97,7 @@ export const POST = auth(async function (req, context) {
     const updated = await OrderModel.updateOne(
       {
         _id: order._id,
-        stripeSessionId: null,
+        stripeSessionId: undefined,
         paymentStatus: PAYMENT_STATUS.PAYMENT_PENDING,
         status: ORDER_STATUS.PENDING,
         expiresAt: { $gt: new Date() },

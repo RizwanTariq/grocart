@@ -65,14 +65,14 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
       index: true,
       unique: true,
       sparse: true,
-      default: null,
+      default: undefined,
     },
     stripePaymentIntentId: {
       type: String,
       index: true,
       unique: true,
       sparse: true,
-      default: null,
+      default: undefined,
     },
     paymentAttempts: {
       type: Number,

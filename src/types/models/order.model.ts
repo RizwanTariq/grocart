@@ -24,8 +24,8 @@ export interface IOrderDB {
   status: ORDER_STATUS;
   paymentMethod: PAYMENT_METHOD;
   paymentStatus: PAYMENT_STATUS;
-  stripeSessionId?: string | null;
-  stripePaymentIntentId?: string | null;
+  stripeSessionId?: string | undefined;
+  stripePaymentIntentId?: string | undefined;
   paymentAttempts?: number;
   address: {
     fullName: string;

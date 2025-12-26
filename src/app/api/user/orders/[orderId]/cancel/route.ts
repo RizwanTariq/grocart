@@ -33,7 +33,7 @@ export const POST = auth(async (req, context) => {
 
     // Only clear stripeSessionId if session still exists
     if (order.stripeSessionId) {
-      order.stripeSessionId = null;
+      order.stripeSessionId = undefined;
       await order.save();
     }
 

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
             paymentStatus: PAYMENT_STATUS.PAYMENT_PAID,
             status: ORDER_STATUS.CONFIRMED,
             stripeSessionId: session.id,
-            stripePaymentIntentId: session.payment_intent || null,
+            stripePaymentIntentId: session.payment_intent || undefined,
             expiresAt: null,
           }
         );
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
             paymentStatus: PAYMENT_STATUS.PAYMENT_PENDING,
           },
           {
-            stripeSessionId: null, // allow for retry
+            stripeSessionId: undefined, // allow for retry
           }
         );
         break;
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
             // Do NOT mark failed
             // Allow retry
             stripePaymentIntentId: intent.id,
-            stripeSessionId: null,
+            stripeSessionId: undefined,
           }
         );
 
