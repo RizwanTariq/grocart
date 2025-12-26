@@ -9,14 +9,20 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useSession } from "next-auth/react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { updateUserAction } from "@/app/actions/updateUser";
 import { IUser } from "@/types";
 import { cn } from "@/utils/cn";
 import { USER_ROLE } from "@/types/enums";
 
-function EditRoleAndContact({ user }: { user: IUser }) {
+function EditRoleAndContact({
+  user,
+  adminExists,
+}: {
+  user: IUser;
+  adminExists: boolean;
+}) {
   const [roles, setRoles] = useState([
     { id: USER_ROLE.ADMIN, label: "Admin", Icon: UserCog2 },
     { id: USER_ROLE.USER, label: "Customer", Icon: User },
@@ -26,6 +32,13 @@ function EditRoleAndContact({ user }: { user: IUser }) {
       Icon: TruckElectric,
     },
   ]);
+  useEffect(() => {
+    if (adminExists) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRoles((pre) => pre.filter((r) => r.id !== USER_ROLE.ADMIN));
+    }
+  }, [adminExists]);
+
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "");
   const [contact, setContact] = useState<string | undefined>(
     user.contact || ""

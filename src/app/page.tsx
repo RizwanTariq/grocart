@@ -25,8 +25,10 @@ export default async function Home() {
   const user = convertId(dbUser) as IUser;
   const isIncompleteProfile = !user.contact || !user.role;
 
+  const adminExists = await UserModel.exists({ role: USER_ROLE.ADMIN });
+
   if (isIncompleteProfile) {
-    return <EditRoleAndContact user={user} />;
+    return <EditRoleAndContact user={user} adminExists={!!adminExists} />;
   }
   if (user.role === USER_ROLE.USER) {
     redirect("/user");

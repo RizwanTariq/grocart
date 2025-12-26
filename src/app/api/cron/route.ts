@@ -1,27 +1,15 @@
 import connectDB from "@/libs/db";
 import OrderModel from "@/models/order.model";
+import { assertOutsideReq } from "@/server/auth/assertOutsideReq";
 import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const cronSecret = req.headers.get("x-cron-secret");
-
-  if (cronSecret !== process.env.CRON_SECRET) {
-    throw NextResponse.json(
-      {
-        error: {
-          code: "UNAUTHORIZED",
-          message: "Unauthorized request",
-        },
-      },
-      { status: 401 }
-    );
-  }
-
   await connectDB();
 
   try {
+    await assertOutsideReq(req);
     const result = await OrderModel.updateMany(
       {
         expiresAt: { $lte: new Date() },

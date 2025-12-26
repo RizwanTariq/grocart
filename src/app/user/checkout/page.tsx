@@ -20,7 +20,12 @@ import { MapPin } from "lucide-react";
 export default function CheckoutPage() {
   const router = useRouter();
   const user = useUser();
-  const { getCurrentLocation } = useGeoLocation();
+  const {
+    getCurrentLocation,
+    position,
+    loading: isPositionLoading,
+    setPosition,
+  } = useGeoLocation();
   const { clearCart, cartItems, grossTotal, cartCount } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<PAYMENT_METHOD>(
@@ -28,11 +33,6 @@ export default function CheckoutPage() {
   );
   const [processing, setProcessing] = useState(false);
   const [orderPlacedId, setOrderPlacedId] = useState("");
-
-  const [position, setPosition] = useLocalStorageState<Coordinates | null>(
-    "checkout-position",
-    { defaultValue: null }
-  );
 
   const [formData, setFormData] = useLocalStorageState<FormData>(
     "checkout-form-data",
@@ -85,6 +85,13 @@ export default function CheckoutPage() {
     }
   };
 
+  useEffect(() => {
+    if (!position && !isPositionLoading) {
+      getCurrentLocation(handlePositionChange);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
   };
@@ -120,7 +127,7 @@ export default function CheckoutPage() {
       const res = await axios.post("/api/user/orders/payment", {
         totalItemsCount: cartCount,
         totalAmount: grossTotal,
-        address: { ...formData, coordinates: position },
+        address: { ...formData, coordinates: { ...position } },
         items: cartItems.map((i) => ({
           _id: i.productId,
           name: i.name,
@@ -151,7 +158,7 @@ export default function CheckoutPage() {
     try {
       const res = await axios.post("/api/user/orders", {
         totalAmount: grossTotal,
-        address: { ...formData, coordinates: position },
+        address: { ...formData, coordinates: { ...position } },
         items: cartItems.map((i) => ({
           _id: i.productId,
           name: i.name,
@@ -195,6 +202,7 @@ export default function CheckoutPage() {
               position={position}
               onChangePosition={handlePositionChange}
               showMap={showMap}
+              isPositionLoading={isPositionLoading}
               handleInputChange={handleInputChange}
               handleGetLocation={() => getCurrentLocation(handlePositionChange)}
             />

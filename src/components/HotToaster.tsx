@@ -96,7 +96,7 @@ function HotToaster() {
                   damping: 30,
                 }}
                 className={`
-                  flex items-start justify-center gap-3 px-4 py-3.5 rounded-xl border
+                  flex items-start justify-center gap-3 px-4 py-3 rounded-2xl border
                   ${currentConfig.bgGradient}
                   ${currentConfig.border}
                   ${currentConfig.shadow}
@@ -127,7 +127,7 @@ function HotToaster() {
                     delay: 0.1,
                   }}
                   className={`
-                    shrink-0 w-9 h-9 rounded-lg ${currentConfig.iconBg}
+                    shrink-0 w-9 h-9 rounded-xl ${currentConfig.iconBg}
                     flex items-center justify-center shadow-md
                     ${currentConfig.iconColor}
                   `}
@@ -154,7 +154,7 @@ function HotToaster() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
                     onClick={() => toast.dismiss(t.id)}
-                    className="shrink-0 p-1 rounded-md hover:bg-gray-900/5 transition-all duration-200 hover:scale-110 active:scale-95 w-8 h-8 flex items-center justify-center cursor-pointer"
+                    className="shrink-0 p-1 rounded-2xl hover:bg-gray-900/5 transition-all duration-200 hover:scale-110 active:scale-95 w-8 h-8 flex items-center justify-center cursor-pointer"
                     aria-label="Close notification"
                   >
                     <X className="w-4 h-4 text-gray-500" />

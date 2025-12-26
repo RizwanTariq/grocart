@@ -3,6 +3,7 @@ import {
   AtSign,
   BookUser,
   Building2,
+  Loader2,
   MailSearch,
   MapPin,
   MapPinHouse,
@@ -31,6 +32,7 @@ type Props = {
   formData: FormData;
   showMap: boolean;
   position: Coordinates | null;
+  isPositionLoading: boolean;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleGetLocation: () => void;
   onChangePosition: (coords: Coordinates) => Promise<void>;
@@ -40,6 +42,7 @@ function AddressForm({
   formData,
   position,
   showMap,
+  isPositionLoading,
   handleInputChange,
   handleGetLocation,
   onChangePosition,
@@ -101,10 +104,20 @@ function AddressForm({
             <button
               type="button"
               onClick={handleGetLocation}
-              className="flex items-center gap-2 text-sm text-rose-600 hover:text-rose-700 font-medium cursor-pointer"
+              disabled={isPositionLoading}
+              className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 px-3 py-2 rounded-xl disabled:bg-white disabled:text-rose-600/70 disabled:cursor-not-allowed hover:text-rose-700 font-medium cursor-pointer"
             >
-              <MapPin className="w-4 h-4" />
-              Use My Location
+              {isPositionLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Fetching your location...
+                </>
+              ) : (
+                <>
+                  <MapPin className="w-4 h-4" />
+                  Use My Location
+                </>
+              )}
             </button>
           </div>
           <div className="relative">

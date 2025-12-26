@@ -23,7 +23,9 @@ function useProducts({ products }: { products: IProduct[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOptionId>("date-desc");
   const [showFilters, setShowFilters] = useState(false);
+
   const categories = useMemo(() => [ALL_CATEGORY, ...categoriesList], []);
+
   const filteredAndSortedProducts = useMemo(() => {
     const filtered = filterProducts(products, selectedCategory, searchQuery);
     return sortProducts(filtered, sortBy);

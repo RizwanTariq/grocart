@@ -28,7 +28,7 @@ export const POST = auth(async function (request) {
   try {
     await connectDB();
 
-    const { address, items, totalAmount, coordinates } = await request.json();
+    const { address, items, totalAmount } = await request.json();
 
     if (!address || !items || !items.length || !totalAmount) {
       throw NextResponse.json(
@@ -64,8 +64,8 @@ export const POST = auth(async function (request) {
         city: address.city,
         postalCode: address.postalCode,
         coordinates: {
-          lat: coordinates?.lat || null,
-          lng: coordinates?.lng || null,
+          lat: address.coordinates?.lat || null,
+          lng: address.coordinates?.lng || null,
         },
       },
     });
