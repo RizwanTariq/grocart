@@ -93,6 +93,18 @@ function OrderCard({
                   className={`w-2 h-2 mt-0.5 rounded-full ${statusConfig.dotColor} animate-pulse`}
                 ></span>
               </span>
+
+              {order.isPaymentRetryAllowed && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRetryPayment();
+                  }}
+                  className="text-sm font-semibold bg-blue-100 px-3.5 py-1.5 rounded-full text-blue-600 hover:shadow-lg hover:bg-blue-200/80 hover:scale-[1.01] transition-all cursor-pointer"
+                >
+                  Retry Payment
+                </button>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
               <span className="flex items-center gap-1.5">
@@ -124,19 +136,6 @@ function OrderCard({
               }`}
             >
               {getPaymentStatusLabel(order.paymentStatus)}
-            </div>
-            <div>
-              {order.isPaymentRetryAllowed && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRetryPayment();
-                  }}
-                  className="text-sm font-semibold text-blue-600 hover:underline cursor-pointer"
-                >
-                  Retry Payment
-                </button>
-              )}
             </div>
           </div>
         </div>

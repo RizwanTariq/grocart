@@ -20,14 +20,16 @@ const OrdersPage = async () => {
       $addFields: {
         isPaymentRetryAllowed: {
           $and: [
-            { $eq: ["$stripeSessionId", null] },
+            {
+              $eq: [{ $ifNull: ["$stripeSessionId", null] }, null],
+            },
             { $eq: ["$paymentMethod", PAYMENT_METHOD.CARD] },
             { $eq: ["$paymentStatus", PAYMENT_STATUS.PAYMENT_PENDING] },
             { $eq: ["$status", ORDER_STATUS.PENDING] },
             {
               $and: [
-                { $ifNull: ["$expiresAt", false] }, // ensure expiresAt exists
-                { $gt: [{ $toDate: "$expiresAt" }, new Date()] }, // compare as Date
+                { $ne: ["$expiresAt", null] },
+                { $gt: [{ $toDate: "$expiresAt" }, new Date()] },
               ],
             },
             { $lt: ["$paymentAttempts", MAX_PAYMENT_ATTEMPTS] },
