@@ -12,7 +12,7 @@ import { NextResponse } from "next/server";
 export const POST = auth(async function (request) {
   try {
     await connectDB();
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
 
     if (user.role !== USER_ROLE.ADMIN) {
       throw NextResponse.json(

@@ -33,7 +33,7 @@ export const POST = auth(async function (request) {
       );
     }
 
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
 
     const orderNumber = await generateOrderNumber();
 

@@ -13,7 +13,7 @@ import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 export const GET = auth(async function (request) {
   try {
     await connectDB();
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
     const orders = await OrderModel.find({
       user: user._id,
     }).lean();
@@ -37,7 +37,7 @@ export const POST = auth(async function (request) {
       );
     }
 
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
 
     const orderNumber = await generateOrderNumber();
 

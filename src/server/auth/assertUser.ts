@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { NextAuthRequest } from "next-auth";
 
 import UserModel from "@/models/user.model";
 import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
 
-export async function assertUser(request: NextAuthRequest) {
-  if (!request.auth?.user?.id) {
+export async function assertUser(id: string) {
+  if (!id) {
     throw NextResponse.json(
       {
         error: {
@@ -17,9 +16,7 @@ export async function assertUser(request: NextAuthRequest) {
     );
   }
 
-  const user = await UserModel.findById(
-    castIdToObjectId(request.auth?.user?.id)
-  ).lean();
+  const user = await UserModel.findById(castIdToObjectId(id)).lean();
 
   if (!user) {
     throw NextResponse.json(

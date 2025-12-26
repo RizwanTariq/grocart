@@ -11,14 +11,14 @@ import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_TOKEN!);
 
-export const POST = auth(async function (req, context) {
+export const POST = auth(async function (request, context) {
   const params = await context.params;
   let orderId;
   let stripeSesId;
   try {
     await connectDB();
     const paramOrderId = await params.orderId;
-    const user = await assertUser(req);
+    const user = await assertUser(request.auth?.user?.id as string);
     const order = await assertOrder(user._id, paramOrderId);
 
     if (order.stripeSessionId) {

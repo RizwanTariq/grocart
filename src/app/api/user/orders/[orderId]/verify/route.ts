@@ -18,7 +18,7 @@ export const GET = auth(async function (request, context) {
         { status: 400 }
       );
     }
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
     const order = await assertOrder(user._id, orderId);
 
     return NextResponse.json(

@@ -14,7 +14,7 @@ export const PATCH = auth(async function (request, context) {
   try {
     const productId = await params.productId;
     await connectDB();
-    const user = await assertUser(request);
+    const user = await assertUser(request.auth?.user?.id as string);
 
     if (user.role !== USER_ROLE.ADMIN) {
       throw NextResponse.json(
@@ -87,7 +87,7 @@ export const GET = auth(async function (request, context) {
   try {
     const productId = await params.productId;
     await connectDB();
-    await assertUser(request);
+    await assertUser(request.auth?.user?.id as string);
     const product = await ProductModel.findById(productId).lean();
 
     if (!product) {

@@ -10,7 +10,7 @@ import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 export const GET = auth(async function (request) {
   try {
     await connectDB();
-    await assertUser(request);
+    await assertUser(request.auth?.user?.id as string);
     const products = await ProductModel.find({}).lean();
 
     return NextResponse.json(convertIds(products), { status: 200 });

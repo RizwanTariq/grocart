@@ -6,7 +6,7 @@ import { USER_ROLE } from "@/types/enums";
 import { prepareErrorResponse } from "../errors/prepare-error-response";
 
 export async function assertAdmin(request: NextAuthRequest) {
-  const user = await assertUser(request);
+  const user = await assertUser(request.auth?.user?.id as string);
 
   if (user.role !== USER_ROLE.ADMIN) {
     throw NextResponse.json(

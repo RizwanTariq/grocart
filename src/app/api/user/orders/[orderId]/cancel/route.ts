@@ -7,13 +7,13 @@ import { assertOrder } from "@/server/order/assertOrder";
 import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
 import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 
-export const POST = auth(async (req, context) => {
+export const POST = auth(async (request, context) => {
   const params = await context.params;
   try {
     await connectDB();
     const orderId = await params.orderId;
 
-    const user = await assertUser(req);
+    const user = await assertUser(request.auth?.user?.id as string);
 
     const order = await assertOrder(user._id, orderId);
 
