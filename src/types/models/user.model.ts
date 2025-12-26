@@ -9,6 +9,11 @@ export interface IUserDB {
   contact?: string;
   image?: string;
   role: USER_ROLE;
+  location: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+  lastActiveAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }

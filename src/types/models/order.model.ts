@@ -39,6 +39,8 @@ export interface IOrderDB {
       lng: number | null;
     };
   };
+  deliveryAssignment?: mongoose.Types.ObjectId;
+  assignedDeliveryBoy?: mongoose.Types.ObjectId;
   expiresAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;

@@ -11,7 +11,7 @@ import {
 const orderSchema = new mongoose.Schema<IOrderDB>(
   {
     user: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       index: true,
@@ -22,7 +22,7 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
       {
         _id: false,
         product: {
-          type: mongoose.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
           required: true,
         },
@@ -93,6 +93,19 @@ const orderSchema = new mongoose.Schema<IOrderDB>(
     },
     expiresAt: {
       type: Date,
+      required: false,
+      index: true,
+    },
+    deliveryAssignment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DeliveryAssignment",
+      required: false,
+      index: true,
+      default: null,
+    },
+    assignedDeliveryBoy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: false,
       index: true,
     },
