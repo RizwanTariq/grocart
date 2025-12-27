@@ -8,7 +8,7 @@ import HeroSection from "./_components/HeroSection";
 
 export default async function UserHome() {
   await connectDB();
-  const _products = await ProductModel.find().lean();
+  const _products = await ProductModel.find().sort({ createdAt: -1 }).lean();
   const products = convertIds(_products) as IProduct[];
 
   return (

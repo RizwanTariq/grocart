@@ -5,7 +5,7 @@ import AdminProductsList from "./_components/AdminProductsList";
 
 async function AdminProductsPage() {
   await connectDB();
-  const _products = await ProductModel.find().lean();
+  const _products = await ProductModel.find().sort({ createdAt: -1 }).lean();
   const products = convertIds(_products) as IProduct[];
 
   return <AdminProductsList products={products} />;
