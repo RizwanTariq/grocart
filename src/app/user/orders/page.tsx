@@ -7,11 +7,14 @@ import { MAX_PAYMENT_ATTEMPTS } from "@/constants/orders";
 import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
 import { IOrderDB } from "@/types/models/order.model";
+import connectDB from "@/libs/db";
 
 const OrdersPage = async () => {
   const session = await auth();
 
   if (!session?.user?.id) return null;
+
+  await connectDB();
 
   const orders: IOrderDB[] = await OrderModel.aggregate([
     { $match: { user: castIdToObjectId(session.user?.id) } },

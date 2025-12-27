@@ -41,7 +41,7 @@ export default auth(async function proxy(req) {
   // 🔥 3. If logged in and visiting a unauthorized route
   if (
     (path.includes("/admin") && req.auth?.user?.role !== USER_ROLE.ADMIN) ||
-    (path.includes("/delivery") &&
+    (path.includes("/delivery-rider") &&
       req.auth?.user?.role !== USER_ROLE.DELIVERY_BOY) ||
     (path.includes("/user") && req.auth?.user?.role !== USER_ROLE.USER)
   ) {

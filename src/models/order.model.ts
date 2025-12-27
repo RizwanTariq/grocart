@@ -8,6 +8,9 @@ import {
   PRODUCT_UNIT,
 } from "@/types/enums";
 
+import "./user.model";
+import "./products.model";
+
 const orderSchema = new mongoose.Schema<IOrderDB>(
   {
     user: {

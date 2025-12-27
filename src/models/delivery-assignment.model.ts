@@ -2,6 +2,8 @@ import mongoose, { Model } from "mongoose";
 
 import { IDeliveryAssignmentDB } from "@/types/models/delivery-assignment.model";
 import { DELIVERY_ASSIGNMENT_STATUS } from "@/types/enums";
+import "./user.model";
+import "./order.model";
 
 const deliveryAssignmentSchema = new mongoose.Schema<IDeliveryAssignmentDB>(
   {

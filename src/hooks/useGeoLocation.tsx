@@ -17,7 +17,7 @@ function useGeoLocation() {
   );
 
   const getCurrentLocation = useCallback(
-    (callback: (coords: Coordinates) => void) => {
+    (callback: (coords: Coordinates) => void, retryCount = 0) => {
       if (!("geolocation" in navigator)) {
         toast.error("Geolocation is not supported by this browser.");
         return;
@@ -25,33 +25,63 @@ function useGeoLocation() {
 
       setLoading(true);
 
+      const options = {
+        enableHighAccuracy: retryCount === 0, // High accuracy only on first try
+        timeout: retryCount === 0 ? 10000 : 5000, // Shorter timeout on retry
+        maximumAge: retryCount * 60000, // Accept older positions on retry
+      };
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          setLoading(false);
           callback({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
-          setLoading(false);
         },
         (err) => {
-          if (!loading) return;
-          console.error(err);
-          toast.error(
-            err.code === 1
-              ? "Please allow location access to proceed."
-              : err.code === 3
-              ? "Location access timed out. Please try again."
-              : err.message
-          );
+          if (err.code === err.TIMEOUT && retryCount < 2) {
+            // Retry with different settings
+            setTimeout(() => {
+              getCurrentLocation(callback, retryCount + 1);
+            }, 1000);
+            return;
+          }
+
           setLoading(false);
+
+          let errorMessage = "Failed to get location.";
+
+          switch (err.code) {
+            case err.PERMISSION_DENIED:
+              errorMessage =
+                "Location access denied. Please enable location permissions in your browser settings.";
+              break;
+            case err.POSITION_UNAVAILABLE:
+              errorMessage =
+                "Location services unavailable. Please check your GPS/Wi-Fi connection.";
+              break;
+            case err.TIMEOUT:
+              errorMessage =
+                "Location request timed out. Please try again in an area with better signal.";
+              break;
+          }
+
+          toast.error(errorMessage);
+
+          // Optional: Provide fallback coordinates
+          if (
+            err.code === err.TIMEOUT ||
+            err.code === err.POSITION_UNAVAILABLE
+          ) {
+            // You could call a fallback IP-based location service here
+            console.log("Could use IP-based fallback location");
+          }
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 200000, // 120 seconds max
-        }
+        options
       );
     },
-    [loading]
+    []
   );
 
   return {

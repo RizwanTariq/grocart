@@ -34,6 +34,9 @@ import PageHeader from "@/components/PageHeader";
 import ExpandedCard from "./ExpandedCard";
 import TrackingCard from "@/components/features/orders/TrackingCard";
 import NoOrdersCard from "./NoOrdersCard";
+import axios from "axios";
+import { extractApiError } from "@/utils/api-error-extractor";
+import toast from "react-hot-toast";
 
 const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
   const [orders, setOrders] = useState<IOrder[]>(_orders);
@@ -86,20 +89,29 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
   ) => {
     try {
       setUpdatingStatus(orderId);
-      const response = await fetch(`/api/admin/orders/${orderId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
 
-      if (response.ok) {
+      const response = await axios.patch(
+        `/api/admin/orders/${orderId}/status`,
+        {
+          status: newStatus,
+        }
+      );
+
+      console.log(response.data);
+
+      if (response.status === 200) {
         setOrders((prev) =>
           prev.map((order) =>
             order._id === orderId ? { ...order, status: newStatus } : order
           )
         );
       }
-    } catch (error) {
+    } catch (err: unknown) {
+      const error = extractApiError(err);
+      if (error) {
+        toast.error(error.message);
+      }
+
       console.error("Error updating status:", error);
     } finally {
       setUpdatingStatus(null);

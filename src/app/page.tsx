@@ -6,7 +6,6 @@ import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
 import NavBar from "@/components/features/navbar/NavBar";
 import AdminDashboard from "@/components/features/dashboard/AdminDashboard";
-import DeliveryBoyDashboard from "@/components/features/dashboard/DeliveryBoyDashboard";
 import { convertId, IUser } from "@/types";
 import { USER_ROLE } from "@/types/enums";
 
@@ -33,15 +32,14 @@ export default async function Home() {
   if (user.role === USER_ROLE.USER) {
     redirect("/user");
   }
+  if (user.role === USER_ROLE.DELIVERY_BOY) {
+    redirect("/delivery-rider");
+  }
 
   return (
     <>
       <NavBar />
-      {user.role === USER_ROLE.ADMIN ? (
-        <AdminDashboard />
-      ) : (
-        <DeliveryBoyDashboard />
-      )}
+      <AdminDashboard />
     </>
   );
 }
