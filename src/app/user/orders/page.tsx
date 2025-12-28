@@ -1,5 +1,5 @@
 import OrdersWrapper from "./_components/OrdersWrapper";
-import { convertIds, IOrder } from "@/types";
+import { IOrder } from "@/types";
 import { auth } from "@/auth";
 import OrderModel from "@/models/order.model";
 
@@ -40,9 +40,12 @@ const OrdersPage = async () => {
         },
       },
     },
-    { $unset: ["user", "items.product"] }, // removes user and items.product
   ]);
-  return <OrdersWrapper orders={convertIds(orders) as IOrder[]} />;
+  return (
+    <OrdersWrapper
+      initialOrders={JSON.parse(JSON.stringify(orders)) as IOrder[]}
+    />
+  );
 };
 
 export default OrdersPage;

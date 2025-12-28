@@ -1,17 +1,19 @@
 import { auth } from "@/auth";
 import connectDB from "@/libs/db";
+import eventEmitter from "@/libs/eventEmitter";
 import DeliveryAssignmentModel from "@/models/delivery-assignment.model";
 import OrderModel from "@/models/order.model";
 import UserModel from "@/models/user.model";
 import { assertAdmin } from "@/server/auth/assertAdmin";
 import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
 import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
-import { convertId, convertIds } from "@/types";
+import { convertId, convertIds, IOrderPopulated, IUser } from "@/types";
 import {
   DELIVERY_ASSIGNMENT_STATUS,
   ORDER_STATUS,
   USER_ROLE,
 } from "@/types/enums";
+import { EmitterEvent } from "@/types/generic";
 import { NextResponse } from "next/server";
 
 export const PATCH = auth(async function (request, context) {
@@ -30,7 +32,10 @@ export const PATCH = auth(async function (request, context) {
       );
     }
 
-    const order = await OrderModel.findById(orderId).populate("user");
+    const order = await OrderModel.findById(orderId).populate({
+      path: "user",
+      select: "-password",
+    });
 
     if (!order) {
       throw NextResponse.json(
@@ -39,7 +44,7 @@ export const PATCH = auth(async function (request, context) {
       );
     }
 
-    let availableDeliveryBoys = [];
+    let deliveryBoys: IUser[] = [];
 
     if (status === ORDER_STATUS.OUT_FOR_DELIVERY && !order.deliveryAssignment) {
       const { coordinates } = order.address;
@@ -66,7 +71,7 @@ export const PATCH = auth(async function (request, context) {
         status: DELIVERY_ASSIGNMENT_STATUS.ASSIGNED,
       }).distinct("assignedTo");
 
-      availableDeliveryBoys = nearByDeliveryBoys.filter(
+      const availableDeliveryBoys = nearByDeliveryBoys.filter(
         (delBoy) =>
           !busyDelBoyIds.some(
             (delBoyId) => delBoyId.toString() === delBoy._id.toString()
@@ -87,28 +92,26 @@ export const PATCH = auth(async function (request, context) {
         status: DELIVERY_ASSIGNMENT_STATUS.BROADCASTED,
       });
 
-      order.status = ORDER_STATUS.OUT_FOR_DELIVERY;
       order.deliveryAssignment = deliveryAssignment._id;
-      await order.save();
-
-      return NextResponse.json(
-        {
-          order: convertId(order.toObject()),
-          availableDeliveryBoys: convertIds(
-            availableDeliveryBoys.map((delBoy) => delBoy.toObject())
-          ),
-        },
-        {
-          status: 200,
-        }
+      deliveryBoys = convertIds(
+        availableDeliveryBoys.map((delBoy) => delBoy.toObject())
       );
     }
 
     order.status = status;
     await order.save();
 
+    await eventEmitter(
+      EmitterEvent.ORDER_UPDATED,
+      JSON.parse(JSON.stringify(order)),
+      (order as unknown as IOrderPopulated).user?.socketId
+    );
+
     return NextResponse.json(
-      { order: convertId(order.toObject()), availableDeliveryBoys: [] },
+      {
+        order: convertId(order.toObject()),
+        availableDeliveryBoys: deliveryBoys,
+      },
       {
         status: 200,
       }

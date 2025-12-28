@@ -10,6 +10,8 @@ import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 import { ORDER_TTL_MINUTES } from "@/constants/orders";
 import { assertUser } from "@/server/auth/assertUser";
 import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import eventEmitter from "@/libs/eventEmitter";
+import { EmitterEvent } from "@/types/generic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_TOKEN!);
 
@@ -68,6 +70,11 @@ export const POST = auth(async function (request) {
         },
       },
       expiresAt,
+    });
+
+    await eventEmitter(EmitterEvent.ORDER_CREATED, {
+      ...JSON.parse(JSON.stringify(order)),
+      user: { ...JSON.parse(JSON.stringify(user)) },
     });
 
     orderId = order._id.toHexString();

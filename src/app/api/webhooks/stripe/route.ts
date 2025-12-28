@@ -6,6 +6,8 @@ import OrderModel from "@/models/order.model";
 import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
 import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
+import eventEmitter from "@/libs/eventEmitter";
+import { EmitterEvent } from "@/types/generic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_TOKEN!);
 
@@ -42,7 +44,7 @@ export async function POST(request: NextRequest) {
         const orderId = session.metadata?.orderId;
         if (!orderId || session.payment_status !== "paid") break;
 
-        await OrderModel.findOneAndUpdate(
+        const order = await OrderModel.findOneAndUpdate(
           {
             _id: castIdToObjectId(orderId),
             paymentStatus: { $ne: PAYMENT_STATUS.PAYMENT_PAID },
@@ -54,8 +56,19 @@ export async function POST(request: NextRequest) {
             stripeSessionId: session.id,
             stripePaymentIntentId: session.payment_intent,
             expiresAt: null,
-          }
-        );
+          },
+          { new: true }
+        ).populate({
+          path: "user",
+          select: "-password",
+        });
+
+        if (order) {
+          await eventEmitter(
+            EmitterEvent.PAYMENT_COMPLETED,
+            JSON.parse(JSON.stringify(order))
+          );
+        }
 
         break;
       }
@@ -101,8 +114,7 @@ export async function POST(request: NextRequest) {
             // Allow retry
 
             $unset: { stripeSessionId: 1, stripePaymentIntentId: 1 },
-          },
-          { new: true }
+          }
         );
 
         break;

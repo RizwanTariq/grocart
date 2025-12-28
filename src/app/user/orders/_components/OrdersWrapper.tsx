@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ShoppingBag } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -11,8 +11,13 @@ import NoOrdersCard from "./NoOrdersCard";
 
 import OrderCard from "./OrderCard";
 import TrackingCard from "@/components/features/orders/TrackingCard";
+// import axios from "axios";
+import { getSocket } from "@/libs/socket";
+import { EmitterEvent } from "@/types/generic";
+import toast from "react-hot-toast";
 
-const OrdersWrapper = ({ orders }: { orders: IOrder[] }) => {
+const OrdersWrapper = ({ initialOrders }: { initialOrders: IOrder[] }) => {
+  const [orders, setOrders] = useState<IOrder[]>(initialOrders);
   const searchParams = useSearchParams();
   const [expandedOrder, setExpandedOrder] = useState<string | null>(
     searchParams.get("order_id") || null
@@ -20,6 +25,42 @@ const OrdersWrapper = ({ orders }: { orders: IOrder[] }) => {
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [selectedOrderForTracking, setSelectedOrderForTracking] =
     useState<IOrder | null>(null);
+
+  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  useEffect(() => {
+    // ensure stable socket
+    if (!socketRef.current) {
+      socketRef.current = getSocket();
+    }
+
+    const socket = socketRef.current;
+
+    const handler = (data: IOrder) => {
+      toast.success(`Your order #${data.orderNumber} has been updated!`, {
+        duration: 10000,
+      });
+      setOrders((prev) =>
+        prev.map((order) => (order._id === data._id ? data : order))
+      );
+    };
+
+    socket.on(EmitterEvent.ORDER_UPDATED, handler);
+
+    return () => {
+      socket.off(EmitterEvent.ORDER_UPDATED, handler);
+    };
+  }, []);
+
+  // const fetchOrders = async () => {
+  //   try {
+  //     const response = await axios.get("/api/user/orders");
+  //     if (response.status === 200) {
+  //       setOrders(response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const openTrackingModal = (order: IOrder) => {
     setSelectedOrderForTracking(order);

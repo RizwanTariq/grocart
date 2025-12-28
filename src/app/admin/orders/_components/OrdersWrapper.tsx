@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 import {
@@ -15,7 +15,7 @@ import {
   User,
   ShoppingBag,
 } from "lucide-react";
-import { IOrder } from "@/types";
+import { IOrder, IOrderPopulated } from "@/types";
 import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 
 import StatsGrid from "./StatsGrid";
@@ -37,6 +37,8 @@ import NoOrdersCard from "./NoOrdersCard";
 import axios from "axios";
 import { extractApiError } from "@/utils/api-error-extractor";
 import toast from "react-hot-toast";
+import { getSocket } from "@/libs/socket";
+import { EmitterEvent } from "@/types/generic";
 
 const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
   const [orders, setOrders] = useState<IOrder[]>(_orders);
@@ -82,6 +84,58 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
 
     setFilteredOrders(filtered);
   }, [orders, searchTerm, statusFilter, paymentFilter]);
+
+  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  useEffect(() => {
+    // ensure stable socket
+    if (!socketRef.current) {
+      socketRef.current = getSocket();
+    }
+
+    const socket = socketRef.current;
+
+    const handler = (data: IOrder) => {
+      toast.success(
+        `${
+          (data as unknown as IOrderPopulated).user.name
+        } created a new order #${data.orderNumber}`,
+        { duration: 10000 }
+      );
+      setOrders((prev) => [data, ...prev]);
+    };
+
+    socket.on(EmitterEvent.ORDER_CREATED, handler);
+
+    const handlerPayment = (data: IOrder) => {
+      toast.success(
+        `${(data as unknown as IOrderPopulated).user.name} paid for order #${
+          data.orderNumber
+        }`,
+        { duration: 10000 }
+      );
+      setOrders((prev) =>
+        prev.map((order) => (order._id === data._id ? data : order))
+      );
+    };
+
+    socket.on(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
+
+    return () => {
+      socket.off(EmitterEvent.ORDER_CREATED, handler);
+      socket.off(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
+    };
+  }, []);
+
+  // const fetchOrders = async () => {
+  //   try {
+  //     const response = await axios.get("/api/admin/orders");
+  //     if (response.status === 200) {
+  //       setOrders(response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const updateOrderStatus = async (
     orderId: string,

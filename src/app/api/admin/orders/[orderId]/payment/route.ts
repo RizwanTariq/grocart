@@ -1,11 +1,13 @@
 import { auth } from "@/auth";
 import connectDB from "@/libs/db";
+import eventEmitter from "@/libs/eventEmitter";
 import OrderModel from "@/models/order.model";
 import { assertAdmin } from "@/server/auth/assertAdmin";
 import { prepareErrorResponse } from "@/server/errors/prepare-error-response";
 import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
-import { convertId } from "@/types";
+import { convertId, IOrderPopulated } from "@/types";
 import { PAYMENT_STATUS } from "@/types/enums";
+import { EmitterEvent } from "@/types/generic";
 import { NextResponse } from "next/server";
 
 export const PATCH = auth(async function (request, context) {
@@ -30,7 +32,10 @@ export const PATCH = auth(async function (request, context) {
         paymentStatus,
       },
       { new: true }
-    );
+    ).populate({
+      path: "user",
+      select: "-password",
+    });
 
     if (!order) {
       throw NextResponse.json(
@@ -38,6 +43,12 @@ export const PATCH = auth(async function (request, context) {
         { status: 404 }
       );
     }
+
+    await eventEmitter(
+      EmitterEvent.ORDER_UPDATED,
+      JSON.parse(JSON.stringify(order)),
+      (order as unknown as IOrderPopulated).user?.socketId
+    );
 
     return NextResponse.json(convertId(order.toObject()), {
       status: 200,
