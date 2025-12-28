@@ -44,11 +44,14 @@ export const PATCH = auth(async function (request, context) {
       );
     }
 
-    await eventEmitter(
-      EmitterEvent.ORDER_UPDATED,
-      JSON.parse(JSON.stringify(order)),
-      (order as unknown as IOrderPopulated).user?.socketId
-    );
+    const userSocketId = (order as unknown as IOrderPopulated).user?.socketId;
+    if (userSocketId) {
+      await eventEmitter(
+        EmitterEvent.ORDER_UPDATED,
+        JSON.parse(JSON.stringify(order)),
+        userSocketId
+      );
+    }
 
     return NextResponse.json(convertId(order.toObject()), {
       status: 200,

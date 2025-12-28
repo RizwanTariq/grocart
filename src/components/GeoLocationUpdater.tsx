@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { getSocket } from "@/libs/socket";
+import { disconnectSocket, getSocket } from "@/libs/socket";
 import { useStore } from "@/store/useStore";
 
 function GeoLocationUpdater() {
@@ -46,6 +46,7 @@ function GeoLocationUpdater() {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
+      disconnectSocket(); // Disconnect the socket when the component unmounts
     };
   }, [userId]);
 

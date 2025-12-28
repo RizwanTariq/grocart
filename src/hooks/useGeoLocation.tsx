@@ -74,8 +74,7 @@ function useGeoLocation() {
             err.code === err.TIMEOUT ||
             err.code === err.POSITION_UNAVAILABLE
           ) {
-            // You could call a fallback IP-based location service here
-            console.log("Could use IP-based fallback location");
+            // We could call a fallback IP-based location service here
           }
         },
         options
