@@ -58,10 +58,16 @@ export async function POST(request: NextRequest) {
             expiresAt: null,
           },
           { new: true }
-        ).populate({
-          path: "user",
-          select: "-password",
-        });
+        ).populate([
+          {
+            path: "user",
+            select: "-password",
+          },
+          {
+            path: "assignedDeliveryBoy",
+            select: "-password",
+          },
+        ]);
 
         if (order) {
           await eventEmitter(

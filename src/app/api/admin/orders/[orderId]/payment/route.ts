@@ -32,10 +32,16 @@ export const PATCH = auth(async function (request, context) {
         paymentStatus,
       },
       { new: true }
-    ).populate({
-      path: "user",
-      select: "-password",
-    });
+    ).populate([
+      {
+        path: "user",
+        select: "-password",
+      },
+      {
+        path: "assignedDeliveryBoy",
+        select: "-password",
+      },
+    ]);
 
     if (!order) {
       throw NextResponse.json(

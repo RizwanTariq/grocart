@@ -32,10 +32,16 @@ export const PATCH = auth(async function (request, context) {
       );
     }
 
-    const order = await OrderModel.findById(orderId).populate({
-      path: "user",
-      select: "-password",
-    });
+    const order = await OrderModel.findById(orderId).populate([
+      {
+        path: "user",
+        select: "-password",
+      },
+      {
+        path: "assignedDeliveryBoy",
+        select: "-password",
+      },
+    ]);
 
     if (!order) {
       throw NextResponse.json(
@@ -45,6 +51,10 @@ export const PATCH = auth(async function (request, context) {
     }
 
     let deliveryBoys: IUser[] = [];
+    let deliveryAssignment;
+
+    const isDeliveryAssignmentRequired =
+      status === ORDER_STATUS.OUT_FOR_DELIVERY && !order.deliveryAssignment;
 
     if (status === ORDER_STATUS.OUT_FOR_DELIVERY && !order.deliveryAssignment) {
       const { coordinates } = order.address;
@@ -86,11 +96,16 @@ export const PATCH = auth(async function (request, context) {
           { status: 400 }
         );
       }
-      const deliveryAssignment = await DeliveryAssignmentModel.create({
-        order: order._id,
-        broadcastedTo: availableDeliveryBoys.map((delBoy) => delBoy._id),
-        status: DELIVERY_ASSIGNMENT_STATUS.BROADCASTED,
-      });
+      deliveryAssignment = await (
+        await DeliveryAssignmentModel.create({
+          order: order._id,
+          broadcastedTo: availableDeliveryBoys.map((delBoy) => delBoy._id),
+          status: DELIVERY_ASSIGNMENT_STATUS.BROADCASTED,
+        })
+      ).populate([
+        { path: "order" },
+        { path: "broadcastedTo", select: "socketId" },
+      ]);
 
       order.deliveryAssignment = deliveryAssignment._id;
       deliveryBoys = convertIds(
@@ -101,11 +116,27 @@ export const PATCH = auth(async function (request, context) {
     order.status = status;
     await order.save();
 
-    await eventEmitter(
-      EmitterEvent.ORDER_UPDATED,
-      JSON.parse(JSON.stringify(order)),
-      (order as unknown as IOrderPopulated).user?.socketId
-    );
+    const userSocketId = (order as unknown as IOrderPopulated).user?.socketId;
+    if (userSocketId) {
+      await eventEmitter(
+        EmitterEvent.ORDER_UPDATED,
+        JSON.parse(JSON.stringify(order)),
+        userSocketId
+      );
+    }
+
+    if (isDeliveryAssignmentRequired) {
+      deliveryAssignment?.broadcastedTo.forEach((delBoy) => {
+        const socketId = (delBoy as unknown as IUser).socketId;
+        if (socketId) {
+          eventEmitter(
+            EmitterEvent.ORDER_BROADCASTED,
+            JSON.parse(JSON.stringify(deliveryAssignment)),
+            socketId
+          );
+        }
+      });
+    }
 
     return NextResponse.json(
       {

@@ -10,6 +10,7 @@ import {
 
 import "./user.model";
 import "./products.model";
+import "./delivery-assignment.model";
 
 const orderSchema = new mongoose.Schema<IOrderDB>(
   {
