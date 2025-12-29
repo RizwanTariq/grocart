@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ShoppingBag } from "lucide-react";
 import { AnimatePresence } from "motion/react";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/common/NonNavHeader";
 import NoOrdersCard from "./NoOrdersCard";
@@ -15,16 +15,35 @@ import TrackingCard from "@/components/features/orders/TrackingCard";
 import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 
-const OrdersWrapper = ({ initialOrders }: { initialOrders: IOrder[] }) => {
-  const [orders, setOrders] = useState<IOrder[]>(initialOrders);
+const OrdersWrapper = ({
+  initialOrders,
+}: {
+  initialOrders: IOrderPopulated[];
+}) => {
+  const [orders, setOrders] = useState<IOrderPopulated[]>(initialOrders);
   const searchParams = useSearchParams();
   const [expandedOrder, setExpandedOrder] = useState<string | null>(
     searchParams.get("order_id") || null
   );
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [selectedOrderForTracking, setSelectedOrderForTracking] =
-    useState<IOrder | null>(null);
+    useState<IOrderPopulated | null>(null);
+
+  const fetchOrderAndSetState = async (orderId: string) => {
+    try {
+      const response = await axios.get(`/api/user/orders/${orderId}`);
+      if (response.status === 200) {
+        setOrders((prev) =>
+          prev.map((order) => (order._id === orderId ? response.data : order))
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   useEffect(() => {
@@ -35,7 +54,7 @@ const OrdersWrapper = ({ initialOrders }: { initialOrders: IOrder[] }) => {
 
     const socket = socketRef.current;
 
-    const handler = (data: IOrder) => {
+    const handler = (data: IOrderPopulated) => {
       toast.success(`Your order #${data.orderNumber} has been updated!`, {
         duration: 10000,
       });
@@ -46,23 +65,19 @@ const OrdersWrapper = ({ initialOrders }: { initialOrders: IOrder[] }) => {
 
     socket.on(EmitterEvent.ORDER_UPDATED, handler);
 
+    const handlerDeliveryAccepted = (data: IDeliveryAssignmentPopulated) => {
+      fetchOrderAndSetState(data.order._id);
+    };
+
+    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+
     return () => {
       socket.off(EmitterEvent.ORDER_UPDATED, handler);
+      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
     };
   }, []);
 
-  // const fetchOrders = async () => {
-  //   try {
-  //     const response = await axios.get("/api/user/orders");
-  //     if (response.status === 200) {
-  //       setOrders(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const openTrackingModal = (order: IOrder) => {
+  const openTrackingModal = (order: IOrderPopulated) => {
     setSelectedOrderForTracking(order);
     setTrackingModalOpen(true);
   };
@@ -100,7 +115,7 @@ const OrdersWrapper = ({ initialOrders }: { initialOrders: IOrder[] }) => {
                   index={index}
                   expandedOrder={expandedOrder}
                   toggleOrder={toggleOrder}
-                  openTrackingModal={openTrackingModal}
+                  openTrackingModal={() => openTrackingModal(order)}
                 />
               );
             })}

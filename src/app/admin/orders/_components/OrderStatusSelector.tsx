@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CustomDropdown from "./CustomDropdown";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { ORDER_STATUS } from "@/types/enums";
 import { getStatusConfig } from "@/app/user/orders/_components/utils";
 
@@ -9,7 +9,7 @@ function OrderStatusSelector({
   loading,
   updateOrderStatus,
 }: {
-  order: IOrder;
+  order: IOrderPopulated;
   loading: boolean;
   updateOrderStatus: (orderId: string, newStatus: ORDER_STATUS) => void;
 }) {

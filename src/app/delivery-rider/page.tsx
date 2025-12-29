@@ -13,18 +13,46 @@ async function DeliveryBoyHomePage() {
 
   await connectDB();
 
-  const _availableAssignments = await DeliveryAssignmentModel.find({
-    broadcastedTo: userId,
-    status: DELIVERY_ASSIGNMENT_STATUS.BROADCASTED,
+  const assignments = await DeliveryAssignmentModel.find({
+    $or: [
+      { broadcastedTo: userId, status: DELIVERY_ASSIGNMENT_STATUS.BROADCASTED },
+      { assignedTo: userId, status: DELIVERY_ASSIGNMENT_STATUS.ASSIGNED },
+      { assignedTo: userId, status: DELIVERY_ASSIGNMENT_STATUS.DELIVERED },
+      { assignedTo: userId, status: DELIVERY_ASSIGNMENT_STATUS.CANCELLED },
+    ],
   })
-    .populate("order")
+    .populate({
+      path: "order",
+    })
     .lean();
 
-  const availableAssignments = JSON.parse(
-    JSON.stringify(_availableAssignments)
+  const availableBroadcasts = assignments.filter(
+    (a) => a.status === DELIVERY_ASSIGNMENT_STATUS.BROADCASTED
   );
 
-  return <DeliveryBoyDashboard initialBroadcasts={availableAssignments} />;
+  const activeDelivery =
+    assignments.find((a) => a.status === DELIVERY_ASSIGNMENT_STATUS.ASSIGNED) ||
+    null;
+
+  const completedDeliveries = assignments.filter(
+    (a) => a.status === DELIVERY_ASSIGNMENT_STATUS.DELIVERED
+  );
+
+  const cancelledDeliveries = assignments.filter(
+    (a) => a.status === DELIVERY_ASSIGNMENT_STATUS.CANCELLED
+  );
+  const initialData = {
+    broadcasts: availableBroadcasts,
+    active: activeDelivery,
+    completed: completedDeliveries,
+    cancelled: cancelledDeliveries,
+  };
+
+  return (
+    <DeliveryBoyDashboard
+      initialData={JSON.parse(JSON.stringify(initialData))}
+    />
+  );
 }
 
 export default DeliveryBoyHomePage;

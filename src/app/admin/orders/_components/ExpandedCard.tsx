@@ -1,21 +1,15 @@
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { Package } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
-import { MapPin, Phone, Mail, FileText, Navigation, Truck } from "lucide-react";
-import { ORDER_STATUS, PAYMENT_METHOD } from "@/types/enums";
+import { MapPin, Phone, Mail, FileText } from "lucide-react";
+import { PAYMENT_METHOD } from "@/types/enums";
 import {
   getPaymentStatusConfig,
   totalItems,
 } from "@/app/user/orders/_components/utils";
 
-function ExpandedCard({
-  order,
-  openTrackingModal,
-}: {
-  order: IOrder;
-  openTrackingModal: (order: IOrder) => void;
-}) {
+function ExpandedCard({ order }: { order: IOrderPopulated }) {
   const paymentConfig = getPaymentStatusConfig(order.paymentStatus);
   return (
     <motion.div
@@ -174,38 +168,6 @@ function ExpandedCard({
               </div>
             </motion.div>
           </div>
-
-          {/* Live Tracking Section */}
-          {order.status === ORDER_STATUS.OUT_FOR_DELIVERY && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-3"
-            >
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-                <Truck className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-blue-900 mb-1">
-                    Order is out for delivery!
-                  </p>
-                  <p className="text-xs text-blue-700">
-                    Track the delivery in real-time
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openTrackingModal(order);
-                }}
-                className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-              >
-                <Navigation className="w-5 h-5" />
-                Track Live Delivery
-              </button>
-            </motion.div>
-          )}
         </div>
       </div>
     </motion.div>

@@ -3,7 +3,7 @@ import {
   getStatusConfig,
   totalItems,
 } from "@/app/user/orders/_components/utils";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 import {
   AlertCircle,
@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from "motion/react";
 import OrderStatusSelector from "./OrderStatusSelector";
 import PaymentStatusSelector from "./PaymentStatusSelector";
 import ExpandedCard from "./ExpandedCard";
+import DeliveryRiderInfo from "@/components/features/orders/DeliveryRiderInfo";
 
 function OrderCard({
   order,
@@ -32,14 +33,14 @@ function OrderCard({
   openTrackingModal,
   expandOrder,
 }: {
-  order: IOrder;
+  order: IOrderPopulated;
   isExpanded: boolean;
   statusLoading: boolean;
   paymentLoading: boolean;
   index: number;
   updateOrderStatus: (orderId: string, newStatus: ORDER_STATUS) => void;
   updatePaymentStatus: (orderId: string, newStatus: PAYMENT_STATUS) => void;
-  openTrackingModal: (order: IOrder) => void;
+  openTrackingModal: (order: IOrderPopulated) => void;
   expandOrder: (orderId: string) => void;
 }) {
   const statusConfig = getStatusConfig(order.status);
@@ -114,7 +115,7 @@ function OrderCard({
                 {order.paymentMethod}
               </span>
             </div>
-            <button className="p-2 hover:bg-gray-50 rounded-xl transition-all cursor-pointer lg:ml-4">
+            <button className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all cursor-pointer lg:ml-4">
               {isExpanded ? (
                 <ChevronUp className="w-5 h-5 text-gray-600" />
               ) : (
@@ -153,12 +154,19 @@ function OrderCard({
             )}
           </div>
         </div>
+
+        {/* Delivery Rider Info - Show when OUT_FOR_DELIVERY */}
+        {order.status === ORDER_STATUS.OUT_FOR_DELIVERY &&
+          order.assignedDeliveryBoy && (
+            <DeliveryRiderInfo
+              rider={order.assignedDeliveryBoy}
+              onTrackDelivery={() => openTrackingModal(order)}
+            />
+          )}
       </div>
 
       <AnimatePresence>
-        {isExpanded && (
-          <ExpandedCard order={order} openTrackingModal={openTrackingModal} />
-        )}
+        {isExpanded && <ExpandedCard order={order} />}
       </AnimatePresence>
     </motion.div>
   );

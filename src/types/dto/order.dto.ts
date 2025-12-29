@@ -9,4 +9,8 @@ export type IOrder = WithStringId<
 
 export type IOrderItem = WithStringId<IOrderDB["items"][0]>;
 
-export type IOrderPopulated = Populate<IOrder, "user", IUser>;
+export type IOrderPopulated = Populate<
+  Populate<IOrder, "user", IUser>,
+  "assignedDeliveryBoy",
+  IUser | null
+>;

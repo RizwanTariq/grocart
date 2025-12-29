@@ -2,13 +2,13 @@ import { MapPin, Navigation, Phone, X } from "lucide-react";
 import { motion } from "motion/react";
 import { totalItems } from "@/app/user/orders/_components/utils";
 import Image from "next/image";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 
 function TrackingCard({
   order,
   closeTrackingModal,
 }: {
-  order: IOrder;
+  order: IOrderPopulated;
   closeTrackingModal: () => void;
 }) {
   return (

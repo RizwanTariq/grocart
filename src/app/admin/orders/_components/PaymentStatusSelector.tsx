@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CustomDropdown from "./CustomDropdown";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 import { getPaymentStatusConfig } from "@/app/user/orders/_components/utils";
 
@@ -9,7 +9,7 @@ function PaymentStatusSelector({
   loading,
   updatePaymentStatus,
 }: {
-  order: IOrder;
+  order: IOrderPopulated;
   loading: boolean;
   updatePaymentStatus: (orderId: string, newStatus: PAYMENT_STATUS) => void;
 }) {

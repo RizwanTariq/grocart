@@ -1,5 +1,5 @@
 import OrdersWrapper from "./_components/OrdersWrapper";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { auth } from "@/auth";
 import OrderModel from "@/models/order.model";
 
@@ -19,6 +19,20 @@ const OrdersPage = async () => {
   const orders: IOrderDB[] = await OrderModel.aggregate([
     { $match: { user: castIdToObjectId(session.user?.id) } },
     { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "assignedDeliveryBoy",
+        foreignField: "_id",
+        as: "assignedDeliveryBoy",
+      },
+    },
+    {
+      $unwind: {
+        path: "$assignedDeliveryBoy",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $addFields: {
         isPaymentRetryAllowed: {
@@ -43,7 +57,7 @@ const OrdersPage = async () => {
   ]);
   return (
     <OrdersWrapper
-      initialOrders={JSON.parse(JSON.stringify(orders)) as IOrder[]}
+      initialOrders={JSON.parse(JSON.stringify(orders)) as IOrderPopulated[]}
     />
   );
 };

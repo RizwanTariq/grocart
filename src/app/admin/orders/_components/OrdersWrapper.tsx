@@ -21,10 +21,11 @@ import StatusFilterSelector from "./StatusFilterSelector";
 import PaymentFilterSelector from "./PaymentFilterSelector";
 import NoOrdersCard from "./NoOrdersCard";
 import OrderCard from "./OrderCard";
+import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 
-const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
-  const [orders, setOrders] = useState<IOrder[]>(_orders);
-  const [filteredOrders, setFilteredOrders] = useState<IOrder[]>([]);
+const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
+  const [orders, setOrders] = useState<IOrderPopulated[]>(_orders);
+  const [filteredOrders, setFilteredOrders] = useState<IOrderPopulated[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ORDER_STATUS | "ALL">("ALL");
   const [paymentFilter, setPaymentFilter] = useState<PAYMENT_STATUS | "ALL">(
@@ -35,7 +36,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
   const [updatingPayment, setUpdatingPayment] = useState<string | null>(null);
   const [trackingModalOpen, setTrackingModalOpen] = useState(false);
   const [selectedOrderForTracking, setSelectedOrderForTracking] =
-    useState<IOrder | null>(null);
+    useState<IOrderPopulated | null>(null);
 
   useEffect(() => {
     let filtered = [...orders];
@@ -67,6 +68,19 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
     setFilteredOrders(filtered);
   }, [orders, searchTerm, statusFilter, paymentFilter]);
 
+  const fetchOrderAndSetState = async (orderId: string) => {
+    try {
+      const response = await axios.get(`/api/admin/orders/${orderId}`);
+      if (response.status === 200) {
+        setOrders((prev) =>
+          prev.map((order) => (order._id === orderId ? response.data : order))
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   useEffect(() => {
     // ensure stable socket
@@ -76,7 +90,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
 
     const socket = socketRef.current;
 
-    const handler = (data: IOrder) => {
+    const handler = (data: IOrderPopulated) => {
       toast.success(
         `${
           (data as unknown as IOrderPopulated).user.name
@@ -88,7 +102,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
 
     socket.on(EmitterEvent.ORDER_CREATED, handler);
 
-    const handlerPayment = (data: IOrder) => {
+    const handlerPayment = (data: IOrderPopulated) => {
       toast.success(
         `${(data as unknown as IOrderPopulated).user.name} paid for order #${
           data.orderNumber
@@ -102,22 +116,18 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
 
     socket.on(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
 
+    const handlerDeliveryAccepted = (data: IDeliveryAssignmentPopulated) => {
+      fetchOrderAndSetState(data.order._id);
+    };
+
+    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+
     return () => {
       socket.off(EmitterEvent.ORDER_CREATED, handler);
       socket.off(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
+      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
     };
   }, []);
-
-  // const fetchOrders = async () => {
-  //   try {
-  //     const response = await axios.get("/api/admin/orders");
-  //     if (response.status === 200) {
-  //       setOrders(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const updateOrderStatus = async (
     orderId: string,
@@ -180,7 +190,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
     }
   };
 
-  const openTrackingModal = (order: IOrder) => {
+  const openTrackingModal = (order: IOrderPopulated) => {
     setSelectedOrderForTracking(order);
     setTrackingModalOpen(true);
   };
@@ -205,7 +215,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrder[] }) => {
         />
 
         {/* Stats Cards */}
-        <StatsGrid orders={orders} />
+        <StatsGrid orders={orders as unknown as IOrder[]} />
 
         {/* Filters */}
         <motion.div

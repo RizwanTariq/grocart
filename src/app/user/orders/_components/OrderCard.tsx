@@ -11,11 +11,9 @@ import {
   ChevronUp,
   Calendar,
   CreditCard,
-  Truck,
-  Navigation,
 } from "lucide-react";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import { cn } from "@/utils/cn";
 import {
   formatDate,
@@ -28,6 +26,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { extractApiError } from "@/utils/api-error-extractor";
 import toast from "react-hot-toast";
+import DeliveryRiderInfo from "@/components/features/orders/DeliveryRiderInfo";
 
 function OrderCard({
   order,
@@ -36,11 +35,11 @@ function OrderCard({
   toggleOrder,
   openTrackingModal,
 }: {
-  order: IOrder;
+  order: IOrderPopulated;
   index: number;
   expandedOrder: string | null;
   toggleOrder: (orderId: string) => void;
-  openTrackingModal: (order: IOrder) => void;
+  openTrackingModal: () => void;
 }) {
   const router = useRouter();
   const statusConfig = getStatusConfig(order.status);
@@ -75,7 +74,7 @@ function OrderCard({
       )}
     >
       <div
-        className="p-6 cursor-pointer"
+        className="p-4 md:p-6 cursor-pointer"
         onClick={() => toggleOrder(order._id)}
       >
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
@@ -122,26 +121,38 @@ function OrderCard({
               </span>
             </div>
           </div>
-          <div className="text-left md:text-right">
-            <div className="text-2xl font-bold bg-linear-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-              Rs. {order.totalAmount.toLocaleString()}
+          <div className="flex items-center justify-between lg:justify-end gap-4">
+            <div className="text-left md:text-right">
+              <div className="text-2xl font-bold bg-linear-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
+                Rs. {order.totalAmount.toLocaleString()}
+              </div>
+              <div
+                className={`text-sm font-semibold mt-1 ${
+                  order.paymentStatus === PAYMENT_STATUS.PAYMENT_PAID
+                    ? "text-green-600"
+                    : order.paymentStatus === PAYMENT_STATUS.PAYMENT_FAILED
+                    ? "text-red-600"
+                    : "text-amber-600"
+                }`}
+              >
+                {getPaymentStatusLabel(order.paymentStatus)}
+              </div>
             </div>
-            <div
-              className={`text-sm font-semibold mt-1 ${
-                order.paymentStatus === PAYMENT_STATUS.PAYMENT_PAID
-                  ? "text-green-600"
-                  : order.paymentStatus === PAYMENT_STATUS.PAYMENT_FAILED
-                  ? "text-red-600"
-                  : "text-amber-600"
-              }`}
-            >
-              {getPaymentStatusLabel(order.paymentStatus)}
-            </div>
+            <button className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all cursor-pointer lg:ml-4">
+              {isExpanded ? (
+                <ChevronUp className="w-5 h-5 text-gray-600" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex -space-x-3">
+        {/* Delivery Rider Info - Show when OUT_FOR_DELIVERY */}
+        {order.status === ORDER_STATUS.OUT_FOR_DELIVERY &&
+          order.assignedDeliveryBoy && (
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              {/* <div className="flex -space-x-3">
             {order.items.slice(0, 3).map((item, idx) => (
               <div
                 key={idx}
@@ -161,19 +172,13 @@ function OrderCard({
                 +{order.items.length - 3}
               </div>
             )}
-          </div>
-          <button className="text-rose-600 hover:text-rose-700 font-semibold text-sm flex items-center gap-1.5 hover:gap-2 transition-all cursor-pointer">
-            {isExpanded ? (
-              <>
-                Hide Details <ChevronUp className="w-4 h-4" />
-              </>
-            ) : (
-              <>
-                View Details <ChevronDown className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </div>
+          </div> */}
+              <DeliveryRiderInfo
+                rider={order.assignedDeliveryBoy}
+                onTrackDelivery={openTrackingModal}
+              />
+            </div>
+          )}
       </div>
 
       <AnimatePresence>
@@ -317,37 +322,6 @@ function OrderCard({
                     </div>
                   </motion.div>
                 </div>
-
-                {order.status === ORDER_STATUS.OUT_FOR_DELIVERY ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="space-y-3"
-                  >
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-                      <Truck className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-blue-900 mb-1">
-                          Your order is out for delivery!
-                        </p>
-                        <p className="text-xs text-blue-700">
-                          Track your delivery in real-time
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openTrackingModal(order);
-                      }}
-                      className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                      <Navigation className="w-5 h-5" />
-                      Track Live Delivery
-                    </button>
-                  </motion.div>
-                ) : null}
               </div>
             </div>
           </motion.div>

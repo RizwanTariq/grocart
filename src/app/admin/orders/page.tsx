@@ -1,14 +1,29 @@
 import OrdersWrapper from "./_components/OrdersWrapper";
 import connectDB from "@/libs/db";
-import { IOrder } from "@/types";
+import { IOrderPopulated } from "@/types";
 import OrderModel from "@/models/order.model";
 
 const AdminOrdersPage = async () => {
   await connectDB();
-  const _orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
+  const orders = await OrderModel.find()
+    .populate([
+      {
+        path: "assignedDeliveryBoy",
+        select: "-password",
+      },
+      {
+        path: "user",
+        select: "-password",
+      },
+    ])
+    .sort({ createdAt: -1 })
+    .lean();
 
-  const orders = JSON.parse(JSON.stringify(_orders)) as IOrder[];
-  return <OrdersWrapper _orders={orders} />;
+  return (
+    <OrdersWrapper
+      _orders={JSON.parse(JSON.stringify(orders)) as IOrderPopulated[]}
+    />
+  );
 };
 
 export default AdminOrdersPage;
