@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import DeliveryBoyDashboard from "@/components/features/dashboard/DeliveryBoyDashboard";
+import DeliveryBoyDashboard from "./_components/DeliveryBoyDashboard";
 import connectDB from "@/libs/db";
 import DeliveryAssignmentModel from "@/models/delivery-assignment.model";
 
