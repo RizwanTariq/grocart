@@ -1,8 +1,18 @@
-import { MapPin, Navigation, Phone, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { Navigation, Phone, User, X } from "lucide-react";
 import { motion } from "motion/react";
-import { totalItems } from "@/app/user/orders/_components/utils";
 import Image from "next/image";
+
+import { totalItems } from "@/app/user/orders/_components/utils";
 import { IOrderPopulated } from "@/types";
+import { getSocket } from "@/libs/socket";
+import { EmitterEvent } from "@/types/generic";
+
+const LiveTrackingMap = dynamic(
+  () => import("@/components/features/maps/LiveTrackingMap"),
+  { ssr: false }
+);
 
 function TrackingCard({
   order,
@@ -11,6 +21,44 @@ function TrackingCard({
   order: IOrderPopulated;
   closeTrackingModal: () => void;
 }) {
+  const [riderLocation, setRiderLocation] = useState({
+    lat: Number(order.assignedDeliveryBoy?.location.coordinates[1]),
+    lng: Number(order.assignedDeliveryBoy?.location.coordinates[0]),
+  });
+
+  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+
+  useEffect(() => {
+    if (!order.assignedDeliveryBoy?._id) return;
+
+    // ensure stable socket
+    if (!socketRef.current) {
+      socketRef.current = getSocket();
+    }
+
+    const socket = socketRef.current;
+
+    const event = `${EmitterEvent.D_B_LOCATION_UPDATED}_${order.assignedDeliveryBoy?._id}`;
+
+    const handler = (data: {
+      userId: string;
+      latitude: number;
+      longitude: number;
+      isDeliveryBoy: boolean;
+    }) => {
+      setRiderLocation({
+        lng: Number(data.longitude),
+        lat: Number(data.latitude),
+      });
+    };
+
+    socket.on(event, handler);
+
+    return () => {
+      socket.off(event, handler);
+    };
+  }, [order.assignedDeliveryBoy?._id]);
+
   return (
     <>
       <motion.div
@@ -41,7 +89,7 @@ function TrackingCard({
             </div>
             <button
               onClick={closeTrackingModal}
-              className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors"
+              className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -81,38 +129,51 @@ function TrackingCard({
             </div>
 
             {/* Map Container */}
-            <div
-              className="bg-gray-100 rounded-xl overflow-hidden"
-              style={{ height: "400px" }}
-            >
+            <div className="bg-gray-100 rounded-xl overflow-hidden">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="font-semibold">Your Map Component Goes Here</p>
-                  <p className="text-sm mt-1">
-                    Import and use your map component to show live tracking
-                  </p>
-                </div>
+                <LiveTrackingMap
+                  staticPosition={{
+                    lat: Number(order.address.coordinates.lat),
+                    lng: Number(order.address.coordinates.lng),
+                  }}
+                  movingPosition={riderLocation}
+                  status="online"
+                />
               </div>
             </div>
 
             {/* Delivery Boy Info */}
             <div className="bg-white rounded-xl border border-gray-200 p-5">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  DB
+                <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
+                  {order.assignedDeliveryBoy?.image ? (
+                    <Image
+                      src={order.assignedDeliveryBoy?.image}
+                      alt={order.assignedDeliveryBoy?.name}
+                      fill
+                      sizes="(max-width: 768px) 30vw, 50vw"
+                      loading="eager"
+                      className="object-cover rounded-full"
+                    />
+                  ) : (
+                    <User className="h-7 w-7 text-white-700" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">
-                    Delivery Partner
+                    {order.assignedDeliveryBoy?.name || "Delivery Partner"}
                   </p>
                   <p className="text-sm text-gray-600">
                     On the way to delivery location
                   </p>
                 </div>
-                <button className="w-12 h-12 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors">
+                <a
+                  href={`tel:${order.assignedDeliveryBoy?.contact}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors"
+                >
                   <Phone className="w-5 h-5 text-green-600" />
-                </button>
+                </a>
               </div>
             </div>
 
