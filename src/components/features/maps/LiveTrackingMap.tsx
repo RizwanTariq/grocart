@@ -105,6 +105,7 @@ type Props = {
   zoom?: number;
   follow?: boolean;
   status?: "online" | "offline" | "arrived";
+  onProgressAction?: (distanceKm: number, etaMinutes: number) => void;
 };
 
 export default function LiveTrackingMap({
@@ -113,6 +114,7 @@ export default function LiveTrackingMap({
   zoom = 14,
   follow = true,
   status = "online",
+  onProgressAction,
 }: Props) {
   const [route, setRoute] = useState<[number, number][]>([]);
   const [animatedPos, setAnimatedPos] = useState<Coordinates>(movingPosition);
@@ -189,18 +191,26 @@ export default function LiveTrackingMap({
         );
         const data = await res.json();
         if (!data.routes?.length) return;
+        const route = data.routes[0];
         setRoute(
-          data.routes[0].geometry.coordinates.map(
-            ([lng, lat]: [number, number]) => [lat, lng]
-          )
+          route.geometry.coordinates.map(([lng, lat]: [number, number]) => [
+            lat,
+            lng,
+          ])
         );
+
+        if (onProgressAction) {
+          const distance = route.distance / 1000;
+          const duration = route.duration / 60;
+          onProgressAction(distance, duration);
+        }
       } catch (e) {
         if ((e as Error).name !== "AbortError") console.error(e);
       }
     };
     fetchRoute();
     return () => controller.abort();
-  }, [staticPosition, movingPosition]);
+  }, [staticPosition, movingPosition, onProgressAction]);
 
   return (
     <MapContainer

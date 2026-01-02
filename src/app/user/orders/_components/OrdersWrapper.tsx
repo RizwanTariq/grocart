@@ -127,6 +127,7 @@ const OrdersWrapper = ({
           {trackingModalOpen && selectedOrderForTracking && (
             <TrackingCard
               order={selectedOrderForTracking}
+              deliveryBoy={selectedOrderForTracking.assignedDeliveryBoy}
               closeTrackingModal={closeTrackingModal}
             />
           )}

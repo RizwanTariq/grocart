@@ -306,6 +306,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
           {trackingModalOpen && selectedOrderForTracking && (
             <TrackingCard
               order={selectedOrderForTracking}
+              deliveryBoy={selectedOrderForTracking.assignedDeliveryBoy}
               closeTrackingModal={closeTrackingModal}
             />
           )}

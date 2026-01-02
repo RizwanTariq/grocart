@@ -21,9 +21,12 @@ async function DeliveryBoyHomePage() {
       { assignedTo: userId, status: DELIVERY_ASSIGNMENT_STATUS.CANCELLED },
     ],
   })
-    .populate({
-      path: "order",
-    })
+    .populate([
+      {
+        path: "order",
+        populate: { path: "user" },
+      },
+    ])
     .lean();
 
   const availableBroadcasts = assignments.filter(

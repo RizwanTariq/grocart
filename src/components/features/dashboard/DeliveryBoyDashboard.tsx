@@ -20,7 +20,6 @@ import {
   Bell,
   User,
   Zap,
-  X,
   CreditCard,
 } from "lucide-react";
 import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
@@ -32,6 +31,8 @@ import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 import toast from "react-hot-toast";
 import axios from "axios";
+import TrackingCard from "../orders/TrackingCard";
+import { useUser } from "@/hooks/useUser";
 
 type Props = {
   initialData: {
@@ -51,6 +52,8 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
   const [completedDeliveries, setCompletedDeliveries] = useState<
     IDeliveryAssignmentPopulated[]
   >(initialData.completed);
+
+  const user = useUser();
 
   const [loading, setLoading] = useState(true);
   const [expandedDelivery, setExpandedDelivery] = useState<string | null>(null);
@@ -1094,194 +1097,12 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
         {/* Navigation Modal */}
         <AnimatePresence>
           {navigationModalOpen && activeDelivery && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-                onClick={() => setNavigationModalOpen(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: "spring", duration: 0.5 }}
-                className="fixed inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl md:max-h-[90vh] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
-              >
-                {/* Modal Header */}
-                <div className="bg-linear-to-r from-orange-500 to-orange-600 p-6 text-white">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                        <Navigation className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold">Navigation</h3>
-                        <p className="text-sm text-orange-100">
-                          Order #{activeDelivery.order.orderNumber}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setNavigationModalOpen(false)}
-                      className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span>En route to customer</span>
-                  </div>
-                </div>
-
-                {/* Modal Content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                  <div className="space-y-6">
-                    {/* Delivery Info Card */}
-                    <div className="bg-linear-to-br from-orange-50 to-amber-50 rounded-xl p-5 border border-orange-100">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <p className="text-sm text-gray-600 mb-1">
-                            Deliver to
-                          </p>
-                          <p className="font-semibold text-gray-900 text-lg">
-                            {activeDelivery.order.address.fullName}
-                          </p>
-                          <p className="text-sm text-gray-600 mt-1">
-                            {activeDelivery.order.address.fullAddress}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600 mb-1">Distance</p>
-                          <p className="font-bold text-orange-600">2.5 km</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        <span>{activeDelivery.order.address.phone}</span>
-                      </div>
-                    </div>
-
-                    {/* Map Placeholder */}
-                    <div
-                      className="bg-gray-100 rounded-xl overflow-hidden"
-                      style={{ height: "400px" }}
-                    >
-                      <div className="w-full h-full flex items-center justify-center text-gray-500">
-                        <div className="text-center">
-                          <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                          <p className="font-semibold">
-                            Your Map Component Goes Here
-                          </p>
-                          <p className="text-sm mt-1">
-                            Integrate your map to show route navigation
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <a
-                        href={`tel:${activeDelivery.order.address.phone}`}
-                        className="bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                      >
-                        <Phone className="w-5 h-5" />
-                        Call Customer
-                      </a>
-                      <a
-                        href={`https://www.google.com/maps/dir/?api=1&destination=${activeDelivery.order.address.coordinates.lat},${activeDelivery.order.address.coordinates.lng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                      >
-                        <Navigation className="w-5 h-5" />
-                        Open in Maps
-                      </a>
-                    </div>
-
-                    {/* Order Items */}
-                    <div className="bg-white rounded-xl border border-gray-200 p-5">
-                      <h4 className="font-semibold text-gray-900 mb-3">
-                        Items to Deliver (
-                        {totalItems(activeDelivery.order.items)})
-                      </h4>
-                      <div className="space-y-2">
-                        {activeDelivery.order.items.map((item, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-3 text-sm"
-                          >
-                            <div className="relative w-10 h-10 rounded-lg bg-gray-50 overflow-hidden shrink-0">
-                              <Image
-                                src={item.image}
-                                alt={item.name}
-                                fill
-                                sizes="40px"
-                                className="object-cover"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium text-gray-900">
-                                {item.name}
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Qty: {item.quantity} {item.unit}
-                              </p>
-                            </div>
-                            <p className="font-semibold text-gray-900">
-                              Rs.{" "}
-                              {(item.price * item.quantity).toLocaleString()}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-semibold text-gray-900">
-                            Order Total
-                          </span>
-                          <span className="font-bold text-lg text-gray-900">
-                            Rs.{" "}
-                            {activeDelivery.order.totalAmount.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">
-                            Your Earning (10%)
-                          </span>
-                          <span className="font-bold text-emerald-600">
-                            Rs.{" "}
-                            {Math.round(activeDelivery.order.totalAmount * 0.1)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Mark as Delivered Button */}
-                    <button
-                      onClick={async () => {
-                        // Call API to mark as delivered
-                        await fetch(
-                          `/api/delivery/assignments/${activeDelivery._id}/deliver`,
-                          {
-                            method: "POST",
-                          }
-                        );
-                        setNavigationModalOpen(false);
-                        fetchDashboardData();
-                      }}
-                      className="w-full bg-linear-to-r from-emerald-500 to-emerald-600 text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle2 className="w-5 h-5" />
-                      Mark as Delivered
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </>
+            <TrackingCard
+              isDeliveryBoy={true}
+              order={activeDelivery.order}
+              deliveryBoy={user}
+              closeTrackingModal={() => setNavigationModalOpen(false)}
+            />
           )}
         </AnimatePresence>
       </div>

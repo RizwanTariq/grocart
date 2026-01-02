@@ -39,7 +39,7 @@ export const POST = auth(async function (request, context) {
     const assignment = await DeliveryAssignmentModel.findById(
       assignmentId
     ).populate([
-      { path: "order" },
+      { path: "order", populate: { path: "user" } },
       { path: "broadcastedTo", select: "socketId" },
     ]);
 

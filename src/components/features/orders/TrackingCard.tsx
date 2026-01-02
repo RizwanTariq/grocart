@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { Navigation, Phone, User, X } from "lucide-react";
+import { CheckCircle2, Navigation, Phone, User, X } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 
 import { totalItems } from "@/app/user/orders/_components/utils";
-import { IOrderPopulated } from "@/types";
+import { IOrder, IOrderPopulated, IUser } from "@/types";
 import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 
@@ -16,20 +16,27 @@ const LiveTrackingMap = dynamic(
 
 function TrackingCard({
   order,
+  deliveryBoy,
+  isDeliveryBoy = false,
   closeTrackingModal,
 }: {
-  order: IOrderPopulated;
+  isDeliveryBoy?: boolean;
+  order: IOrderPopulated | IOrder;
+  deliveryBoy: IUser | null;
   closeTrackingModal: () => void;
 }) {
   const [riderLocation, setRiderLocation] = useState({
-    lat: Number(order.assignedDeliveryBoy?.location.coordinates[1]),
-    lng: Number(order.assignedDeliveryBoy?.location.coordinates[0]),
+    lat: Number(deliveryBoy?.location.coordinates[1]),
+    lng: Number(deliveryBoy?.location.coordinates[0]),
   });
+
+  const [distance, setDistance] = useState(0);
+  const [eta, setEta] = useState(0);
 
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
 
   useEffect(() => {
-    if (!order.assignedDeliveryBoy?._id) return;
+    if (!deliveryBoy?._id) return;
 
     // ensure stable socket
     if (!socketRef.current) {
@@ -38,7 +45,7 @@ function TrackingCard({
 
     const socket = socketRef.current;
 
-    const event = `${EmitterEvent.D_B_LOCATION_UPDATED}_${order.assignedDeliveryBoy?._id}`;
+    const event = `${EmitterEvent.D_B_LOCATION_UPDATED}_${deliveryBoy._id}`;
 
     const handler = (data: {
       userId: string;
@@ -57,7 +64,7 @@ function TrackingCard({
     return () => {
       socket.off(event, handler);
     };
-  }, [order.assignedDeliveryBoy?._id]);
+  }, [deliveryBoy?._id]);
 
   return (
     <>
@@ -83,7 +90,9 @@ function TrackingCard({
                 <Navigation className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Live Delivery Tracking</h3>
+                <h3 className="text-xl font-bold">
+                  {isDeliveryBoy ? "Navigation" : "Live Delivery Tracking"}
+                </h3>
                 <p className="text-sm text-blue-100">#{order.orderNumber}</p>
               </div>
             </div>
@@ -96,7 +105,9 @@ function TrackingCard({
           </div>
           <div className="flex items-center gap-2 text-sm">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>Delivery in progress</span>
+            <span>
+              {isDeliveryBoy ? "En route to customer" : "Delivery in progress"}
+            </span>
           </div>
         </div>
 
@@ -115,11 +126,23 @@ function TrackingCard({
                     {order.address.fullAddress}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">
-                    Estimated arrival
-                  </p>
-                  <p className="font-bold text-blue-600">15-20 mins</p>
+                <div className="text-left">
+                  {distance < 0.05 ? (
+                    <p className="text-base font-semibold text-emerald-600 mt-4">
+                      Arrived
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-600">Distance</p>
+                      <p className="font-bold text-blue-600 text-xs mb-2">
+                        {distance.toFixed(1)} km
+                      </p>
+                      <p className="text-sm text-gray-600">ETA</p>
+                      <p className="font-bold text-blue-600 text-xs">
+                        {`${eta.toFixed(0)} - ${(eta + 2).toFixed(0)}`} mins
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -137,45 +160,72 @@ function TrackingCard({
                     lng: Number(order.address.coordinates.lng),
                   }}
                   movingPosition={riderLocation}
-                  status="online"
+                  onProgressAction={(distanceKm, etaMinutes) => {
+                    setDistance(distanceKm);
+                    setEta(etaMinutes);
+                  }}
                 />
               </div>
             </div>
 
-            {/* Delivery Boy Info */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
-                  {order.assignedDeliveryBoy?.image ? (
-                    <Image
-                      src={order.assignedDeliveryBoy?.image}
-                      alt={order.assignedDeliveryBoy?.name}
-                      fill
-                      sizes="(max-width: 768px) 30vw, 50vw"
-                      loading="eager"
-                      className="object-cover rounded-full"
-                    />
-                  ) : (
-                    <User className="h-7 w-7 text-white-700" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900">
-                    {order.assignedDeliveryBoy?.name || "Delivery Partner"}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    On the way to delivery location
-                  </p>
-                </div>
+            {isDeliveryBoy ? (
+              /* Customer Info */
+              <div className="grid grid-cols-2 gap-3">
                 <a
-                  href={`tel:${order.assignedDeliveryBoy?.contact}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors"
+                  href={`tel:${order.address.phone}`}
+                  className="bg-green-100 hover:bg-green-200 text-green-700 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
                 >
-                  <Phone className="w-5 h-5 text-green-600" />
+                  <Phone className="w-5 h-5" />
+                  Call Customer
+                </a>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${order.address.coordinates.lat},${order.address.coordinates.lng}&travelmode=driving&dir_action=navigate`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+                >
+                  <Navigation className="w-5 h-5" />
+                  Open in Maps
                 </a>
               </div>
-            </div>
+            ) : (
+              /* Delivery Boy Info */
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-linear-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg relative">
+                    {deliveryBoy?.image ? (
+                      <Image
+                        src={deliveryBoy.image}
+                        alt={deliveryBoy.name}
+                        fill
+                        sizes="(max-width: 768px) 30vw, 50vw"
+                        loading="eager"
+                        className="object-cover rounded-full"
+                      />
+                    ) : (
+                      <User className="h-7 w-7 text-white-700" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900">
+                      {deliveryBoy?.name || "Delivery Partner"}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {distance < 0.05
+                        ? "Arrived at delivery location"
+                        : "On the way to delivery location"}
+                    </p>
+                  </div>
+                  <a
+                    href={`tel:${deliveryBoy?.contact}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors"
+                  >
+                    <Phone className="w-5 h-5 text-green-600" />
+                  </a>
+                </div>
+              </div>
+            )}
 
             {/* Order Items Summary */}
             <div className="bg-white rounded-xl border border-gray-200 p-5">
@@ -215,6 +265,13 @@ function TrackingCard({
                 </span>
               </div>
             </div>
+            {/* Mark as Delivered Button */}
+            {isDeliveryBoy && (
+              <button className="w-full bg-linear-to-r from-emerald-500 to-emerald-600 text-white py-3.5 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                <CheckCircle2 className="w-5 h-5" />
+                Mark as Delivered
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
