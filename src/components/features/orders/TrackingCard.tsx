@@ -108,12 +108,15 @@ function TrackingCard({
             <span>
               {isDeliveryBoy ? "En route to customer" : "Delivery in progress"}
             </span>
+            <span className="text-sm text-gray-200">
+              • ETA {`${eta.toFixed(0)} - ${(eta + 2).toFixed(0)}`} mins
+            </span>
           </div>
         </div>
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="space-y-6">
+          <div className="space-y-6 mx-5">
             {/* Delivery Status Card */}
             <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
               <div className="flex items-start justify-between mb-4">
@@ -126,20 +129,16 @@ function TrackingCard({
                     {order.address.fullAddress}
                   </p>
                 </div>
-                <div className="text-left">
+                <div className="">
                   {distance < 0.05 ? (
-                    <p className="text-base font-semibold text-emerald-600 mt-4">
-                      Arrived
+                    <p className="text-sm font-semibold text-emerald-600 mt-8">
+                      Arrived at your place
                     </p>
                   ) : (
                     <>
                       <p className="text-sm text-gray-600">Distance</p>
-                      <p className="font-bold text-blue-600 text-xs mb-2">
+                      <p className="font-bold text-blue-600">
                         {distance.toFixed(1)} km
-                      </p>
-                      <p className="text-sm text-gray-600">ETA</p>
-                      <p className="font-bold text-blue-600 text-xs">
-                        {`${eta.toFixed(0)} - ${(eta + 2).toFixed(0)}`} mins
                       </p>
                     </>
                   )}
