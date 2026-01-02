@@ -37,17 +37,7 @@ export const POST = async function (request: NextRequest) {
 
     await connectDB();
     await assertOutsideReq(request);
-    const user = await assertUser(userId);
-
-    if (user.socketId !== socketId) {
-      throw NextResponse.json(
-        prepareErrorResponse(
-          "UNAUTHORIZED",
-          "Unauthorized: Socket id mismatch"
-        ),
-        { status: 401 }
-      );
-    }
+    await assertUser(userId);
 
     await UserModel.findByIdAndUpdate(
       userId,
@@ -57,6 +47,8 @@ export const POST = async function (request: NextRequest) {
           coordinates: [longitude, latitude],
         },
         lastActiveAt: new Date(),
+        isOnline: true,
+        socketId,
       },
       { new: true }
     );
