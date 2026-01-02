@@ -9,6 +9,7 @@ const geoPointSchema = new mongoose.Schema(
       enum: ["Point"],
       required: true,
     },
+    // [longitude, latitude]
     coordinates: {
       type: [Number],
       required: true,
