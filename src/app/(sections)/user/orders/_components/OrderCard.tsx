@@ -21,7 +21,7 @@ import {
   getPaymentStatusLabel,
   getStatusConfig,
   totalItems,
-} from "./utils";
+} from "@/components/utils";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { extractApiError } from "@/utils/api-error-extractor";
@@ -152,29 +152,11 @@ function OrderCard({
         {order.status === ORDER_STATUS.OUT_FOR_DELIVERY &&
           order.assignedDeliveryBoy && (
             <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-              {/* <div className="flex -space-x-3">
-            {order.items.slice(0, 3).map((item, idx) => (
-              <div
-                key={idx}
-                className="relative w-12 h-12 rounded-xl bg-gray-100 overflow-hidden border-2 border-white shadow-sm"
-              >
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  sizes="48px"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-            {order.items.length > 3 && (
-              <div className="w-12 h-12 rounded-xl border-2 border-white bg-linear-to-br from-rose-100 to-pink-100 flex items-center justify-center text-xs font-bold text-rose-700 shadow-sm">
-                +{order.items.length - 3}
-              </div>
-            )}
-          </div> */}
               <DeliveryRiderInfo
                 rider={order.assignedDeliveryBoy}
+                customer={order.user}
+                orderId={order._id}
+                orderNumber={order.orderNumber}
                 onTrackDelivery={openTrackingModal}
               />
             </div>

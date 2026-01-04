@@ -1,31 +1,34 @@
 import { useState } from "react";
-import CustomDropdown from "./CustomDropdown";
-import { IOrderPopulated } from "@/types";
+
 import { ORDER_STATUS } from "@/types/enums";
-import { getStatusConfig } from "@/app/user/orders/_components/utils";
+import { getStatusConfig } from "@/components/utils";
+
+import CustomDropdown from "./CustomDropdown";
 
 function OrderStatusSelector({
-  order,
+  orderId,
+  orderStatus,
   loading,
   updateOrderStatus,
 }: {
-  order: IOrderPopulated;
+  orderId: string;
+  orderStatus: ORDER_STATUS;
   loading: boolean;
   updateOrderStatus: (orderId: string, newStatus: ORDER_STATUS) => void;
 }) {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const config = getStatusConfig(order.status);
+  const config = getStatusConfig(orderStatus);
 
   return (
     <CustomDropdown
       isOpen={showStatusDropdown}
       onToggle={() => setShowStatusDropdown((prev) => !prev)}
-      selectedId={order.status}
+      selectedId={orderStatus}
       selectedLabel={config.label}
       icon={config.icon}
       onSelect={(status) => {
-        updateOrderStatus(order._id, status as ORDER_STATUS);
+        updateOrderStatus(orderId, status as ORDER_STATUS);
       }}
       loading={loading}
       list={Object.values(ORDER_STATUS).map((status) => ({

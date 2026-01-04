@@ -24,7 +24,7 @@ async function DeliveryBoyHomePage() {
     .populate([
       {
         path: "order",
-        populate: { path: "user" },
+        populate: { path: "user", select: "-password" },
       },
     ])
     .lean();

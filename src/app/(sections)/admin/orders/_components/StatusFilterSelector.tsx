@@ -1,4 +1,4 @@
-import { getOrderStatusLabelWithAll as getOrderStatusLabel } from "@/app/user/orders/_components/utils";
+import { getOrderStatusLabelWithAll as getOrderStatusLabel } from "@/components/utils";
 import Dropdown from "@/components/common/Dropdown";
 import { ORDER_STATUS } from "@/types/enums";
 import { Filter } from "lucide-react";

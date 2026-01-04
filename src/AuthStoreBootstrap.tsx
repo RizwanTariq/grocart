@@ -1,37 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useRef } from "react";
 import { useStore } from "@/store/useStore";
 import { IUser } from "@/types";
 import axios from "axios";
 
 function AuthStoreBootstrap() {
-  const { data: session, status } = useSession();
   const setUser = useStore((s) => s.setUser);
   const clearUser = useStore((s) => s.clearUser);
 
+  const ref = useRef(false);
+
   useEffect(() => {
-    if (status === "loading") return;
-    if (status !== "authenticated" || !session?.user?.email) {
-      clearUser();
-      return;
-    }
+    if (ref.current) return;
+    ref.current = true;
     const loadUserFromDB = async () => {
-      const res = await axios.get("/api/me");
+      try {
+        const res = await axios.get("/api/me");
 
-      if (!res.status || (res.status >= 400 && res.status < 500)) {
+        if (res.status !== 200) {
+          clearUser();
+          return;
+        }
+        const user = res.data as IUser;
+
+        setUser(user);
+      } catch (error) {
+        console.error(error);
         clearUser();
-        return;
       }
-      const user = res.data as IUser;
-
-      setUser(user);
     };
 
     loadUserFromDB();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  }, [setUser, clearUser]);
 
   return null;
 }

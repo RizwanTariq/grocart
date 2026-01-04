@@ -19,7 +19,7 @@ import { MapPin } from "lucide-react";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const user = useUser();
+  const { user } = useUser();
   const {
     getCurrentLocation,
     position,

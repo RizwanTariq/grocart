@@ -15,8 +15,7 @@ import {
 } from "lucide-react";
 
 import { IUser } from "@/types";
-import { useStore } from "@/store/useStore";
-import { USER_ROLE } from "@/types/enums";
+import { useUser } from "@/hooks/useUser";
 
 import ProfileDropdown from "./ProfileDropdown";
 import CartButton from "./CartButton";
@@ -26,15 +25,12 @@ import NavLink from "./NavLink";
 
 function NavBar() {
   const [mounted, setMounted] = useState(false);
-  const user = useStore((s) => s.user);
+  const { user, isUser, isAdmin } = useUser();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
-
-  const isUser = user?.role === USER_ROLE.USER;
-  const isAdmin = user?.role === USER_ROLE.ADMIN;
 
   const [mobileMenu, setMobileMenu] = useState(false);
   const [cartMenu, setCartMenu] = useState(false);

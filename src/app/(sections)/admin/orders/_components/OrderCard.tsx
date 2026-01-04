@@ -1,8 +1,4 @@
-import {
-  formatDate,
-  getStatusConfig,
-  totalItems,
-} from "@/app/user/orders/_components/utils";
+import { formatDate, getStatusConfig, totalItems } from "@/components/utils";
 import { IOrderPopulated } from "@/types";
 import { ORDER_STATUS, PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
 import {
@@ -131,7 +127,8 @@ function OrderCard({
               Order Status
             </label>
             <OrderStatusSelector
-              order={order}
+              orderId={order._id}
+              orderStatus={order.status}
               loading={statusLoading}
               updateOrderStatus={updateOrderStatus}
             />
@@ -142,7 +139,9 @@ function OrderCard({
               Payment Status
             </label>
             <PaymentStatusSelector
-              order={order}
+              orderId={order._id}
+              paymentStatus={order.paymentStatus}
+              paymentMethod={order.paymentMethod}
               loading={paymentLoading}
               updatePaymentStatus={updatePaymentStatus}
             />
@@ -160,6 +159,9 @@ function OrderCard({
           order.assignedDeliveryBoy && (
             <DeliveryRiderInfo
               rider={order.assignedDeliveryBoy}
+              customer={order.user}
+              orderId={order._id}
+              orderNumber={order.orderNumber}
               onTrackDelivery={() => openTrackingModal(order)}
             />
           )}

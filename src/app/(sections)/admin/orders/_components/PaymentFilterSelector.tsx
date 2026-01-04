@@ -1,4 +1,4 @@
-import { getPaymentStatusLabelWithAll } from "@/app/user/orders/_components/utils";
+import { getPaymentStatusLabelWithAll } from "@/components/utils";
 import Dropdown from "@/components/common/Dropdown";
 import { PAYMENT_STATUS } from "@/types/enums";
 import { CreditCard } from "lucide-react";

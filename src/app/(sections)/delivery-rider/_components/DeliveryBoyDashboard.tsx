@@ -20,7 +20,7 @@ import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 
 import { PAYMENT_METHOD } from "@/types/enums";
 import PageHeader from "@/components/PageHeader";
-import { formatDate, totalItems } from "@/app/user/orders/_components/utils";
+import { formatDate, totalItems } from "@/components/utils";
 import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 import toast from "react-hot-toast";
@@ -49,7 +49,7 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
     IDeliveryAssignmentPopulated[]
   >(initialData.completed);
 
-  const user = useUser();
+  const { user } = useUser();
 
   const [expandedDelivery, setExpandedDelivery] = useState<string | null>(null);
 

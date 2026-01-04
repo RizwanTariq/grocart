@@ -1,32 +1,35 @@
 import { useState } from "react";
-import CustomDropdown from "./CustomDropdown";
-import { IOrderPopulated } from "@/types";
 import { PAYMENT_METHOD, PAYMENT_STATUS } from "@/types/enums";
-import { getPaymentStatusConfig } from "@/app/user/orders/_components/utils";
+import { getPaymentStatusConfig } from "@/components/utils";
+import CustomDropdown from "./CustomDropdown";
 
 function PaymentStatusSelector({
-  order,
+  orderId,
+  paymentStatus,
+  paymentMethod,
   loading,
   updatePaymentStatus,
 }: {
-  order: IOrderPopulated;
+  orderId: string;
+  paymentStatus: PAYMENT_STATUS;
+  paymentMethod: PAYMENT_METHOD;
   loading: boolean;
   updatePaymentStatus: (orderId: string, newStatus: PAYMENT_STATUS) => void;
 }) {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
-  const config = getPaymentStatusConfig(order.paymentStatus);
-  const disabled = order.paymentMethod !== PAYMENT_METHOD.COD;
+  const config = getPaymentStatusConfig(paymentStatus);
+  const disabled = paymentMethod !== PAYMENT_METHOD.COD;
   return (
     <CustomDropdown
       isOpen={showStatusDropdown}
       onToggle={() => setShowStatusDropdown((prev) => !prev)}
-      selectedId={order.paymentStatus}
+      selectedId={paymentStatus}
       selectedLabel={config.label}
       icon={config.icon}
       disabled={disabled}
       onSelect={(status) => {
-        updatePaymentStatus(order._id, status as PAYMENT_STATUS);
+        updatePaymentStatus(orderId, status as PAYMENT_STATUS);
       }}
       loading={loading}
       list={Object.values(PAYMENT_STATUS).map((status) => ({

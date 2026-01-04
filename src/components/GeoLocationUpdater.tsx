@@ -2,19 +2,18 @@
 
 import { useEffect, useRef } from "react";
 import { disconnectSocket, getSocket } from "@/libs/socket";
-import { useStore } from "@/store/useStore";
-import { USER_ROLE } from "@/types/enums";
+
 import { EmitterEvent } from "@/types/generic";
+import { useUser } from "@/hooks/useUser";
 
 function GeoLocationUpdater() {
-  const userId = useStore((s) => s.user?._id);
-  const userRole = useStore((s) => s.user?.role);
-  const isDeliveryBoy = userRole === USER_ROLE.DELIVERY_BOY;
+  const { user, isDeliveryBoy } = useUser();
+
   const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!user?._id) return;
 
     // ensure stable socket
     if (!socketRef.current) {
@@ -23,7 +22,7 @@ function GeoLocationUpdater() {
 
     const socket = socketRef.current;
 
-    socket.emit("identity", userId);
+    socket.emit("identity", user._id);
 
     if (!navigator.geolocation || !isDeliveryBoy) {
       console.warn("Geolocation not supported");
@@ -33,9 +32,9 @@ function GeoLocationUpdater() {
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         socket.emit("update-location", {
-          userId,
+          userId: user._id,
           isDeliveryBoy,
-          event: `${EmitterEvent.D_B_LOCATION_UPDATED}_${userId}`,
+          event: `${EmitterEvent.D_B_LOCATION_UPDATED}_${user._id}`,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
@@ -54,7 +53,7 @@ function GeoLocationUpdater() {
       }
       disconnectSocket(); // Disconnect the socket when the component unmounts
     };
-  }, [userId, isDeliveryBoy]);
+  }, [user, isDeliveryBoy]);
 
   return null;
 }

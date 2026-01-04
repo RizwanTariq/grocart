@@ -15,7 +15,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import axios from "axios";
 
-import { formatDate, totalItems } from "@/app/user/orders/_components/utils";
+import { formatDate, totalItems } from "@/components/utils";
 import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 import { useState } from "react";
 import toast from "react-hot-toast";

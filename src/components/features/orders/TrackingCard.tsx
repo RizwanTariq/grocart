@@ -4,7 +4,7 @@ import { CheckCircle2, Navigation, Phone, User, X } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 
-import { totalItems } from "@/app/user/orders/_components/utils";
+import { totalItems } from "@/components/utils";
 import { IOrder, IOrderPopulated, IUser } from "@/types";
 import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";

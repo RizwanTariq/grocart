@@ -22,6 +22,20 @@ const OrdersPage = async () => {
     {
       $lookup: {
         from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $unwind: {
+        path: "$user",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
         localField: "assignedDeliveryBoy",
         foreignField: "_id",
         as: "assignedDeliveryBoy",

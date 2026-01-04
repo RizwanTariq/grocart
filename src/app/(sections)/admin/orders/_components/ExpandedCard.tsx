@@ -4,10 +4,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { MapPin, Phone, Mail, FileText } from "lucide-react";
 import { PAYMENT_METHOD } from "@/types/enums";
-import {
-  getPaymentStatusConfig,
-  totalItems,
-} from "@/app/user/orders/_components/utils";
+import { getPaymentStatusConfig, totalItems } from "@/components/utils";
 
 function ExpandedCard({ order }: { order: IOrderPopulated }) {
   const paymentConfig = getPaymentStatusConfig(order.paymentStatus);

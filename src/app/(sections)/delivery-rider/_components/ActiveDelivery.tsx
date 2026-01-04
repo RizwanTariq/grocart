@@ -1,6 +1,6 @@
 "use client";
 
-import { totalItems } from "@/app/user/orders/_components/utils";
+import { totalItems } from "@/components/utils";
 import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 import {
   Bike,
@@ -14,14 +14,25 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
+import DeliveryChat from "../../../../components/common/Chat";
+
+import { useUser } from "@/hooks/useUser";
+
+import { IUser } from "@/types";
+
+interface ActiveDeliveryProps {
+  delivery: IDeliveryAssignmentPopulated;
+  openNavigationModal: () => void;
+}
 
 function ActiveDelivery({
   delivery,
   openNavigationModal,
-}: {
-  delivery: IDeliveryAssignmentPopulated;
-  openNavigationModal: () => void;
-}) {
+}: ActiveDeliveryProps) {
+  const { user } = useUser();
+
+  const customer = delivery.order.user as unknown as IUser;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -32,7 +43,7 @@ function ActiveDelivery({
         <div className="w-10 h-10 bg-linear-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg relative">
           <Zap className="w-5 h-5 text-white" />
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-600 opacity-85"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-400"></span>
           </span>
         </div>
@@ -50,7 +61,7 @@ function ActiveDelivery({
       >
         <div className="relative bg-white rounded-2xl overflow-hidden shadow-lg">
           {/* Header */}
-          <div className="bg-linear-to-r from-red-500 via-red-500 to-rose-500 p-6 md:p-8 text-white relative overflow-hidden">
+          <div className="bg-linear-to-r from-rose-600 via-rose-500 to-pink-600 p-6 md:p-8 text-white relative overflow-hidden">
             {/* Animated background pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl"></div>
@@ -69,7 +80,7 @@ function ActiveDelivery({
                       <Bike className="w-6 h-6 text-white" />
                     </motion.div>
                     <div>
-                      <p className="text-xs font-medium text-orange-100 mb-1">
+                      <p className="text-xs font-medium text-rose-100 mb-1">
                         Order Number
                       </p>
                       <h3 className="text-2xl md:text-3xl font-bold">
@@ -77,12 +88,12 @@ function ActiveDelivery({
                       </h3>
                     </div>
                   </div>
-                  <p className="text-lg text-orange-50 font-medium">
+                  <p className="text-lg text-rose-50 font-medium">
                     {delivery.order.address.fullName}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-medium text-orange-100 mb-2">
+                  <p className="text-xs font-medium text-rose-100 mb-2">
                     Your Earning
                   </p>
                   <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2">
@@ -95,7 +106,7 @@ function ActiveDelivery({
 
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-semibold text-orange-50">
+                <span className="text-sm font-semibold text-rose-50">
                   Delivery In Progress
                 </span>
               </div>
@@ -103,12 +114,12 @@ function ActiveDelivery({
           </div>
 
           {/* Content */}
-          <div className="p-6 md:p-8 ">
+          <div className="p-6 md:p-8">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               {/* Delivery Address */}
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-linear-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
                     <MapPin className="w-5 h-5 text-white" />
                   </div>
                   <h4 className="font-bold text-gray-900 text-lg">
@@ -218,8 +229,8 @@ function ActiveDelivery({
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* Action Buttons - Now includes Chat */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
@@ -229,6 +240,24 @@ function ActiveDelivery({
                 <Navigation className="w-5 h-5" />
                 Navigate
               </motion.button>
+
+              {/* Chat Button */}
+              {delivery.order?._id && user?._id && (
+                <DeliveryChat
+                  orderId={delivery.order._id}
+                  currentUserId={user._id}
+                  otherUser={{
+                    _id: customer._id,
+                    name: delivery.order.address.fullName,
+                    image: customer.image,
+                    isOnline: customer.isOnline,
+                    lastActiveAt: customer.lastActiveAt,
+                    role: customer.role,
+                  }}
+                  orderNumber={delivery.order.orderNumber}
+                />
+              )}
+
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
