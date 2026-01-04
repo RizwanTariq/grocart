@@ -1,5 +1,10 @@
+"use client";
+
+import DeliveryChat from "@/components/common/Chat";
+
 import { IUser } from "@/types";
-import { motion } from "framer-motion";
+
+import { motion } from "motion/react";
 import {
   Bike,
   MapPin,
@@ -8,29 +13,23 @@ import {
   Navigation,
 } from "lucide-react";
 import Image from "next/image";
+import { formatLastActive } from "@/components/utils";
 
 interface DeliveryRiderInfoProps {
   rider: IUser;
+  customer: IUser;
+  orderId: string;
+  orderNumber: string;
   onTrackDelivery?: () => void;
 }
 
 const DeliveryRiderInfo = ({
+  orderId,
+  orderNumber,
   rider,
+  customer,
   onTrackDelivery,
 }: DeliveryRiderInfoProps) => {
-  const formatLastActive = (date?: Date) => {
-    if (!date) return "Unknown";
-    const now = new Date();
-    const diff = now.getTime() - new Date(date).getTime();
-    const minutes = Math.floor(diff / 60000);
-
-    if (minutes < 1) return "Active now";
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.floor(hours / 24)}d ago`;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -39,11 +38,11 @@ const DeliveryRiderInfo = ({
       className="mt-6 relative group w-full"
     >
       {/* Animated glow border */}
-      <div className="absolute -inset-0.5 bg-linear-to-r from-blue-400 via-purple-400 to-blue-400 rounded-2xl opacity-50 group-hover:opacity-80 blur-sm transition-all duration-500"></div>
+      <div className="absolute -inset-0.5 bg-linear-to-r from-rose-400 via-pink-400 to-rose-400 rounded-2xl opacity-30 group-hover:opacity-50 blur-sm transition-all duration-500"></div>
 
-      <div className="relative bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 md:p-5 border border-blue-100">
+      <div className="relative bg-linear-to-br from-gray-50 to-gray-100 rounded-2xl p-4 md:p-5 border border-rose-100">
         {/* Animated background orb */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-300/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-300/20 rounded-full blur-3xl"></div>
 
         <div className="relative">
           {/* Header */}
@@ -77,17 +76,17 @@ const DeliveryRiderInfo = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Rider Avatar & Name */}
             <div className="flex items-center gap-3 p-3 bg-white/80 backdrop-blur-sm rounded-lg hover:bg-white transition-all">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-blue-200 shrink-0">
+              <div className="relative w-12 h-12 rounded-full ring-2 ring-blue-200 shrink-0">
                 {rider.image ? (
                   <Image
                     src={rider.image}
                     alt={rider.name}
                     fill
                     sizes="48px"
-                    className="object-cover"
+                    className="object-cover rounded-full"
                   />
                 ) : (
-                  <div className="w-full h-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <div className="w-full h-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center  rounded-full">
                     <UserIcon className="w-6 h-6 text-white" />
                   </div>
                 )}
@@ -118,31 +117,47 @@ const DeliveryRiderInfo = ({
                 <a
                   href={`tel:${rider.contact}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-lg flex items-center justify-center transition-colors shrink-0"
+                  className="w-10 h-10 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors shrink-0"
                 >
                   <Phone className="w-5 h-5 text-green-600" />
                 </a>
               </div>
             )}
           </div>
-
-          {/* Track Delivery Button */}
-          {onTrackDelivery && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onTrackDelivery();
-              }}
-              className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 mt-3 cursor-pointer"
-            >
-              <Navigation className="w-5 h-5" />
-              Track Live Delivery
-            </button>
-          )}
+          <div className="flex gap-4 mt-3">
+            {/* Track Delivery Button */}
+            {onTrackDelivery && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTrackDelivery();
+                }}
+                className="w-full bg-linear-to-r from-blue-500 to-blue-600 text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Navigation className="w-5 h-5" />
+                Track Live Delivery
+              </button>
+            )}
+            {orderId && customer?._id && rider._id && (
+              <DeliveryChat
+                currentUserId={customer?._id}
+                orderId={orderId}
+                otherUser={{
+                  _id: rider._id,
+                  name: rider.name,
+                  image: rider.image,
+                  isOnline: rider.isOnline,
+                  lastActiveAt: rider.lastActiveAt,
+                  role: rider.role,
+                }}
+                orderNumber={orderNumber}
+              />
+            )}
+          </div>
 
           {/* Status Badge */}
           <div className="flex items-center justify-center gap-2 mt-3 text-sm">
-            <MapPin className="w-4 h-4 text-blue-600" />
+            <MapPin className="w-4 h-4 text-rose-600" />
             <span className="text-gray-700 font-medium">
               En route to customer
             </span>

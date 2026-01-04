@@ -9,19 +9,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async function (request: NextRequest) {
   try {
-    const { socketId } = await request.json();
+    const { socketId, userId } = await request.json();
 
     await connectDB();
     await assertOutsideReq(request);
 
-    if (!socketId) {
+    if (!socketId && !userId) {
       throw NextResponse.json(
-        prepareErrorResponse("BAD_REQUEST", "Missing socket id"),
+        prepareErrorResponse(
+          "BAD_REQUEST",
+          "Missing socket id and user id at least one is required"
+        ),
         { status: 400 }
       );
     }
 
-    const user = await UserModel.findOne({ socketId });
+    const user = await UserModel.findOne({
+      $or: [{ _id: userId }, { socketId }],
+    });
 
     if (!user) {
       throw NextResponse.json(
