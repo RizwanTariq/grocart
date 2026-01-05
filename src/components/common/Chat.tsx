@@ -9,6 +9,7 @@ import {
   User,
   Loader2,
   CheckCheck,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import axios from "axios";
@@ -39,23 +40,52 @@ interface DeliveryChatProps {
   orderNumber: string;
 }
 
+// Suggested messages for delivery riders
+const RIDER_SUGGESTIONS = [
+  "I'm on my way! 🚴",
+  "Arriving in 5 minutes",
+  "I'm near your location",
+  "Please come to the gate",
+  "Unable to find the address. Please help",
+  "Can you share exact location?",
+  "Traffic delay, arriving shortly",
+  "Order delivered successfully! ✅",
+];
+
+// Suggested messages for customers
+const CUSTOMER_SUGGESTIONS = [
+  "How far are you?",
+  "Please call me when you arrive",
+  "I'm at the main gate",
+  "Please ring the doorbell",
+  "Leave at the door please",
+  "Thank you! 🙏",
+  "Can you wait 2 minutes?",
+  "I'll come down now",
+];
+
 const DeliveryChat = ({
   orderId,
   currentUserId,
   otherUser,
   orderNumber,
 }: DeliveryChatProps) => {
-  const { isAdmin } = useUser();
+  const { isAdmin, isDeliveryBoy } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { socket, connected } = useSocket();
+
+  // Determine which suggestions to show based on user role
+  const suggestions = isDeliveryBoy ? RIDER_SUGGESTIONS : CUSTOMER_SUGGESTIONS;
+
   useEffect(() => {
     if (!socket || !connected) {
       console.warn("Socket not connected");
@@ -103,6 +133,19 @@ const DeliveryChat = ({
     }
   }, [isOpen]);
 
+  // Show suggestions when there are few messages or no recent activity
+  useEffect(() => {
+    if (!messages.length) {
+      setShowSuggestions(true);
+      return;
+    }
+    const lastMessage = messages[messages?.length - 1];
+    const timeSinceLastMessage =
+      Date.now() - new Date(lastMessage?.sentAt).getTime();
+    // Hide suggestions if there are many messages or recent activity
+    setShowSuggestions(messages.length < 5 || timeSinceLastMessage > 20000);
+  }, [messages]);
+
   const fetchMessages = async () => {
     try {
       setLoading(true);
@@ -118,7 +161,6 @@ const DeliveryChat = ({
 
       setMessages(formattedMessages);
 
-      // Count unread messages if chat is closed
       if (!isOpen) {
         const unread = formattedMessages.filter(
           (msg: Message) =>
@@ -133,9 +175,11 @@ const DeliveryChat = ({
     }
   };
 
-  const sendMessage = async (e: React.FormEvent) => {
+  const sendMessage = async (e: React.FormEvent, messageText?: string) => {
     e.preventDefault();
-    if (!newMessage.trim() || sending) return;
+    const content = messageText || newMessage;
+    if (!content.trim() || sending) return;
+    setShowSuggestions(false);
 
     try {
       setSending(true);
@@ -143,7 +187,7 @@ const DeliveryChat = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: newMessage,
+          content: content,
           senderId: currentUserId,
           sentAt: new Date(),
         }),
@@ -159,6 +203,10 @@ const DeliveryChat = ({
     } finally {
       setSending(false);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    sendMessage({ preventDefault: () => {} } as React.FormEvent, suggestion);
   };
 
   const scrollToBottom = () => {
@@ -227,7 +275,7 @@ const DeliveryChat = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="fixed inset-4 md:inset-auto md:right-6 md:bottom-6 md:w-[400px] md:h-[600px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+              className="fixed inset-4 sm:inset-auto sm:right-6 sm:bottom-6 sm:w-[400px] sm:h-[700px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -254,13 +302,14 @@ const DeliveryChat = ({
                     </div>
                     <div>
                       <h3 className="font-bold">
-                        {otherUser.name} (
+                        {otherUser.name}{" "}
                         <span className="text-sm font-normal text-rose-50">
+                          (
                           {otherUser.role === USER_ROLE.DELIVERY_BOY
-                            ? "Delivery Rider"
+                            ? "Rider"
                             : "Customer"}
+                          )
                         </span>
-                        )
                       </h3>
                       <p className="text-xs text-rose-100">
                         {otherUser.isOnline
@@ -347,6 +396,39 @@ const DeliveryChat = ({
                 )}
               </div>
 
+              {/* Suggested Messages */}
+              {!isAdmin && showSuggestions && !loading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="px-4 pb-2 bg-white border-t border-gray-100"
+                >
+                  <div className="flex items-center gap-2 mb-2 pt-2">
+                    <Zap className="w-4 h-4 text-rose-500" />
+                    <span className="text-xs font-semibold text-gray-700">
+                      Quick replies
+                    </span>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-custom">
+                    {suggestions.slice(0, 4).map((suggestion, idx) => (
+                      <motion.button
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.05 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        disabled={sending}
+                        className="shrink-0 px-3 py-2 bg-linear-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 text-xs font-medium rounded-full border border-rose-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                      >
+                        {suggestion}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               {/* Input Area */}
               {!isAdmin && (
                 <form
@@ -367,11 +449,11 @@ const DeliveryChat = ({
                       />
                     </div>
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
                       type="submit"
                       disabled={!newMessage.trim() || sending}
-                      className="w-12 h-12 bg-linear-to-r from-rose-600 to-red-500 text-white rounded-xl flex items-center justify-center hover:shadow-lg hover:shadow-rose-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-11 h-11 bg-linear-to-r from-rose-600 to-red-500 text-white rounded-xl flex items-center justify-center hover:shadow-lg hover:shadow-rose-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {sending ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

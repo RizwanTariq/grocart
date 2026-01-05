@@ -33,4 +33,36 @@ body {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+  /* Custom scrollbar styling */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(244 63 94) rgb(255 241 242); /* rose-500 and rose-50 */
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: rgb(255 241 242); /* rose-50 */
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      rgb(244 63 94),
+      rgb(236 72 153)
+    ); /* rose-500 to pink-500 */
+    border-radius: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      rgb(225 29 72),
+      rgb(219 39 119)
+    ); /* rose-600 to pink-600 */
+  }
 }
