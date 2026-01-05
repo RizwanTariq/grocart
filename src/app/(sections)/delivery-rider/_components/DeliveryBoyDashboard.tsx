@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
@@ -21,7 +21,6 @@ import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
 import { PAYMENT_METHOD } from "@/types/enums";
 import PageHeader from "@/components/PageHeader";
 import { formatDate, totalItems } from "@/components/utils";
-import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 import toast from "react-hot-toast";
 import TrackingCard from "@/components/features/orders/TrackingCard";
@@ -29,6 +28,7 @@ import { useUser } from "@/hooks/useUser";
 import StatsGrid from "./StatsGrid";
 import BroadcastsSection from "./BroadcastsSection";
 import ActiveDelivery from "./ActiveDelivery";
+import { useSocket } from "@/SocketContext";
 
 type Props = {
   initialData: {
@@ -55,14 +55,12 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
 
   const [navigationModalOpen, setNavigationModalOpen] = useState(false);
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const { socket, connected } = useSocket();
   useEffect(() => {
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
+    if (!socket || !connected) {
+      console.warn("Socket not connected");
+      return;
     }
-
-    const socket = socketRef.current;
 
     const handler = (data: IDeliveryAssignmentPopulated) => {
       toast.success(
@@ -87,7 +85,7 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
       socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerAcceptOrReject);
       socket.off(EmitterEvent.DELIVERY_REJECTED, handlerAcceptOrReject);
     };
-  }, []);
+  }, [socket, connected]);
 
   const stats = {
     totalDeliveries: completedDeliveries.length,

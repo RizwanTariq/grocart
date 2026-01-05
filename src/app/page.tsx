@@ -4,8 +4,6 @@ import { auth } from "@/auth";
 import EditRoleAndContact from "@/components/EditRoleAndContact";
 import connectDB from "@/libs/db";
 import UserModel from "@/models/user.model";
-import NavBar from "@/components/features/navbar/NavBar";
-import AdminDashboard from "@/components/features/dashboard/AdminDashboard";
 import { convertId, IUser } from "@/types";
 import { USER_ROLE } from "@/types/enums";
 
@@ -36,10 +34,9 @@ export default async function Home() {
     redirect("/delivery-rider");
   }
 
-  return (
-    <>
-      <NavBar />
-      <AdminDashboard />
-    </>
-  );
+  if (user.role === USER_ROLE.ADMIN) {
+    redirect("/admin");
+  }
+
+  return null;
 }

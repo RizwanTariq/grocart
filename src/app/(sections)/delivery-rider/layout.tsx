@@ -1,5 +1,4 @@
 import NavBar from "@/components/features/navbar/NavBar";
-import GeoLocationUpdater from "@/components/GeoLocationUpdater";
 
 export default function DeliveryLayout({
   children,
@@ -10,7 +9,6 @@ export default function DeliveryLayout({
     <>
       <NavBar />
       {children}
-      <GeoLocationUpdater />
     </>
   );
 }

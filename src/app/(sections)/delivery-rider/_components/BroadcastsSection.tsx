@@ -43,9 +43,7 @@ function BroadcastsSection({
 
       if (response.status === 200) {
         onAcceptAction(assignmentId, response.data);
-        toast.success(
-          `Delivery accepted for order #${response.data.order.orderNumber}!`
-        );
+        toast.success(`Delivery request accepted successfully!`);
       }
     } catch (error) {
       console.error("Error accepting delivery:", error);
@@ -63,9 +61,7 @@ function BroadcastsSection({
 
       if (response.status === 200) {
         onRejectAction(assignmentId);
-        toast.success(
-          `Delivery rejected for order #${response.data.order.orderNumber}!`
-        );
+        toast.success(`Delivery request rejected successfully!`);
       }
     } catch (error) {
       console.error("Error rejecting delivery:", error);

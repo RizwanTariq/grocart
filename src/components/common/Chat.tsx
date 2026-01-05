@@ -17,7 +17,7 @@ import { useUser } from "@/hooks/useUser";
 import { USER_ROLE } from "@/types/enums";
 import { formatLastActive } from "../utils";
 import { EmitterEvent } from "@/types/generic";
-import { getSocket } from "@/libs/socket";
+import { useSocket } from "@/SocketContext";
 
 interface Message extends IMessagePopulated {
   isMine: boolean;
@@ -55,14 +55,12 @@ const DeliveryChat = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const { socket, connected } = useSocket();
   useEffect(() => {
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
+    if (!socket || !connected) {
+      console.warn("Socket not connected");
+      return;
     }
-
-    const socket = socketRef.current;
 
     const handler = (message: IMessagePopulated) => {
       if (
@@ -87,7 +85,7 @@ const DeliveryChat = ({
       socket.off(EmitterEvent.MESSAGE_SENT, handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socket, connected]);
 
   useEffect(() => {
     if (isOpen) fetchMessages();

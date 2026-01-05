@@ -1,30 +1,31 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { disconnectSocket, getSocket } from "@/libs/socket";
 
 import { EmitterEvent } from "@/types/generic";
-import { useUser } from "@/hooks/useUser";
+import { useSession } from "next-auth/react";
+import { USER_ROLE } from "@/types/enums";
+import { useSocket } from "@/SocketContext";
 
 function GeoLocationUpdater() {
-  const { user, isDeliveryBoy } = useUser();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const isDeliveryBoy = session?.user?.role === USER_ROLE.DELIVERY_BOY;
+  const { socket, connected } = useSocket();
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
   const watchIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!user?._id) return;
-
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
+    if (!socket || !connected) {
+      console.warn("Socket not connected");
+      return;
+    }
+    if (!userId || !isDeliveryBoy) {
+      console.warn("User not authenticated or not a delivery boy");
+      return;
     }
 
-    const socket = socketRef.current;
-
-    socket.emit("identity", user._id);
-
-    if (!navigator.geolocation || !isDeliveryBoy) {
+    if (!navigator.geolocation) {
       console.warn("Geolocation not supported");
       return;
     }
@@ -32,9 +33,9 @@ function GeoLocationUpdater() {
     watchIdRef.current = navigator.geolocation.watchPosition(
       (position) => {
         socket.emit("update-location", {
-          userId: user._id,
+          userId: userId,
           isDeliveryBoy,
-          event: `${EmitterEvent.D_B_LOCATION_UPDATED}_${user._id}`,
+          event: `${EmitterEvent.D_B_LOCATION_UPDATED}_${userId}`,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
@@ -51,9 +52,8 @@ function GeoLocationUpdater() {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
-      disconnectSocket(); // Disconnect the socket when the component unmounts
     };
-  }, [user, isDeliveryBoy]);
+  }, [socket, userId, isDeliveryBoy, connected]);
 
   return null;
 }

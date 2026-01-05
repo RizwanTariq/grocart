@@ -1,4 +1,3 @@
-import GeoLocationUpdater from "@/components/GeoLocationUpdater";
 import { LayoutUI } from "./_components/LayoutUI";
 
 export default function UserLayout({
@@ -6,10 +5,5 @@ export default function UserLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <LayoutUI>
-      {children}
-      <GeoLocationUpdater />
-    </LayoutUI>
-  );
+  return <LayoutUI>{children}</LayoutUI>;
 }

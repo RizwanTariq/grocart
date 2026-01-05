@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ShoppingBag } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -11,12 +11,11 @@ import NoOrdersCard from "./NoOrdersCard";
 
 import OrderCard from "./OrderCard";
 import TrackingCard from "@/components/features/orders/TrackingCard";
-// import axios from "axios";
-import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
+import { useSocket } from "@/SocketContext";
 
 const OrdersWrapper = ({
   initialOrders,
@@ -45,14 +44,12 @@ const OrdersWrapper = ({
     }
   };
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const { socket, connected } = useSocket();
   useEffect(() => {
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
+    if (!socket || !connected) {
+      console.warn("Socket not connected");
+      return;
     }
-
-    const socket = socketRef.current;
 
     const handler = (data: IOrderPopulated) => {
       toast.success(`Your order #${data.orderNumber} has been updated!`, {
@@ -75,7 +72,7 @@ const OrdersWrapper = ({
       socket.off(EmitterEvent.ORDER_UPDATED, handler);
       socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
     };
-  }, []);
+  }, [socket, connected]);
 
   const openTrackingModal = (order: IOrderPopulated) => {
     setSelectedOrderForTracking(order);

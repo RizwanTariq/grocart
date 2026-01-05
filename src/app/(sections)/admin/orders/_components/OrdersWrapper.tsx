@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import axios from "axios";
 import { ShoppingBag } from "lucide-react";
@@ -10,7 +10,6 @@ import { IOrder, IOrderPopulated } from "@/types";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
 import { EmitterEvent } from "@/types/generic";
 import { extractApiError } from "@/utils/api-error-extractor";
-import { getSocket } from "@/libs/socket";
 
 import TrackingCard from "@/components/features/orders/TrackingCard";
 import SearchInput from "@/components/features/products/SearchInput";
@@ -22,6 +21,7 @@ import PaymentFilterSelector from "./PaymentFilterSelector";
 import NoOrdersCard from "./NoOrdersCard";
 import OrderCard from "./OrderCard";
 import { IDeliveryAssignmentPopulated } from "@/types/dto/delivery-assignment";
+import { useSocket } from "@/SocketContext";
 
 const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
   const [orders, setOrders] = useState<IOrderPopulated[]>(_orders);
@@ -81,14 +81,12 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
     }
   };
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const { socket, connected } = useSocket();
   useEffect(() => {
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
+    if (!socket || !connected) {
+      console.warn("Socket not connected");
+      return;
     }
-
-    const socket = socketRef.current;
 
     const handler = (data: IOrderPopulated) => {
       toast.success(
@@ -127,7 +125,7 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
       socket.off(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
       socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
     };
-  }, []);
+  }, [socket, connected]);
 
   const updateOrderStatus = async (
     orderId: string,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { CheckCircle2, Navigation, Phone, User, X } from "lucide-react";
 import { motion } from "motion/react";
@@ -6,8 +6,8 @@ import Image from "next/image";
 
 import { totalItems } from "@/components/utils";
 import { IOrder, IOrderPopulated, IUser } from "@/types";
-import { getSocket } from "@/libs/socket";
 import { EmitterEvent } from "@/types/generic";
+import { useSocket } from "@/SocketContext";
 
 const LiveTrackingMap = dynamic(
   () => import("@/components/features/maps/LiveTrackingMap"),
@@ -33,17 +33,12 @@ function TrackingCard({
   const [distance, setDistance] = useState(0);
   const [eta, setEta] = useState(0);
 
-  const socketRef = useRef<ReturnType<typeof getSocket> | null>(null);
+  const { socket, connected } = useSocket();
 
   useEffect(() => {
     if (!deliveryBoy?._id) return;
 
-    // ensure stable socket
-    if (!socketRef.current) {
-      socketRef.current = getSocket();
-    }
-
-    const socket = socketRef.current;
+    if (!socket || !connected) return;
 
     const event = `${EmitterEvent.D_B_LOCATION_UPDATED}_${deliveryBoy._id}`;
 
@@ -64,7 +59,7 @@ function TrackingCard({
     return () => {
       socket.off(event, handler);
     };
-  }, [deliveryBoy?._id]);
+  }, [deliveryBoy?._id, socket, connected]);
 
   return (
     <>

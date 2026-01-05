@@ -1,4 +1,3 @@
-import GeoLocationUpdater from "@/components/GeoLocationUpdater";
 import LayoutUI from "./_components/LayoutUI";
 
 export default function AdminLayout({
@@ -6,10 +5,5 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <LayoutUI>
-      {children}
-      <GeoLocationUpdater />
-    </LayoutUI>
-  );
+  return <LayoutUI>{children}</LayoutUI>;
 }
