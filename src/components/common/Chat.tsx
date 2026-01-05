@@ -77,14 +77,15 @@ const DeliveryChat = ({
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(
+    isDeliveryBoy ? RIDER_SUGGESTIONS : CUSTOMER_SUGGESTIONS
+  );
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { socket, connected } = useSocket();
-
-  // Determine which suggestions to show based on user role
-  const suggestions = isDeliveryBoy ? RIDER_SUGGESTIONS : CUSTOMER_SUGGESTIONS;
 
   useEffect(() => {
     if (!socket || !connected) {
@@ -133,17 +134,34 @@ const DeliveryChat = ({
     }
   }, [isOpen]);
 
+  const fetchAiSuggestions = async (lastMessage?: IMessagePopulated) => {
+    setShowSuggestions(true);
+    setSuggestionLoading(true);
+    try {
+      lastMessage = lastMessage || messages[messages.length - 1];
+      const response = await axios.post("/api/delivery-chat/ai-suggestions", {
+        message: lastMessage.content,
+        role: isDeliveryBoy ? USER_ROLE.DELIVERY_BOY : USER_ROLE.USER,
+      });
+      if (response.status === 200) {
+        setSuggestions(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching AI suggestions:", error);
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
+
   // Show suggestions when there are few messages or no recent activity
   useEffect(() => {
-    if (!messages.length) {
-      setShowSuggestions(true);
-      return;
-    }
+    if (!messages.length) return;
     const lastMessage = messages[messages?.length - 1];
-    const timeSinceLastMessage =
-      Date.now() - new Date(lastMessage?.sentAt).getTime();
-    // Hide suggestions if there are many messages or recent activity
-    setShowSuggestions(messages.length < 5 || timeSinceLastMessage > 20000);
+    if (!lastMessage.isMine) {
+      fetchAiSuggestions();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
   const fetchMessages = async () => {
@@ -333,7 +351,7 @@ const DeliveryChat = ({
               </div>
 
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 bg-linear-to-br from-gray-50 to-rose-50/20">
+              <div className="flex-1 overflow-y-auto p-4 bg-linear-to-br from-gray-50 to-rose-50/20 scrollbar-custom">
                 {loading && messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
@@ -410,21 +428,39 @@ const DeliveryChat = ({
                     </span>
                   </div>
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-custom">
-                    {suggestions.slice(0, 4).map((suggestion, idx) => (
-                      <motion.button
-                        key={idx}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: idx * 0.05 }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        disabled={sending}
-                        className="shrink-0 px-3 py-2 bg-linear-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-700 text-xs font-medium rounded-full border border-rose-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                      >
-                        {suggestion}
-                      </motion.button>
-                    ))}
+                    {suggestionLoading
+                      ? [...Array(3)].map((_, idx) => (
+                          <div
+                            key={idx}
+                            className="relative w-28 h-7 bg-gray-200 rounded-xl overflow-hidden"
+                          >
+                            <motion.div
+                              className="absolute inset-0 bg-linear-to-r from-transparent via-gray-100 to-transparent"
+                              initial={{ x: "-100%" }}
+                              animate={{ x: "100%" }}
+                              transition={{
+                                repeat: Infinity,
+                                duration: 1.5,
+                                ease: "linear",
+                              }}
+                            />
+                          </div>
+                        ))
+                      : suggestions.slice(0, 4).map((suggestion, idx) => (
+                          <motion.button
+                            key={idx}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: idx * 0.05 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleSuggestionClick(suggestion)}
+                            disabled={sending}
+                            className="shrink-0 px-3 py-2 bg-linear-to-r from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 text-rose-600 text-xs font-medium rounded-xl border border-rose-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            {suggestion}
+                          </motion.button>
+                        ))}
                   </div>
                 </motion.div>
               )}
