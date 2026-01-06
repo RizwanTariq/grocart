@@ -112,6 +112,21 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (
+      !formData.fullName ||
+      !formData.phone.match("[0-9]{10}") ||
+      !formData.address ||
+      !formData.city ||
+      !formData.postalCode
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    setFormData((pre) => ({
+      ...pre,
+      phone: pre.phone.slice(0, 2) !== "92" ? "92" + pre.phone : pre.phone,
+    }));
+
     if (paymentMethod === PAYMENT_METHOD.COD) {
       handleCodOrder();
     }

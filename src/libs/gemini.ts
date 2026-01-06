@@ -13,6 +13,8 @@ async function getAiSuggestions(
   const prompt = `
             You are a delivery chat assistant.
 
+            Possible roles: Delivery Boy, Customer
+
             Role: ${
               role === USER_ROLE.DELIVERY_BOY ? "Delivery Boy" : "Customer"
             }

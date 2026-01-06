@@ -31,8 +31,8 @@ export default function LocationPickerMap({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "/leaflet/custom-marker-icon-2x.png",
-      iconUrl: "/leaflet/custom-marker-icon.png",
+      iconRetinaUrl: "/leaflet/pin-destination.png",
+      iconUrl: "/leaflet/pin-destination.png",
       shadowUrl: "",
       iconSize: [51, 51],
       iconAnchor: [25.5, 51],

@@ -15,6 +15,7 @@ import { updateUserAction } from "@/app/actions/updateUser";
 import { IUser } from "@/types";
 import { cn } from "@/utils/cn";
 import { USER_ROLE } from "@/types/enums";
+import ContactInput from "./common/ContactInput";
 
 function EditRoleAndContact({
   user,
@@ -40,14 +41,11 @@ function EditRoleAndContact({
   }, [adminExists]);
 
   const [selectedRole, setSelectedRole] = useState<string>(user.role || "");
-  const [contact, setContact] = useState<string | undefined>(
-    user.contact || ""
-  );
+  const [contact, setContact] = useState<string>(user.contact || "");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
-  const disabled =
-    !contact || contact.length < 10 || contact.length > 10 || !selectedRole;
+  const disabled = !contact.match("[0-9]{10}") || !selectedRole;
 
   const { update } = useSession();
 
@@ -55,7 +53,11 @@ function EditRoleAndContact({
     startTransition(async () => {
       try {
         const formData = new FormData();
-        if (contact) formData.append("contact", contact);
+        if (contact)
+          formData.append(
+            "contact",
+            contact.slice(0, 2) !== "92" ? "92" + contact : contact
+          );
         if (selectedRole) formData.append("role", selectedRole);
         const updatedUser = await updateUserAction(formData);
         update({ role: updatedUser.role });
@@ -102,20 +104,17 @@ function EditRoleAndContact({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="flex flex-col justify-center items-center mt-10"
+        className="flex flex-col justify-center gap-3 items-center mt-10"
       >
-        <label htmlFor="contact" className="text-gray-700 font-medium mb-2">
+        <label htmlFor="contact" className="text-gray-700 font-medium">
           Enter Your Contact No.
         </label>
-        <input
-          type="tel"
-          id="contact"
+        <ContactInput
           name="contact"
-          value={contact}
+          value={contact || ""}
           onChange={(e) => setContact(e.target.value)}
-          className="w-70 sm:w-120 md:w-140 p-3 md:px-6 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-400 mb-6"
-          placeholder="eg. 1234567890"
           required
+          className="w-70 sm:w-120 md:w-140 mb-4"
         />
       </motion.div>
       <motion.button

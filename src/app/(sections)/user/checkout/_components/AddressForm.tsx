@@ -1,7 +1,6 @@
 "use client";
 import {
   AtSign,
-  BookUser,
   Building2,
   Loader2,
   MailSearch,
@@ -14,6 +13,7 @@ import dynamic from "next/dynamic";
 
 import Input from "./Input";
 import { Coordinates } from "@/hooks/useGeoLocation";
+import PhoneNumber from "./PhoneNumber";
 
 const SearchAddressWithMap = dynamic(() => import("./SearchAddressWithMap"), {
   ssr: false,
@@ -73,15 +73,11 @@ function AddressForm({
             Icon={UserRoundPen}
           />
 
-          <Input
-            type="tel"
+          <PhoneNumber
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
             label="Phone Number"
-            placeholder="eg. 2345678900"
-            required
-            Icon={BookUser}
           />
         </div>
 
