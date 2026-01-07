@@ -77,7 +77,7 @@ function OrderCard({
         className="p-4 md:p-6 cursor-pointer"
         onClick={() => toggleOrder(order._id)}
       >
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-3 mb-3">
               <h3 className="text-lg font-bold text-gray-900">
@@ -151,7 +151,7 @@ function OrderCard({
         {/* Delivery Rider Info - Show when OUT_FOR_DELIVERY */}
         {order.status === ORDER_STATUS.OUT_FOR_DELIVERY &&
           order.assignedDeliveryBoy && (
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
               <DeliveryRiderInfo
                 rider={order.assignedDeliveryBoy}
                 customer={order.user}
