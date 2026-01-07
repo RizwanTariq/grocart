@@ -56,7 +56,7 @@ function EditRoleAndContact({
         if (contact)
           formData.append(
             "contact",
-            contact.slice(0, 2) !== "92" ? "92" + contact : contact
+            !contact.startsWith("92") ? "92" + contact : contact
           );
         if (selectedRole) formData.append("role", selectedRole);
         const updatedUser = await updateUserAction(formData);

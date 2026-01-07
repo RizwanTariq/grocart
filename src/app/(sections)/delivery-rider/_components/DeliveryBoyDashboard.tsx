@@ -373,13 +373,10 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
                                       Delivered At
                                     </span>
                                     <span className="font-medium text-gray-900">
-                                      {new Date(
+                                      {formatDate(
                                         (delivery.deliveredAt as Date) ||
                                           delivery.createdAt
-                                      ).toLocaleTimeString("en-US", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
+                                      )}
                                     </span>
                                   </div>
                                   <div className="pt-3 border-t border-gray-200">

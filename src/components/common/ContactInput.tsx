@@ -24,9 +24,7 @@ function ContactInput({
     if (!value) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setNumber(
-      value.slice(0, 2) === "92" ? value.slice(2, value.length - 1) : value
-    );
+    setNumber(value.startsWith("92") ? value.slice(2, value.length) : value);
   }, [value]);
   return (
     <div

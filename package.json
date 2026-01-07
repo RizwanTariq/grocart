@@ -23,6 +23,7 @@
     "motion": "^12.23.25",
     "next": "^16.0.10",
     "next-auth": "^5.0.0-beta.30",
+    "node-mailjet": "^6.0.11",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-hot-toast": "^2.6.0",

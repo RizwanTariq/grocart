@@ -42,7 +42,6 @@ async function getAiSuggestions(
     });
 
     const text = result.text;
-    console.log(text);
 
     // IMPORTANT: Gemini sometimes wraps JSON in text
     const jsonMatch = text?.match(/\[[\s\S]*\]/);
