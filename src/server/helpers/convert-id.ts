@@ -1,3 +1,5 @@
+import "server-only";
+
 import { Types } from "mongoose";
 
 export type WithStringId<T> = Omit<T, "_id"> & { _id: string };

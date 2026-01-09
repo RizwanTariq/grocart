@@ -1,3 +1,5 @@
+"use server";
+
 import { NextResponse } from "next/server";
 import { castIdToObjectId } from "@/server/helpers/mongoose-parser";
 import OrderModel from "@/models/order.model";
