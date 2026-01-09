@@ -124,8 +124,7 @@ const DeliveryRiderInfo = ({
               </div>
             )}
           </div>
-          <div className="flex gap-4 mt-3">
-            {/* Track Delivery Button */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-3">
             {onTrackDelivery && (
               <button
                 onClick={(e) => {

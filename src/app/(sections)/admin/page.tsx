@@ -28,6 +28,7 @@ import Dropdown from "@/components/common/Dropdown";
 import axios from "axios";
 import SecondaryStats from "./_components/SecondaryStats";
 import StatsGrid from "./_components/StatsGrid";
+import useMobile from "@/hooks/useMobile";
 
 export interface DashboardStats {
   totalRevenue: number;
@@ -62,6 +63,7 @@ interface OrderStatusData {
 }
 
 const AdminDashboard = () => {
+  const { isMobile } = useMobile();
   const [isPending, startTransition] = useTransition();
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d">("30d");
   const [stats, setStats] = useState<DashboardStats>({
@@ -133,7 +135,7 @@ const AdminDashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
-    <div className="min-h-screen mt-15 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
+    <div className="min-h-screen mt-12 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <PageHeader
           icon={LayoutDashboard}
@@ -171,9 +173,7 @@ const AdminDashboard = () => {
 
             <SecondaryStats stats={stats} />
 
-            {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Revenue Chart */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
                   <AreaChart data={revenueData}>
                     <defs>
                       <linearGradient
@@ -240,7 +240,6 @@ const AdminDashboard = () => {
                 </ResponsiveContainer>
               </motion.div>
 
-              {/* Category Distribution */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -258,7 +257,7 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                 </div>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
                   <PieChart>
                     <Pie
                       data={
@@ -297,7 +296,6 @@ const AdminDashboard = () => {
               </motion.div>
             </div>
 
-            {/* Order Status Distribution */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -315,7 +313,7 @@ const AdminDashboard = () => {
                   </p>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={isMobile ? 200 : 300}>
                 <BarChart data={orderStatusData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis

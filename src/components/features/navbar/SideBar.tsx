@@ -4,7 +4,6 @@ import {
   Boxes,
   ClipboardList,
   Package2,
-  PlusCircle,
   ShoppingCart,
   User,
   X,
@@ -136,9 +135,9 @@ function SideBar({ user, closeMobileMenu }: Props) {
                 Admin Actions
               </p>
               <SidebarLink
-                pathToGo="/admin/products/add"
-                label="Add Product"
-                icon={PlusCircle}
+                pathToGo="/admin"
+                label="Dashboard"
+                icon={Home}
                 closeMobileMenu={closeMobileMenu}
               />
               <SidebarLink

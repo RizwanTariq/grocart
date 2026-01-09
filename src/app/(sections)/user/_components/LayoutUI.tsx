@@ -1,6 +1,7 @@
 "use client";
 
 import NavBar from "@/components/features/navbar/NavBar";
+import Footer from "@/components/Footer";
 import { usePathname } from "next/navigation";
 
 export function LayoutUI({ children }: { children: React.ReactNode }) {
@@ -14,6 +15,7 @@ export function LayoutUI({ children }: { children: React.ReactNode }) {
     <>
       {!hideNavbar && <NavBar />}
       {children}
+      <Footer />
     </>
   );
 }

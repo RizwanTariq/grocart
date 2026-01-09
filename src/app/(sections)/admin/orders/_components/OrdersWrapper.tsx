@@ -205,19 +205,16 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
   };
 
   return (
-    <div className="min-h-screen mt-15 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
+    <div className="min-h-screen mt-12 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <PageHeader
           icon={ShoppingBag}
           title="Order Management"
           subTitle="Track and manage all customer orders"
         />
 
-        {/* Stats Cards */}
         <StatsGrid orders={orders as unknown as IOrder[]} />
 
-        {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -269,7 +266,6 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
           </div>
         </motion.div>
 
-        {/* Orders List */}
         {filteredOrders.length === 0 ? (
           <NoOrdersCard
             description={
