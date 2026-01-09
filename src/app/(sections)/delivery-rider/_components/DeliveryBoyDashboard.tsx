@@ -58,7 +58,6 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
   const { socket, connected } = useSocket();
   useEffect(() => {
     if (!socket || !connected) {
-      console.warn("Socket not connected");
       return;
     }
 
@@ -80,10 +79,17 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
     socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerAcceptOrReject);
     socket.on(EmitterEvent.DELIVERY_REJECTED, handlerAcceptOrReject);
 
+    const handlerDeliveryCompleted = (data: IDeliveryAssignmentPopulated) => {
+      setCompletedDeliveries((prev) => [data, ...prev]);
+      setActiveDelivery(null);
+    };
+    socket.on(EmitterEvent.DELIVERY_COMPLETED, handlerDeliveryCompleted);
+
     return () => {
       socket.off(EmitterEvent.ORDER_BROADCASTED, handler);
       socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerAcceptOrReject);
       socket.off(EmitterEvent.DELIVERY_REJECTED, handlerAcceptOrReject);
+      socket.off(EmitterEvent.DELIVERY_COMPLETED, handlerDeliveryCompleted);
     };
   }, [socket, connected]);
 

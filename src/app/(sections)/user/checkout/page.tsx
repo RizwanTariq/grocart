@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       toast.error("Please fill in all required fields");
       return;
     }
-    console.log(formData.phone);
+
     setFormData((pre) => ({
       ...pre,
       phone: !pre.phone.startsWith("92") ? "92" + pre.phone : pre.phone,

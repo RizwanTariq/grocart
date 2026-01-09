@@ -84,7 +84,6 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
   const { socket, connected } = useSocket();
   useEffect(() => {
     if (!socket || !connected) {
-      console.warn("Socket not connected");
       return;
     }
 
@@ -114,16 +113,19 @@ const AdminOrdersPage = ({ _orders = [] }: { _orders: IOrderPopulated[] }) => {
 
     socket.on(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
 
-    const handlerDeliveryAccepted = (data: IDeliveryAssignmentPopulated) => {
+    const handlerDelivery = (data: IDeliveryAssignmentPopulated) => {
       fetchOrderAndSetState(data.order._id);
     };
 
-    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDelivery);
+
+    socket.on(EmitterEvent.DELIVERY_COMPLETED, handlerDelivery);
 
     return () => {
       socket.off(EmitterEvent.ORDER_CREATED, handler);
       socket.off(EmitterEvent.PAYMENT_COMPLETED, handlerPayment);
-      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDelivery);
+      socket.off(EmitterEvent.DELIVERY_COMPLETED, handlerDelivery);
     };
   }, [socket, connected]);
 

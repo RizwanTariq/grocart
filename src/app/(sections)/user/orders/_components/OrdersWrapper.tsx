@@ -47,7 +47,6 @@ const OrdersWrapper = ({
   const { socket, connected } = useSocket();
   useEffect(() => {
     if (!socket || !connected) {
-      console.warn("Socket not connected");
       return;
     }
 
@@ -62,15 +61,18 @@ const OrdersWrapper = ({
 
     socket.on(EmitterEvent.ORDER_UPDATED, handler);
 
-    const handlerDeliveryAccepted = (data: IDeliveryAssignmentPopulated) => {
+    const handlerDelivery = (data: IDeliveryAssignmentPopulated) => {
       fetchOrderAndSetState(data.order._id);
     };
 
-    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+    socket.on(EmitterEvent.DELIVERY_ACCEPTED, handlerDelivery);
+
+    socket.on(EmitterEvent.DELIVERY_COMPLETED, handlerDelivery);
 
     return () => {
       socket.off(EmitterEvent.ORDER_UPDATED, handler);
-      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDeliveryAccepted);
+      socket.off(EmitterEvent.DELIVERY_ACCEPTED, handlerDelivery);
+      socket.off(EmitterEvent.DELIVERY_COMPLETED, handlerDelivery);
     };
   }, [socket, connected]);
 

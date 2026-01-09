@@ -10,8 +10,14 @@ import {
   DELIVERY_ASSIGNMENT_STATUS,
   ORDER_STATUS,
   PAYMENT_STATUS,
+  USER_ROLE,
 } from "@/types/enums";
 import OrderModel from "@/models/order.model";
+import eventEmitter from "@/libs/eventEmitter";
+import { EmitterEvent } from "@/types/generic";
+import { IUser } from "@/types";
+
+import UserModel from "@/models/user.model";
 
 export const POST = auth(async function (request, context) {
   const params = await context.params;
@@ -20,8 +26,7 @@ export const POST = auth(async function (request, context) {
     await connectDB();
     const rider = await assertDeliveryRider(request);
 
-    const assignment = await DeliveryAssignmentModel.findById(assignmentId)
-    .populate([{ path: "order" }, { path: "assignedTo", select: "-password" }]);
+    const assignment = await DeliveryAssignmentModel.findById(assignmentId);
 
     if (!assignment) {
       throw NextResponse.json(
@@ -93,6 +98,26 @@ export const POST = auth(async function (request, context) {
     order.status = ORDER_STATUS.DELIVERED;
     order.paymentStatus = PAYMENT_STATUS.PAYMENT_PAID;
     await order.save();
+
+    await assignment.populate([
+      { path: "order" },
+      { path: "assignedTo", select: "-password" },
+    ]);
+
+    const adminsAndCustomer = await UserModel.find({
+      $or: [{ role: USER_ROLE.ADMIN }, { _id: order.user }],
+    }).select("socketId");
+
+    [rider, ...adminsAndCustomer].forEach((u) => {
+      const socketId = (u as unknown as IUser).socketId;
+      if (socketId) {
+        eventEmitter(
+          EmitterEvent.DELIVERY_COMPLETED,
+          JSON.parse(JSON.stringify(assignment)),
+          socketId
+        );
+      }
+    });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

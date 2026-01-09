@@ -89,7 +89,6 @@ const DeliveryChat = ({
 
   useEffect(() => {
     if (!socket || !connected) {
-      console.warn("Socket not connected");
       return;
     }
 
