@@ -156,7 +156,7 @@ const DeliveryChat = ({
   useEffect(() => {
     if (!messages.length) return;
     const lastMessage = messages[messages?.length - 1];
-    if (!lastMessage.isMine) {
+    if (!lastMessage.isMine && !isAdmin) {
       fetchAiSuggestions();
     }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { LucideIcon, TrendingUp } from "lucide-react";
+import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import { motion } from "motion/react";
 
 export type StatCard = {
@@ -13,15 +13,15 @@ export type StatCard = {
   iconColor: string;
   iconBg: string;
   isRevenue?: boolean;
+  change?: number;
 };
 
 type Props = {
   stat: StatCard;
   index: number;
-  isTrandingUp?: boolean;
 };
 
-function StatsCard({ stat, index, isTrandingUp = true }: Props) {
+function StatsCard({ stat, index }: Props) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -41,7 +41,16 @@ function StatsCard({ stat, index, isTrandingUp = true }: Props) {
         >
           <stat.icon className={cn(`w-6 h-6`, stat.iconColor)} />
         </div>
-        {isTrandingUp && <TrendingUp className="w-5 h-5 text-green-500" />}
+
+        {typeof stat.change === "number" && stat.change !== 0 && (
+          <>
+            {stat.change > 0 ? (
+              <TrendingUp className="w-5 h-5 text-green-500" />
+            ) : (
+              <TrendingDown className="w-5 h-5 text-red-500" />
+            )}
+          </>
+        )}
       </div>
       <div className="flex items-center justify-between sm:flex-col sm:items-start">
         <p className="text-base sm:text-sm font-semibold text-gray-600 mb-1">

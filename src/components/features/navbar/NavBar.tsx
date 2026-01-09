@@ -93,7 +93,7 @@ function NavBar() {
 
               <NavLink
                 pathToGo="/admin/products"
-                label="View Products"
+                label="Manage Products"
                 icon={Boxes}
               />
 

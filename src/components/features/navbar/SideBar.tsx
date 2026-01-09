@@ -143,7 +143,7 @@ function SideBar({ user, closeMobileMenu }: Props) {
               />
               <SidebarLink
                 pathToGo="/admin/products"
-                label="View Products"
+                label="Manage Products"
                 icon={Boxes}
                 closeMobileMenu={closeMobileMenu}
               />
