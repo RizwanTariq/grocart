@@ -5,14 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 
-import {
-  Boxes,
-  ClipboardList,
-  Menu,
-  PlusCircle,
-  Store,
-  Home,
-} from "lucide-react";
+import { Boxes, ClipboardList, Menu, Store, Home } from "lucide-react";
 
 import { IUser } from "@/types";
 import { useUser } from "@/hooks/useUser";
@@ -61,7 +54,7 @@ function NavBar() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="w-[96%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-rose-500 via-pink-500 to-rose-500 rounded-2xl shadow-xl shadow-black/20 flex justify-between items-center h-18 px-5 md:px-8 z-50"
+      className="w-full sticky top-0 bg-linear-to-l from-rose-500 via-pink-500 to-rose-500 shadow-xl shadow-black/20 flex justify-between items-center h-18 px-5 md:px-10 z-50 backdrop-blur-2xl"
     >
       <div className="flex items-center gap-8">
         <Link
@@ -85,11 +78,7 @@ function NavBar() {
           )}
           {isAdmin && (
             <>
-              <NavLink
-                pathToGo="/admin/products/add"
-                label="Add Product"
-                icon={PlusCircle}
-              />
+              <NavLink pathToGo="/admin" label="Dashboard" icon={Home} />
 
               <NavLink
                 pathToGo="/admin/products"

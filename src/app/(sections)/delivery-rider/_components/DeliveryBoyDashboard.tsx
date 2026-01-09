@@ -115,7 +115,7 @@ const DeliveryRiderDashboard = ({ initialData }: Props) => {
   };
 
   return (
-    <div className="min-h-screen pt-28 sm:pt-32 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
+    <div className="min-h-screen mt-15 pb-12 sm:pb-16 px-3 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
 

@@ -1,7 +1,8 @@
 "use client";
 import { DollarSign, Package, ShoppingCart, Truck } from "lucide-react";
-import { DashboardStats } from "./AdminDashboard";
+
 import StatsCard from "@/components/common/StatsCard";
+import { DashboardStats } from "../page";
 
 function StatsGrid({ stats }: { stats: DashboardStats }) {
   const statCards = [

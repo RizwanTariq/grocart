@@ -55,7 +55,7 @@ function HeroSection() {
     return () => clearInterval(interval);
   }, [activeSlide, slides.length]);
   return (
-    <div className="relative w-[96%] mx-auto mt-26 md:mt-32 h-[60vh] md:h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="relative w-[96%] mx-auto mt-10 h-[60vh] md:h-[80vh] rounded-2xl overflow-hidden shadow-xl">
       <AnimatePresence mode="wait">
         <motion.div
           key={activeSlide}

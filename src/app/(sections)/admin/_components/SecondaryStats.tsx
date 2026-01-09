@@ -1,6 +1,5 @@
 "use client";
 
-import { DashboardStats } from "./AdminDashboard";
 import {
   Activity,
   AlertCircle,
@@ -10,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/utils/cn";
+import { DashboardStats } from "../page";
 
 function SecondaryStats({ stats }: { stats: DashboardStats }) {
   const secondaryStats = [
