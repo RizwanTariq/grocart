@@ -107,7 +107,7 @@ const Footer = () => {
       animate={{ opacity: 1, y: 0 }}
       viewport={{ once: false, amount: 0.3 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
+      className="bg-linear-to-br from-gray-900 via-gray-800 to-gray-900 text-white mt-12"
     >
       <div className="border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -146,7 +146,9 @@ const Footer = () => {
               <div className="w-10 h-10 bg-linear-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center">
                 <ShoppingBag className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold">GroCart</span>
+              <span className="text-2xl font-bold">
+                {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"}
+              </span>
             </Link>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Your trusted partner for fresh groceries delivered to your
@@ -162,11 +164,14 @@ const Footer = () => {
                 <span>+92 300 1234567</span>
               </a>
               <a
-                href="mailto:support@grocart.com"
+                href={`mailto:${process.env.NEXT_PUBLIC_DOMAIN_EMAIL} || "support@grocart.com"`}
                 className="flex items-center gap-2 text-gray-400 hover:text-rose-500 transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                <span>support@grocart.com</span>
+                <span>
+                  {process.env.NEXT_PUBLIC_DOMAIN_EMAIL ||
+                    "support@grocart.com"}
+                </span>
               </a>
               <div className="flex items-start gap-2 text-gray-400">
                 <MapPin className="w-4 h-4 mt-1 shrink-0" />
@@ -267,7 +272,8 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm text-center md:text-left">
-              © {currentYear} GroCart. All rights reserved.
+              © {currentYear} {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"}.
+              All rights reserved.
             </p>
             <p className="text-gray-400 text-sm flex items-center gap-1">
               Made with{" "}

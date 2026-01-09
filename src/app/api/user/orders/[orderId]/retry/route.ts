@@ -71,7 +71,9 @@ export const POST = auth(async function (request, context) {
             price_data: {
               currency: "inr",
               product_data: {
-                name: `GroCart - Order # ${orderNumber}`,
+                name: `${
+                  process.env.NEXT_PUBLIC_APP_NAME || "GroCart"
+                } - Order # ${orderNumber}`,
               },
               unit_amount: totalAmount * 100,
             },

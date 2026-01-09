@@ -61,7 +61,7 @@ function NavBar() {
           href="/"
           className="text-white font-extrabold text-xl sm:text-2xl tracking-wide hover:scale-105 transition-all"
         >
-          GroCart
+          {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"}
         </Link>
 
         {/* Navigation Links for Users */}

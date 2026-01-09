@@ -27,7 +27,11 @@ export const POST = auth(async function (req: Request) {
     const res = await fetch(url, {
       headers: {
         // REQUIRED by Nominatim usage policy
-        "User-Agent": "grocart/1.0 (contact@yourdomain.com)",
+        "User-Agent": `${
+          process.env.NEXT_PUBLIC_APP_NAME?.toLowerCase() || "grocart"
+        }/1.0 (${
+          process.env.NEXT_PUBLIC_DOMAIN_EMAIL || "contact@yourdomain.com"
+        })`,
       },
     });
 

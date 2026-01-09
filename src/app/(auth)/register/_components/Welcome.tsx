@@ -16,7 +16,9 @@ function Welcome({ onNext }: WelcomeProps) {
         className="flex gap-2.5 items-center text-rose-700"
       >
         <Store className="w-10 h-10 md:w-12 md:h-12" strokeWidth={2.5} />
-        <h1 className="text-4xl md:text-5xl font-extrabold">GroCart</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold">
+          {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"}
+        </h1>
       </motion.div>
       <motion.p
         initial={{ opacity: 0, y: -10 }}
@@ -24,9 +26,10 @@ function Welcome({ onNext }: WelcomeProps) {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="mt-4 text-lg md:text-xl text-gray-700 max-w-2xl"
       >
-        GroCart is your go-to online grocery store, offering a wide range of
-        fresh produce, pantry essentials, and household items with fast and
-        reliable delivery right to your doorstep.
+        {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"} is your go-to online
+        grocery store, offering a wide range of fresh produce, pantry
+        essentials, and household items with fast and reliable delivery right to
+        your doorstep.
       </motion.p>
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}

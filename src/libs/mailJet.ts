@@ -27,7 +27,9 @@ export async function sendOtpEmail(
                   <!-- Header -->
                   <tr>
                     <td style="background:#22c55e;padding:16px;text-align:center;">
-                      <h1 style="margin:0;color:#ffffff;font-size:22px;">GroCart</h1>
+                      <h1 style="margin:0;color:#ffffff;font-size:22px;">${
+                        process.env.NEXT_PUBLIC_APP_NAME || "GroCart"
+                      }</h1>
                     </td>
                   </tr>
 
@@ -75,7 +77,9 @@ export async function sendOtpEmail(
                   <tr>
                     <td style="background:#f9fafb;padding:12px;text-align:center;">
                       <p style="margin:0;font-size:12px;color:#9ca3af;">
-                        © ${new Date().getFullYear()} GroCart. All rights reserved.
+                        © ${new Date().getFullYear()} ${
+    process.env.NEXT_PUBLIC_APP_NAME || "GroCart"
+  }. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -93,8 +97,8 @@ export async function sendOtpEmail(
       Messages: [
         {
           From: {
-            Email: "mrizwantariq1996@gmail.com",
-            Name: "GroCart",
+            Email: process.env.MAILJET_FROM_EMAIL!,
+            Name: process.env.NEXT_PUBLIC_APP_NAME!,
           },
           To: [
             {

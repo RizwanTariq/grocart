@@ -47,7 +47,7 @@ function LoginForm() {
         transition={{ duration: 0.8 }}
         className="text-4xl md:text-5xl font-extrabold text-rose-700"
       >
-        Welcome back to GroCart!
+        Welcome back to {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"}!
       </motion.h1>
       <p className="flex items-center gap-2 mt-3 text-medium md:text-lg text-gray-600">
         Sign in to manage your account, orders, and more.

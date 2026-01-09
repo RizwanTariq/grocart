@@ -17,7 +17,7 @@ const uploadOnCloudinary = async (file: Blob): Promise<string | undefined> => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: "auto",
-          folder: "grocart",
+          folder: process.env.NEXT_PUBLIC_APP_NAME?.toLowerCase() || "grocart",
         },
         (error, result) => {
           if (error) {

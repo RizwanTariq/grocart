@@ -11,9 +11,13 @@ import {
 } from "@/types/enums";
 import { auth } from "@/auth";
 import { categories } from "@/constants/product";
+import { assertAdmin } from "@/server/auth/assertAdmin";
+import connectDB from "@/libs/db";
 
 export const GET = auth(async function (request) {
   try {
+    await connectDB();
+    await assertAdmin(request);
     const searchParams = request.nextUrl.searchParams;
     const range = searchParams.get("range") || "30d";
 

@@ -1,4 +1,3 @@
-// store/useStore.ts
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -16,11 +15,12 @@ export const useStore = create<StoreState>()(
       ...createUserSlice(...args),
     }),
     {
-      name: "grocart-shop-storage",
+      name: `${
+        process.env.NEXT_PUBLIC_APP_NAME?.toLowerCase() || "grocart"
+      }-shop-storage`,
 
       storage: createJSONStorage(() => localStorage),
 
-      // 🔐 Optional but recommended
       partialize: (state) => ({
         user: state.user,
         cartItems: state.cartItems,

@@ -62,7 +62,8 @@ function RegisterForm() {
         Create an account
       </motion.h1>
       <p className="flex items-center gap-2 mt-3 text-medium md:text-lg text-gray-600">
-        Join GroCart and start your shopping journey!
+        Join {process.env.NEXT_PUBLIC_APP_NAME || "GroCart"} and start your
+        shopping journey!
         <BadgeCheck className="w-6 h-6 text-green-500" />
       </p>
       <motion.form
