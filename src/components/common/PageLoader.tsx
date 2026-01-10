@@ -17,7 +17,7 @@ function PageLoader() {
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 120, damping: 20 }}
       >
-        <Loader2 className="w-12 h-12 text-rose-600 dark:text-rose-400" />
+        <Loader2 className="w-12 h-12 text-rose-600 dark:text-rose-400 animate-spin" />
         <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
           Loading...
         </span>
