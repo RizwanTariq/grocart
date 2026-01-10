@@ -5,6 +5,9 @@ import { handleGenericError } from "@/server/helpers/generic-api-error-handler";
 import { ORDER_STATUS, PAYMENT_STATUS } from "@/types/enums";
 import { NextRequest, NextResponse } from "next/server";
 
+// This cron job will run every day at 12:00 AM
+// https://www.easycron.com/cron-jobs
+// 42 15 * * * *
 export async function POST(req: NextRequest) {
   await connectDB();
 
